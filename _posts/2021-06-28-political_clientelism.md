@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ว่าด้วยการเมืองเชิงอุปถัมภ์ในบริบทไทย
+title: ว่าด้วยการเมืองเชิงอุปถัมภ์ในบริบทการเลือกตั้งไทย
 gh-repo: naponjatusripitak/polisci490/
 gh-badge: [star, fork, follow]
 tags: [การเมือง]
