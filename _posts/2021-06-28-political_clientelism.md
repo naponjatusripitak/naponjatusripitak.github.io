@@ -1,4 +1,11 @@
  
+---
+layout: post
+title: ว่าด้วยการเมืองเชิงอุปถัมภ์ในบริบทไทย
+gh-repo: naponjatusripitak/polisci490/
+gh-badge: [star, fork, follow]
+tags: [การเมือง]
+---
 
 ## บทนำ
 
