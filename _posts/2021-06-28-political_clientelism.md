@@ -5,6 +5,9 @@ gh-repo: naponjatusripitak/polisci490/
 gh-badge: [star, fork, follow]
 tags: [การเมือง]
 ---
+<p align="center">
+<img src="https://naponjatusripitak.github.io/img/extension.png">
+</p>
 
 ## บทนำ
 
