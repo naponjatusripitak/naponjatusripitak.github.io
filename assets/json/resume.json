@@ -1,7 +1,6 @@
 {
     "basics": {
         "name": "Napon Jatusripitak",
-        "label": "Researcher",
         "image": "",
         "email": "napon.jatusripitak@gmail.com",
         "phone": "+66 (0)81-618-2616",
@@ -46,21 +45,83 @@
                 "Created an election map in ArcGIS to visualize the electoral performance of political parties and to identify patterns of geographic clustering in votes and partisanship in Thailand’s 2019 general elections",
                 "Designed and conducted original, independent research in Thailand involving indepth interviews with hard-to-reach political actors to assess how and why parties and politicians distribute discretionary rewards, favors and privileged access to government resources as a means to generate electoral support"
             ]
+        },
+        {
+            "name": "Northwestern University, Department of Sociology",
+            "position": "Research Assistant",
+            "url": "",
+            "startDate": "2018",
+            "endDate": "2018",
+            "highlights": [
+                "Devised an automated approach in R for scraping military records, biographical and demographic data of individuals who perished in Belgium during WWI and WWII",
+                "Compiled a county-level dataset for examining the impact of war commemoration on the strength of nationalism in Belgium (1914-1945)"
+            ]
+        },
+        {
+            "name": "Nomura Research Institute, Global Business Development",
+            "position": "Research Analyst Intern",
+            "url": "",
+            "startDate": "2014",
+            "endDate": "2014",
+            "highlights": [
+                "Evaluated ASEAN convenience retail industry and devised market entry strategies based on macro-indicators, intensity of competition, distribution logistics, regulatory framework, and consumption patterns",
+                "Conducted competitor profiling analysis of Turkish and Cambodian over-the-counter pharmaceutical industries by assessing individual company's competitiveness, scale of operation, product and service mix, marketing strategy, ownership and financial structure"
+            ]
         }
     ],
-  "education": [
-    {
-      "institution": "University of Zurich, Zurich, Switzerland",
-      "location": "Zurich, Switzerland",
-      "url": "https://www.uzh.ch/",
-      "area": "Software Development",
-      "studyType": "PhD",
-      "startDate": "1905-01-01",
-      "endDate": "1905-01-01",
-      "score": "10",
-      "courses": ["Theory of Relativity"]
-    }
-  ],
+    "education": [
+        {
+            "institution": "Northwestern University",
+            "location": "Evanston, IL",
+            "url": "",
+            "area": "Political Science",
+            "studyType": "Ph.D.",
+            "startDate": "2016",
+            "endDate": "2022",
+            "score": "3.95",
+            "courses": [
+                "Comparative Politics",
+                "Machine Learning and Text as Data",
+                "Probability & Statistics",
+                "Linear Models",
+                "Quantitative Causal Inference",
+                "Qualitative Methods",
+                "Experimental Political Science"
+            ]
+        },
+        {
+            "institution": "Columbia University",
+            "location": "New York, NY",
+            "url": "",
+            "area": "Sociocultural Anthropology",
+            "studyType": "M.A.",
+            "startDate": "2014",
+            "endDate": "2016",
+            "score": "3.89",
+            "courses": [
+                "Nationalizing Bodies: Reflections on Schooling, Nation-building, and Nationalism in Contemporary Thailand"
+            ]
+        },
+        {
+            "institution": "Cornell University",
+            "location": "Ithaca, NY",
+            "url": "",
+            "area": "Economics/Asian Studies",
+            "studyType": "B.A.",
+            "startDate": "2010",
+            "endDate": "2014",
+            "score": "3.77",
+            "courses": [
+                "Microeconomics",
+                "Macroeconomics",
+                "Probability and Statistics",
+                "Econometrics",
+                "Money and Credit",
+                "International Trade Theory and Policy",
+                "Industrial Organization"
+            ]
+        }
+    ],
   "awards": [
     {
       "title": "Nobel Prize in Physics",
