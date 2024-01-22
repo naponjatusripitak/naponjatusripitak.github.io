@@ -22,7 +22,7 @@ social: true # includes social icons at the bottom of the page
 
 Hello, and welcome!
 
-My name is Napon. I'm currently a visiting fellow at the ISEAS-Yusof Ishak Institute in Singapore. I hold a PhD in Political Science from <a href="https://polisci.northwestern.edu/people/graduate-students/napon-jatusripitak.html">Northwestern University</a> in the field of Comparative Politics and Methodology.
+My name is Napon. I'm currently a visiting fellow at the ISEAS-Yusof Ishak Institute in Singapore. I hold a PhD in Political Science from Northwestern University in the field of Comparative Politics and Methodology.
 
 I read, write and talk about topics in social science and Southeast Asian politics, using both qualitative and quantitative research methods to produce knowledge and insights about the world. I'm also passionate about coding and solving programming challenges.
 
