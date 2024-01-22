@@ -6,7 +6,7 @@ date: 2021-06-28
 
 authors:
   - name: Napon Jatusripitak
-    url: "https://polisci.northwestern.edu/people/graduate-students/napon-jatusripitak.html"
+    url: "https://naponjatusripitak.github.io/"
     affiliations:
       name: Department of Political Science, Northwestern University
 
