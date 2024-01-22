@@ -1,49 +1,53 @@
 {
-  "basics": {
-    "name": "Albert Einstein",
-    "label": "Scientist",
-    "image": "",
-    "email": "albert@einstein.de",
-    "phone": "(912) 123-4567",
-    "url": "https://alshedivat.github.io/al-folio/",
-    "summary": "A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time",
-    "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
-      "countryCode": "US",
-      "region": "California"
+    "basics": {
+        "name": "Napon Jatusripitak",
+        "label": "Researcher",
+        "image": "",
+        "email": "napon.jatusripitak@gmail.com",
+        "phone": "+66 (0)81-618-2616",
+        "url": "linkedin.com/in/naponj",
+        "summary": "A dedicated mixed-methods researcher with extensive experience in political science, focusing on comparative politics, methodology, and the politics of giving",
+        "location": {
+            "address": "601 University Place",
+            "postalCode": "60201",
+            "city": "Evanston",
+            "countryCode": "US",
+            "region": "Illinois"
+        },
+        "profiles": [
+            {
+                "network": "LinkedIn",
+                "username": "naponj",
+                "url": "linkedin.com/in/naponj"
+            }
+        ]
     },
-    "profiles": [
-      {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
-      }
-    ]
-  },
-  "work": [
-    {
-      "name": "Institute for Advanced Study, Princeton University",
-      "position": "Professor of Theoretical Physics",
-      "url": "https://example.com",
-      "startDate": "1933-01-01",
-      "endDate": "1955-01-01",
-      "summary": "Teaching at Palmer Physical Laboratory (now 302 Frist Campus Center). While not a professor at Princeton, I associated with the physics professors and continued to give lectures on campus.",
-      "highlights": ["Relativity"]
-    }
-  ],
-  "volunteer": [
-    {
-      "organization": "People's Climate March",
-      "position": "Lead Organizer",
-      "url": "https://example.com",
-      "startDate": "2014-04-01",
-      "endDate": "2015-07-01",
-      "summary": "Lead organizer for the New York City branch of the People's Climate March, the largest climate march in history.",
-      "highlights": ["Awarded 'Climate Hero' award by Greenpeace for my efforts organizing the march.", "Men of the year 2014 by Time magazine"]
-    }
-  ],
+    "work": [
+        {
+            "name": "ISEAS-Yusof Ishak Institute Thailand Studies Programme",
+            "position": "Visiting Fellow",
+            "url": "",
+            "startDate": "2022",
+            "endDate": "Present",
+            "highlights": [
+                "Undertook research on Thai politics for ISEAS flagship publications such as Fulcrum and ISEAS Perspectives, delivering analytical insights to guide and inform policymakers, diplomats, journalists, academics, business leaders, and other stakeholders around the globe on Thailand’s shifting political and policy environment",
+                "Collaborated with ISEAS coordinators to organize events and moderated diverse panels of policymakers, political figures and academics, fostering in-depth discussions on Southeast Asia’s politics, economics, and social issues",
+                "Provided expert commentary and in-depth analysis on the evolving political dynamics in Thailand through seminars and webinars for an international audience, in addition to regular media appearances"
+            ]
+        },
+        {
+            "name": "Northwestern University Department of Political Science",
+            "position": "Ph.D. Researcher",
+            "url": "",
+            "startDate": "2016",
+            "endDate": "2022",
+            "highlights": [
+                "Applied unsupervised machine learning and natural language processing methods to analyze underlying trends in public opinion and sentiment on Thailand’s political issues, using over 20,000 news articles and two million tweets as data sources",
+                "Created an election map in ArcGIS to visualize the electoral performance of political parties and to identify patterns of geographic clustering in votes and partisanship in Thailand’s 2019 general elections",
+                "Designed and conducted original, independent research in Thailand involving indepth interviews with hard-to-reach political actors to assess how and why parties and politicians distribute discretionary rewards, favors and privileged access to government resources as a means to generate electoral support"
+            ]
+        }
+    ],
   "education": [
     {
       "institution": "University of Zurich, Zurich, Switzerland",
