@@ -45,6 +45,28 @@
                 "Created an election map in ArcGIS to visualize the electoral performance of political parties and to identify patterns of geographic clustering in votes and partisanship in Thailand’s 2019 general elections",
                 "Designed and conducted original, independent research in Thailand involving indepth interviews with hard-to-reach political actors to assess how and why parties and politicians distribute discretionary rewards, favors and privileged access to government resources as a means to generate electoral support"
             ]
+        },
+        {
+            "name": "Northwestern University, Department of Sociology",
+            "position": "Research Assistant",
+            "url": "",
+            "startDate": "2018",
+            "endDate": "2018",
+            "highlights": [
+                "Devised an automated approach in R for scraping military records, biographical and demographic data of individuals who perished in Belgium during WWI and WWII",
+                "Compiled a county-level dataset for examining the impact of war commemoration on the strength of nationalism in Belgium (1914-1945)"
+            ]
+        },
+        {
+            "name": "Nomura Research Institute, Global Business Development",
+            "position": "Research Analyst Intern",
+            "url": "",
+            "startDate": "2014",
+            "endDate": "2014",
+            "highlights": [
+                "Evaluated ASEAN convenience retail industry and devised market entry strategies based on macro-indicators, intensity of competition, distribution logistics, regulatory framework, and consumption patterns",
+                "Conducted competitor profiling analysis of Turkish and Cambodian over-the-counter pharmaceutical industries by assessing individual company's competitiveness, scale of operation, product and service mix, marketing strategy, ownership and financial structure"
+            ]
         }
     ],
     "education": [
@@ -59,8 +81,6 @@
             "score": "3.95",
             "courses": [
                 "Comparative Politics",
-				"Elite Politics",
-				"Clientelism and Patronage Politics",
                 "Machine Learning and Text as Data",
                 "Probability & Statistics",
                 "Linear Models",
@@ -68,16 +88,6 @@
                 "Qualitative Methods",
                 "Experimental Political Science"
             ]
-        },
-        {
-            "institution": "Northwestern University",
-            "location": "Evanston, IL",
-            "url": "",
-            "area": "Political Science",
-            "studyType": "M.A.",
-            "startDate": "2016",
-            "endDate": "2018",
-            "score": "3.95",
         },
         {
             "institution": "Columbia University",
@@ -88,6 +98,9 @@
             "startDate": "2014",
             "endDate": "2016",
             "score": "3.89",
+            "courses": [
+                "Nationalizing Bodies: Reflections on Schooling, Nation-building, and Nationalism in Contemporary Thailand"
+            ]
         },
         {
             "institution": "Cornell University",
@@ -111,14 +124,55 @@
     ],
   "awards": [
     {
-      "title": "Distinction, Dissertation",
-      "date": "01-01-2022",
-      "awarder": "Northwestern University, Department of Political Science"
+      "title": "Nobel Prize in Physics",
+      "date": "1921-11-01",
+      "awarder": "Royal Swedish Academy of Sciences",
+      "url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/",
+      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
+    }
+  ],
+  "certificates": [
+    {
+      "name": "Machine Learning",
+      "date": "2018-01-01",
+      "issuer": "Stanford University",
+      "url": "https://example.com",
+      "icon": "fa-solid fa-location-dot"
     },
     {
-      "title": "High Distinction, Comprehensive Exam in Comparative Politics",
-      "date": "01-01-2018",
-      "awarder": "Northwestern University, Department of Political Science"
+      "name": "Quantum Computing",
+      "date": "2018-01-01",
+      "issuer": "Stanford University",
+      "url": "https://example.com",
+      "icon": "fa-solid fa-tag"
+    },
+    {
+      "name": "Quantum Information",
+      "date": "2018-01-01",
+      "issuer": "Stanford University",
+      "url": "https://example.com",
+      "icon": "fa-solid fa-envelope"
+    },
+    {
+      "name": "Quantum Cryptography",
+      "date": "2018-01-01",
+      "issuer": "Stanford University",
+      "url": "https://example.com",
+      "icon": "fa-solid fa-hashtag"
+    },
+    {
+      "name": "Quantum Communication",
+      "date": "2018-01-01",
+      "issuer": "Stanford University",
+      "url": "https://example.com",
+      "icon": "fa-solid fa-calendar"
+    },
+    {
+      "name": "Quantum Teleportation",
+      "date": "2018-01-01",
+      "issuer": "Stanford University",
+      "url": "https://example.com",
+      "icon": "fa-solid fa-clipboard-check"
     }
   ],
   "publications": [
