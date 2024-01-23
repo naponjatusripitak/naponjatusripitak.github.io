@@ -50,8 +50,7 @@
             "name": "Northwestern University, Department of Sociology",
             "position": "Research Assistant",
             "url": "",
-            "startDate": "2018",
-            "endDate": "2018",
+			"date": "2018",
             "highlights": [
                 "Devised an automated approach in R for scraping military records, biographical and demographic data of individuals who perished in Belgium during WWI and WWII",
                 "Compiled a county-level dataset for examining the impact of war commemoration on the strength of nationalism in Belgium (1914-1945)"
@@ -61,8 +60,7 @@
             "name": "Nomura Research Institute, Global Business Development",
             "position": "Research Analyst Intern",
             "url": "",
-            "startDate": "2014",
-            "endDate": "2014",
+			"date": "2014",
             "highlights": [
                 "Evaluated ASEAN convenience retail industry and devised market entry strategies based on macro-indicators, intensity of competition, distribution logistics, regulatory framework, and consumption patterns",
                 "Conducted competitor profiling analysis of Turkish and Cambodian over-the-counter pharmaceutical industries by assessing individual company's competitiveness, scale of operation, product and service mix, marketing strategy, ownership and financial structure"
