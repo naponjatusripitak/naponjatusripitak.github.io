@@ -4,6 +4,7 @@ title: Rice Pledging, Rainfall and the Vote
 description: A research design based on instrumental variables approach
 date: 2017-06-09
 redirect: /assets/pdf/Rainfall, Rice Subsidy, and the Vote.pdf
+tags: social-science
 ---
 
 

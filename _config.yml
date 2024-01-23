@@ -124,7 +124,7 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 # -----------------------------------------------------------------------------
 
 blog_name: blog # blog_name will be displayed in your blog page
-blog_description: This is where I test run my ideas
+blog_description: This is where I test run my ideas.
 permalink: /blog/:year/:title/
 
 # Pagination
@@ -159,7 +159,7 @@ disqus_shortname: al-folio # put your disqus shortname
 # you can display them in your blog by adding a link to the RSS feed.
 external_sources:
   - name: fulcrum.sg
-    rss_url: https://fulcrum.sg/search/napon/feed/
+    rss_url: hhttps://fulcrum.sg/contributors/napon-jatusripitak/
 
 # -----------------------------------------------------------------------------
 # Collections

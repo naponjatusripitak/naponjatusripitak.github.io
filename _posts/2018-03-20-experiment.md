@@ -4,6 +4,7 @@ title: Clientelist Politics in the Thai Context - A Survey Experiment
 description: A research design based on a survey experiment
 date: 2018-03-20
 redirect: /assets/pdf/Rainfall, Rice Subsidy, and the Vote.pdf
+tags: social-science
 ---
 
 Clientelist Politics in the Thai Context: A Survey Experiment

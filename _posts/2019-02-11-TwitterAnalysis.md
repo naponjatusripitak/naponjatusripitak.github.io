@@ -3,13 +3,13 @@ layout: distill
 title: เมื่อทษช.เปิดเผยตัวละครลับเป็นแคนดิเดตนายกฯ
 description: วิเคราะห์สถานการณ์ทางการเมืองด้วยข้อมูลจาก Twitter
 date: 2019-02-11
+tags: thailand politics python
 
 authors:
   - name: Napon Jatusripitak
     url: "https://polisci.northwestern.edu/people/graduate-students/napon-jatusripitak.html"
     affiliations:
       name: Department of Political Science, Northwestern University
-
 toc:
   - name: บทนำ
     # if a section has subsections, you can add them as follows:

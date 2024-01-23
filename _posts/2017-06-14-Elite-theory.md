@@ -4,6 +4,7 @@ title: Elite Theory
 description: Theorizing Stratification and Domination in Society
 date: 2017-06-14
 redirect: /assets/pdf/Elite Theory.pdf
+tags: social-science
 ---
 
 Napon Jatusripitak 6/14/17

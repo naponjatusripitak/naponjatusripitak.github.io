@@ -4,6 +4,7 @@ title: Two Theories of Nationalism
 description: A comparison of Benedict Anderson and Ernest Gellner
 date: 2018-05-20
 redirect: /assets/pdf/Paper on Anderson and Gellner.pdf
+tags: social-science
 ---
 
 Two Theories of Nationalism
