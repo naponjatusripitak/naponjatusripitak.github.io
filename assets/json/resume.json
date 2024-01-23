@@ -151,25 +151,39 @@
   ],
   "publications": [
     {
-      "name": "Zur Elektrody/namik bewegter Körper",
-      "publisher": "Annalen der Physik",
-      "releaseDate": "1905-06-30",
-      "url": "https://en.wikisource.org/wiki/Translation:On_the_Electrodynamics_of_Moving_Bodies",
-      "summary": "It concerned an interpretation of the Michelson–Morley experiment and the properties of light and time. Special relativity incorporates the principle that the speed of light is the same for all inertial observers regardless of the state of motion of the source."
+      "name": "A New Tale of Two Democracies? The Changing Urban--Rural Dynamics at Thailand's 2023 General Elections",
+      "publisher": "Contemporary Southeast Asia: A Journal of International and Strategic Affairs",
+      "releaseDate": "2023",
+      "url": "https://muse.jhu.edu/pub/70/article/917134",
+      "summary": "This article explores the changing urban-rural dynamics in Thailand's 2023 General Elections, emphasizing the evolving political landscape."
     },
     {
-      "name": "Über einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt",
-      "publisher": "Annalen der Physik",
-      "releaseDate": "1905-03-18",
-      "url": "https://de.wikisource.org/wiki/Über_einen_die_Erzeugung_und_Verwandlung_des_Lichtes_betreffenden_heuristischen_Gesichtspunkt",
-      "summary": "In the second paper, he applied the quantum theory to light to explain the photoelectric effect. In particular, he used the idea of light quanta (photons) to explain experimental results, but stressed the importance of the experimental results. The importance of his work on the photoelectric effect earned him the Nobel Prize in Physics in 1921."
+      "name": "Introduction: Making Sense of Thailand's Seismic Elections",
+      "publisher": "Contemporary Southeast Asia: A Journal of International and Strategic Affairs",
+      "releaseDate": "2023",
+      "url": "https://muse.jhu.edu/article/917133",
+      "summary": "This article provides an introduction to understanding the significant shifts and implications of Thailand's seismic elections in 2023."
     },
     {
-      "name": "Die Grundlage der allgemeinen Relativitätstheorie",
-      "publisher": "Annalen der Physik",
-      "releaseDate": "1916-03-20",
-      "url": "https://de.wikisource.org/wiki/Die_Grundlage_der_allgemeinen_Relativitätstheorie",
-      "summary": "The publication of the theory of general relativity made him internationally famous. He was professor of physics at the universities of Zurich (1909–1911) and Prague (1911–1912), before he returned to ETH Zurich (1912–1914)."
+      "name": "The Promise and Peril of Patronage Politics for Authoritarian Party-Building in Thailand",
+      "publisher": "ISEAS Perspective",
+      "releaseDate": "2022-12-14",
+      "url": "https://www.iseas.edu.sg/articles-commentaries/iseas-perspective/2022-119-the-promise-and-peril-of-patronage-politics-for-authoritarian-party-building-in-thailand-by-napon-jatusripitak/",
+      "summary": "This article discusses the dual aspects of patronage politics and its critical role in the authoritarian party-building process in Thailand."
+    },
+    {
+      "name": "The Authoritarian Electoral Blueprint of Thailand’s Palang Pracharath Party May No Longer Be Effective",
+      "publisher": "ISEAS Perspective",
+      "releaseDate": "2022-10-18",
+      "url": "https://www.iseas.edu.sg/articles-commentaries/iseas-perspective/2022-101-the-authoritarian-electoral-blueprint-of-thailands-palang-pracharath-party-may-no-longer-be-effective-by-napon-jatusripitak/",
+      "summary": "This article critically evaluates the effectiveness of the authoritarian electoral strategies employed by Thailand's Palang Pracharath Party."
+    },
+    {
+      "name": "Review of Dynastic Democracy: Political Families in Thailand, by Yoshinori Nishizaki",
+      "publisher": "Journal of the Siam Society",
+      "releaseDate": "2022",
+      "url": "https://so06.tci-thaijo.org/index.php/pub_jss/article/view/260298/174759",
+      "summary": "This review provides a comprehensive analysis of Yoshinori Nishizaki's 'Dynastic Democracy', delving into the role of political families in Thailand."
     }
   ],
   "skills": [
