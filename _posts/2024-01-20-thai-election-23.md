@@ -6,6 +6,7 @@ description: One Constituency, Two Parties, and a New Tale of Two Democracies
 tags: thailand politics python
 giscus_comments: false
 related_posts: false
+featured: true
 ---
 
 {::nomarkdown}
