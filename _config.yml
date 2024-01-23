@@ -157,9 +157,9 @@ disqus_shortname: al-folio # put your disqus shortname
 # External sources.
 # If you have blog posts published on medium.com or other external sources,
 # you can display them in your blog by adding a link to the RSS feed.
-external_sources:
-  - name: fulcrum.sg
-    rss_url: # https://fulcrum.sg/contributors/napon-jatusripitak/
+#external_sources:
+#  - name: fulcrum.sg
+#    rss_url: https://fulcrum.sg/contributors/napon-jatusripitak/
 
 # -----------------------------------------------------------------------------
 # Collections
@@ -276,7 +276,7 @@ jekyll-archives:
     category: "/blog/category/:name/"
 
 display_tags: ["thailand", "politics", "social-science", "python", "quoteworthy"] # these tags will be displayed on the front page of your blog
-display_categories: #["blockquotes"] these categories will be displayed on the front page of your blog
+#display_categories: ["blockquotes"] these categories will be displayed on the front page of your blog
 
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
