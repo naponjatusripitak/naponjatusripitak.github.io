@@ -81,13 +81,26 @@
             "score": "3.95",
             "courses": [
                 "Comparative Politics",
+				"Elite Politics",
+				"Clientelism and Patronage Politics",
                 "Machine Learning and Text as Data",
                 "Probability & Statistics",
                 "Linear Models",
                 "Quantitative Causal Inference",
                 "Qualitative Methods",
-                "Experimental Political Science"
+                "Experimental Political Science",
+				"The Politics of Giving: Patterns and Evolution of Patronage and Electoral Networks in Thailand, Ph.D. Dissertation"
             ]
+        },
+        {
+            "institution": "Northwestern University",
+            "location": "Evanston, IL",
+            "url": "",
+            "area": "Political Science",
+            "studyType": "M.A.",
+            "startDate": "2016",
+            "endDate": "2018",
+            "score": "3.95",
         },
         {
             "institution": "Columbia University",
@@ -99,14 +112,14 @@
             "endDate": "2016",
             "score": "3.89",
             "courses": [
-                "Nationalizing Bodies: Reflections on Schooling, Nation-building, and Nationalism in Contemporary Thailand"
+                "Nationalizing Bodies: Reflections on Schooling, Nation-building, and Nationalism in Contemporary Thailand, M.A. Thesis"
             ]
         },
         {
             "institution": "Cornell University",
             "location": "Ithaca, NY",
             "url": "",
-            "area": "Economics/Asian Studies",
+            "area": "Economics and Asian Studies",
             "studyType": "B.A.",
             "startDate": "2010",
             "endDate": "2014",
