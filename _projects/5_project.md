@@ -2,8 +2,9 @@
 layout: page
 title: Analysis of Thailand's May 2023 General Elections
 description: This project presents a comprehensive analysis of Thailand’s May 2023 General Elections, providing an in-depth understanding of the voting patterns. Utilizing Python and GIS technology, the project delivers a thorough examination of election results, including party preferences, vote shares, and the relationship between urbanization and voting outcomes.
+date: 2024-01-20
 img: assets/img/facet.png
-redirect: [https://github.com/naponjatusripitak/rbraun](https://github.com/naponjatusripitak/Thailand-May-2023-General-Elections)
+redirect: https://naponjatusripitak.github.io/blog/2023/thai-election-23/
 importance: 5
 category: work
 ---
