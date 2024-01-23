@@ -47,10 +47,23 @@
             ]
         },
         {
+            "name": "Northwestern University Department of Political Science",
+            "position": "Teaching Assistant",
+            "url": "",
+            "startDate": "2017",
+            "endDate": "2020",
+            "highlights": [
+                "Organized and facilitated weekly lectures, discussion sections and individual consultations for a wide range of university-level courses both within and outside personal area of expertise to help students meet learning objectives",
+                "Supported students with limited technical background to develop a rudimentary understanding of intricate concepts in statistical research methods, causal inference and machine learning",
+				"Led weekly lab sections to train students in data wrangling and application of regression analysis and machine learning methods in R, equipping them with programming and data analytical skills necessary for incorporating mathematical approach in their own research"
+            ]
+        },
+        {
             "name": "Northwestern University, Department of Sociology",
             "position": "Research Assistant",
             "url": "",
-			"date": "2018",
+            "startDate": "2018",
+            "endDate": "2018",
             "highlights": [
                 "Devised an automated approach in R for scraping military records, biographical and demographic data of individuals who perished in Belgium during WWI and WWII",
                 "Compiled a county-level dataset for examining the impact of war commemoration on the strength of nationalism in Belgium (1914-1945)"
@@ -60,7 +73,8 @@
             "name": "Nomura Research Institute, Global Business Development",
             "position": "Research Analyst Intern",
             "url": "",
-			"date": "2014",
+            "startDate": "2014",
+            "endDate": "2014",
             "highlights": [
                 "Evaluated ASEAN convenience retail industry and devised market entry strategies based on macro-indicators, intensity of competition, distribution logistics, regulatory framework, and consumption patterns",
                 "Conducted competitor profiling analysis of Turkish and Cambodian over-the-counter pharmaceutical industries by assessing individual company's competitiveness, scale of operation, product and service mix, marketing strategy, ownership and financial structure"
@@ -124,13 +138,16 @@
         }
     ],
   "awards": [
-    {
-      "title": "Nobel Prize in Physics",
-      "date": "1921-11-01",
-      "awarder": "Royal Swedish Academy of Sciences",
-      "url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/",
-      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
-    }
+	 {
+		 "title": "Distinction, Dissertation",
+		 "date": "2022",
+		 "awarder": "Northwestern University, Department of Political Science"
+	 },
+	 {
+		 "title": "High Distinction, Comprehensive Exam in Comparative Politics",
+		 "date": "2018",
+		 "awarder": "Northwestern University, Department of Political Science"
+	 }
   ],
   "certificates": [
     {
