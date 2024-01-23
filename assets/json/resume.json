@@ -218,17 +218,16 @@
   ],
   "skills": [
     {
-      "name": "Research and Data Science",
+      "name": "Physics",
+      "level": "Master",
       "icon": "fa-solid fa-hashtag",
       "keywords": [
-        "R (including tidyverse, RMarkdown)",
-        "Python",
-        "NVivo",
-        "LaTex",
-        "Data scraping",
-        "HTML",
-		"CSS",
-		"GitHub"
+        "Quantum Mechanics",
+        "Quantum Computing",
+        "Quantum Information",
+        "Quantum Cryptography",
+        "Quantum Communication",
+        "Quantum Teleportation"
       ]
     }
   ],
@@ -256,23 +255,15 @@
   ],
   "interests": [
     {
-      "name": "Politics",
+      "name": "Physics",
       "icon": "fa-solid fa-tag",
       "keywords": [
-        "Southeast Asian Affairs",
-        "Elite Politics",
-        "Democratization",
-        "Clientelism and Patronage",
-      ]
-    },
-    {
-      "name": "Computational Social Science",
-      "icon": "fa-solid fa-tag",
-      "keywords": [
-        "Text-as-data",
-        "Machine Learning",
-        "Causal Inference",
-        "Geographic Information System",
+        "Quantum Mechanics",
+        "Quantum Computing",
+        "Quantum Information",
+        "Quantum Cryptography",
+        "Quantum Communication",
+        "Quantum Teleportation"
       ]
     }
   ],
