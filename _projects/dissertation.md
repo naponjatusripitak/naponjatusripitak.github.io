@@ -5,7 +5,7 @@ description: Dissertation research. What explains variation in patronage politic
 date: 2022-03-04
 importance: 1
 category: work
-redirect: https://naponjatusripitak.github.io/research/
+redirect: /assets/pdf/Jatusripitak_northwestern_0163D_16049.pdf
 ---
 
 Every project has a beautiful feature showcase page.
