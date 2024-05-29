@@ -1,12 +1,8 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - naponjatusripitak
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - naponjatusripitak/MMSS_311_2
+  - naponjatusripitak/Thailand-May-2023-General-Elections
+  - naponjatusripitak/election_map_2019
+  - naponjatusripitak/twitter_thai
