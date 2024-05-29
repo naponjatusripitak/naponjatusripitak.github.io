@@ -32,3 +32,7 @@ More specifically, I am interested in how politicians compete for power by provi
 My research agenda is driven thematically by the realization that power relations in many societies are contested and negotiated outside the scope of formal institutions, political parties, legislative affairs and civil society. Instead, they are frequently shaped by informal arrangements and everyday interactions through which all sorts of goods, services, benefits and favors are made to flow.
 
 The intricate networks and enduring relationships of trust, solidarity and compliance that emerge as a result may serve to entrench existing inequalities and power asymmetries. Or they may open up new possibilities for agency, participation, representation and accountability where democratic institutions and governments have failed to deliver.  
+
+
+
+
