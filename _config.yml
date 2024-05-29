@@ -164,10 +164,6 @@ disqus_shortname: al-folio # put your disqus shortname
 # If you have blog posts published on medium.com or other external sources,
 # you can display them in your blog by adding a link to the RSS feed.
 external_sources:
-  - name: The Jakarta Post
-    posts:
-      - url: https://www.thejakartapost.com/opinion/2023/05/12/the-curious-case-of-divergence-between-malaysias-and-thai-youths.html
-        published_date: 2023-05-12
   - name: East Asia Forum
     posts:
       - url: https://eastasiaforum.org/2024/01/13/is-thailands-new-elite-pact-a-marriage-of-convenience-or-lasting-alliance/
