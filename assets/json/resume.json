@@ -1,157 +1,230 @@
 {
-  "basics": {
-    "name": "Albert Einstein",
-    "label": "Scientist",
-    "image": "",
-    "email": "albert@einstein.de",
-    "phone": "(912) 123-4567",
-    "url": "https://alshedivat.github.io/al-folio/",
-    "summary": "A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time",
-    "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
-      "countryCode": "US",
-      "region": "California"
+    "basics": {
+        "name": "Napon Jatusripitak",
+        "image": "profile.jpeg",
+        "email": "napon.jatusripitak@gmail.com",
+        "phone": "+66 (0)81-618-2616",
+        "url": "linkedin.com/in/naponj",
+        "summary": "A dedicated mixed-methods researcher with extensive experience in political science, focusing on comparative politics, methodology, and the politics of giving",
+        "location": {
+            "address": "601 University Place",
+            "postalCode": "60201",
+            "city": "Evanston",
+            "countryCode": "US",
+            "region": "Illinois"
+        },
+        "profiles": [
+            {
+                "network": "LinkedIn",
+                "username": "naponj",
+                "url": "linkedin.com/in/naponj"
+            }
+        ]
     },
-    "profiles": [
-      {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
-      }
-    ]
-  },
-  "work": [
-    {
-      "name": "Institute for Advanced Study, Princeton University",
-      "position": "Professor of Theoretical Physics",
-      "url": "https://example.com",
-      "startDate": "1933-01-01",
-      "endDate": "1955-01-01",
-      "summary": "Teaching at Palmer Physical Laboratory (now 302 Frist Campus Center). While not a professor at Princeton, I associated with the physics professors and continued to give lectures on campus.",
-      "highlights": ["Relativity"]
-    }
-  ],
-  "volunteer": [
-    {
-      "organization": "People's Climate March",
-      "location": "Zurich, Switzerland",
-      "position": "Lead Organizer",
-      "url": "https://example.com",
-      "startDate": "2014-04-01",
-      "endDate": "2015-07-01",
-      "summary": "Lead organizer for the New York City branch of the People's Climate March, the largest climate march in history.",
-      "highlights": ["Awarded 'Climate Hero' award by Greenpeace for my efforts organizing the march.", "Men of the year 2014 by Time magazine"]
-    }
-  ],
-  "education": [
-    {
-      "institution": "University of Zurich, Zurich, Switzerland",
-      "location": "Zurich, Switzerland",
-      "url": "https://www.uzh.ch/",
-      "area": "Software Development",
-      "studyType": "PhD",
-      "startDate": "1905-01-01",
-      "endDate": "1905-01-01",
-      "score": "10",
-      "courses": ["Theory of Relativity"]
-    }
-  ],
+    "work": [
+        {
+            "name": "ISEAS-Yusof Ishak Institute Thailand Studies Programme",
+            "position": "Visiting Fellow",
+            "url": "",
+            "startDate": "2022",
+            "endDate": "Present",
+            "highlights": [
+                "Undertook research on Thai politics for ISEAS flagship publications such as Fulcrum and ISEAS Perspectives, delivering analytical insights to guide and inform policymakers, diplomats, journalists, academics, business leaders, and other stakeholders around the globe on Thailand’s shifting political and policy environment",
+                "Collaborated with ISEAS coordinators to organize events and moderated diverse panels of policymakers, political figures and academics, fostering in-depth discussions on Southeast Asia’s politics, economics, and social issues",
+                "Provided expert commentary and in-depth analysis on the evolving political dynamics in Thailand through seminars and webinars for an international audience, in addition to regular media appearances"
+            ]
+        },
+        {
+            "name": "Northwestern University Department of Political Science",
+            "position": "Ph.D. Researcher",
+            "url": "",
+            "startDate": "2016",
+            "endDate": "2022",
+            "highlights": [
+                "Applied unsupervised machine learning and natural language processing methods to analyze underlying trends in public opinion and sentiment on Thailand’s political issues, using over 20,000 news articles and two million tweets as data sources",
+                "Created an election map in ArcGIS to visualize the electoral performance of political parties and to identify patterns of geographic clustering in votes and partisanship in Thailand’s 2019 general elections",
+                "Designed and conducted original, independent research in Thailand involving indepth interviews with hard-to-reach political actors to assess how and why parties and politicians distribute discretionary rewards, favors and privileged access to government resources as a means to generate electoral support"
+            ]
+        },
+        {
+            "name": "Northwestern University Department of Political Science",
+            "position": "Teaching Assistant",
+            "url": "",
+            "startDate": "2017",
+            "endDate": "2020",
+            "highlights": [
+                "Organized and facilitated weekly lectures, discussion sections and individual consultations for a wide range of university-level courses both within and outside personal area of expertise to help students meet learning objectives",
+                "Supported students with limited technical background to develop a rudimentary understanding of intricate concepts in statistical research methods, causal inference and machine learning",
+				"Led weekly lab sections to train students in data wrangling and application of regression analysis and machine learning methods in R, equipping them with programming and data analytical skills necessary for incorporating mathematical approach in their own research"
+            ]
+        },
+        {
+            "name": "Northwestern University, Department of Sociology",
+            "position": "Research Assistant",
+            "url": "",
+            "startDate": "2018",
+            "endDate": "2018",
+            "highlights": [
+                "Devised an automated approach in R for scraping military records, biographical and demographic data of individuals who perished in Belgium during WWI and WWII",
+                "Compiled a county-level dataset for examining the impact of war commemoration on the strength of nationalism in Belgium (1914-1945)"
+            ]
+        },
+        {
+            "name": "Nomura Research Institute, Global Business Development",
+            "position": "Research Analyst Intern",
+            "url": "",
+            "startDate": "2014",
+            "endDate": "2014",
+            "highlights": [
+                "Evaluated ASEAN convenience retail industry and devised market entry strategies based on macro-indicators, intensity of competition, distribution logistics, regulatory framework, and consumption patterns",
+                "Conducted competitor profiling analysis of Turkish and Cambodian over-the-counter pharmaceutical industries by assessing individual company's competitiveness, scale of operation, product and service mix, marketing strategy, ownership and financial structure"
+            ]
+        }
+    ],
+    "education": [
+        {
+            "institution": "Northwestern University",
+            "location": "Evanston, IL",
+            "url": "",
+            "area": "Political Science",
+            "studyType": "Ph.D. & M.A.",
+            "startDate": "2016",
+            "endDate": "2022",
+            "score": "3.95",
+            "courses": [
+                "Comparative Politics",
+				"Elite Politics",
+				"Clientelism and Patronage Politics",
+                "Machine Learning and Text as Data",
+                "Probability & Statistics",
+                "Linear Models",
+                "Quantitative Causal Inference",
+                "Qualitative Methods",
+                "Experimental Political Science",
+				"The Politics of Giving: Patterns and Evolution of Patronage and Electoral Networks in Thailand, Ph.D. Dissertation"
+            ]
+        },
+        {
+            "institution": "Columbia University",
+            "location": "New York, NY",
+            "url": "",
+            "area": "Sociocultural Anthropology",
+            "studyType": "M.A.",
+            "startDate": "2014",
+            "endDate": "2016",
+            "score": "3.89",
+            "courses": [
+                "Nationalizing Bodies: Reflections on Schooling, Nation-building, and Nationalism in Contemporary Thailand, M.A. Thesis"
+            ]
+        },
+        {
+            "institution": "Cornell University",
+            "location": "Ithaca, NY",
+            "url": "",
+            "area": "Economics and Asian Studies",
+            "studyType": "B.A.",
+            "startDate": "2010",
+            "endDate": "2014",
+            "score": "3.77",
+            "courses": [
+                "Microeconomics",
+                "Macroeconomics",
+                "Probability and Statistics",
+                "Econometrics",
+                "Money and Credit",
+                "International Trade Theory and Policy",
+                "Industrial Organization"
+            ]
+        }
+    ],
   "awards": [
-    {
-      "title": "Nobel Prize in Physics",
-      "date": "1921-11-01",
-      "awarder": "Royal Swedish Academy of Sciences",
-      "url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/",
-      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
-    }
-  ],
-  "certificates": [
-    {
-      "name": "Machine Learning",
-      "date": "2018-01-01",
-      "issuer": "Stanford University",
-      "url": "https://example.com",
-      "icon": "fa-solid fa-location-dot"
-    },
-    {
-      "name": "Quantum Computing",
-      "date": "2018-01-01",
-      "issuer": "Stanford University",
-      "url": "https://example.com",
-      "icon": "fa-solid fa-tag"
-    },
-    {
-      "name": "Quantum Information",
-      "date": "2018-01-01",
-      "issuer": "Stanford University",
-      "url": "https://example.com",
-      "icon": "fa-solid fa-envelope"
-    },
-    {
-      "name": "Quantum Cryptography",
-      "date": "2018-01-01",
-      "issuer": "Stanford University",
-      "url": "https://example.com",
-      "icon": "fa-solid fa-hashtag"
-    },
-    {
-      "name": "Quantum Communication",
-      "date": "2018-01-01",
-      "issuer": "Stanford University",
-      "url": "https://example.com",
-      "icon": "fa-solid fa-calendar"
-    },
-    {
-      "name": "Quantum Teleportation",
-      "date": "2018-01-01",
-      "issuer": "Stanford University",
-      "url": "https://example.com",
-      "icon": "fa-solid fa-clipboard-check"
-    }
+	 {
+		 "title": "Distinction, Dissertation",
+		 "date": "2022",
+		 "awarder": "Northwestern University, Department of Political Science"
+	 },
+	 {
+		 "title": "High Distinction, Comprehensive Exam in Comparative Politics",
+		 "date": "2018",
+		 "awarder": "Northwestern University, Department of Political Science"
+	 }
   ],
   "publications": [
-    {
-      "name": "Zur Elektrody/namik bewegter Körper",
-      "publisher": "Annalen der Physik",
-      "releaseDate": "1905-06-30",
-      "url": "https://en.wikisource.org/wiki/Translation:On_the_Electrodynamics_of_Moving_Bodies",
-      "summary": "It concerned an interpretation of the Michelson–Morley experiment and the properties of light and time. Special relativity incorporates the principle that the speed of light is the same for all inertial observers regardless of the state of motion of the source."
+     {
+      "name": "Age and Ideology: The Emergence of New Political Cleavages in Thailand's 2566 (2023) Election",
+      "publisher": "Pacific Affairs",
+      "releaseDate": "2024",
+      "url": "https://www.ingentaconnect.com/content/paaf/paaf/pre-prints/content-pacaff-97.1-art6",
+      "summary": "Relying on data from an original survey collected the week before and the week after Thailand’s 14 May 2023 general election, as well as observations from fieldwork, this article identifies two political cleavages that were influential in shaping vote choice: age and ideology. Younger voters and those who embrace more liberal values were significantly more likely to support the Move Forward. Nevertheless, we caution that this election may be unique, and that these political cleavages may not necessarily drive voter behaviour in future elections."
     },
     {
-      "name": "Über einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt",
-      "publisher": "Annalen der Physik",
-      "releaseDate": "1905-03-18",
-      "url": "https://de.wikisource.org/wiki/Über_einen_die_Erzeugung_und_Verwandlung_des_Lichtes_betreffenden_heuristischen_Gesichtspunkt",
-      "summary": "In the second paper, he applied the quantum theory to light to explain the photoelectric effect. In particular, he used the idea of light quanta (photons) to explain experimental results, but stressed the importance of the experimental results. The importance of his work on the photoelectric effect earned him the Nobel Prize in Physics in 1921."
+      "name": "A New Tale of Two Democracies? The Changing Urban--Rural Dynamics at Thailand's 2023 General Elections",
+      "publisher": "Contemporary Southeast Asia: A Journal of International and Strategic Affairs",
+      "releaseDate": "2023",
+      "url": "https://muse.jhu.edu/pub/70/article/917134",
+      "summary": "This article explores the changing urban-rural dynamics in Thailand's 2023 General Elections, emphasizing the evolving political landscape."
     },
     {
-      "name": "Die Grundlage der allgemeinen Relativitätstheorie",
-      "publisher": "Annalen der Physik",
-      "releaseDate": "1916-03-20",
-      "url": "https://de.wikisource.org/wiki/Die_Grundlage_der_allgemeinen_Relativitätstheorie",
-      "summary": "The publication of the theory of general relativity made him internationally famous. He was professor of physics at the universities of Zurich (1909–1911) and Prague (1911–1912), before he returned to ETH Zurich (1912–1914)."
+      "name": "Introduction: Making Sense of Thailand's Seismic Elections",
+      "publisher": "Contemporary Southeast Asia: A Journal of International and Strategic Affairs",
+      "releaseDate": "2023",
+      "url": "https://muse.jhu.edu/article/917133",
+      "summary": "This article provides an introduction to understanding the significant shifts and implications of Thailand's seismic elections in 2023."
+    },
+    {
+      "name": "The Promise and Peril of Patronage Politics for Authoritarian Party-Building in Thailand",
+      "publisher": "ISEAS Perspective",
+      "releaseDate": "2022-12-14",
+      "url": "https://www.iseas.edu.sg/articles-commentaries/iseas-perspective/2022-119-the-promise-and-peril-of-patronage-politics-for-authoritarian-party-building-in-thailand-by-napon-jatusripitak/",
+      "summary": "This article discusses the dual aspects of patronage politics and its critical role in the authoritarian party-building process in Thailand."
+    },
+    {
+      "name": "The Authoritarian Electoral Blueprint of Thailand’s Palang Pracharath Party May No Longer Be Effective",
+      "publisher": "ISEAS Perspective",
+      "releaseDate": "2022-10-18",
+      "url": "https://www.iseas.edu.sg/articles-commentaries/iseas-perspective/2022-101-the-authoritarian-electoral-blueprint-of-thailands-palang-pracharath-party-may-no-longer-be-effective-by-napon-jatusripitak/",
+      "summary": "This article critically evaluates the effectiveness of the authoritarian electoral strategies employed by Thailand's Palang Pracharath Party."
+    },
+    {
+      "name": "Review of Dynastic Democracy: Political Families in Thailand, by Yoshinori Nishizaki",
+      "publisher": "Journal of the Siam Society",
+      "releaseDate": "2022",
+      "url": "https://so06.tci-thaijo.org/index.php/pub_jss/article/view/260298/174759",
+      "summary": "This review provides a comprehensive analysis of Yoshinori Nishizaki's 'Dynastic Democracy', delving into the role of political families in Thailand."
     }
   ],
   "skills": [
     {
-      "name": "Physics",
+      "name": "Technical Skills",
       "level": "Master",
       "icon": "fa-solid fa-hashtag",
       "keywords": [
-        "Quantum Mechanics",
-        "Quantum Computing",
-        "Quantum Information",
-        "Quantum Cryptography",
-        "Quantum Communication",
-        "Quantum Teleportation"
+		  "R (including tidyverse, RMarkdown)",
+		  "Python",
+		  "NVivo",
+		  "LaTex",
+		  "Data scraping",
+		  "HTML",
+		  "CSS",
+		  "GitHub"
+      ]
+    },
+    {
+      "name": "Research",
+      "level": "Master",
+      "icon": "fa-solid fa-hashtag",
+      "keywords": [
+		  "Fieldwork",
+		  "In-depth Interviews",
+		  "Qualitative Analysis",
+		  "Research Design and Methodology",
+		  "Analytical Writing"
       ]
     }
   ],
   "languages": [
     {
-      "language": "German",
+      "language": "Thai",
       "fluency": "Native speaker",
       "icon": ""
     },
@@ -159,42 +232,38 @@
       "language": "English",
       "fluency": "Fluent",
       "icon": ""
+    },
+    {
+      "language": "Japanese",
+      "fluency": "Basic",
+      "icon": ""
+    },
+    {
+      "language": "Chinese (Mandarin)",
+      "fluency": "Novice",
+      "icon": ""
     }
   ],
   "interests": [
     {
-      "name": "Physics",
+      "name": "Politics",
       "icon": "fa-solid fa-tag",
       "keywords": [
-        "Quantum Mechanics",
-        "Quantum Computing",
-        "Quantum Information",
-        "Quantum Cryptography",
-        "Quantum Communication",
-        "Quantum Teleportation"
+        "Southeast Asian Affairs",
+        "Elite Politics",
+        "Clientelism and Patronage",
+        "Democratization"
       ]
-    }
-  ],
-  "references": [
-    {
-      "name": "Professor John Doe",
-      "icon": "fa-solid fa-laptop",
-      "reference": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, diam quis convallis euismod, arcu mi ullamcorper lorem, a vestibulum nunc magna at sem. Sed in risus ac felis varius blandit. D"
     },
     {
-      "name": "Professor John Doe",
-      "icon": "fa-solid fa-thumbtack",
-      "reference": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, diam quis convallis euismod, arcu mi ullamcorper lorem, a vestibulum nunc magna at sem. Sed in risus ac felis varius blandit. D"
-    }
-  ],
-  "projects": [
-    {
-      "name": "Quantum Computing",
-      "summary": "Quantum computing is the use of quantum-mechanical phenomena such as superposition and entanglement to perform computation. Computers that perform quantum computations are known as quantum computers.",
-      "highlights": ["Quantum Teleportation", "Quantum Cryptography"],
-      "startDate": "2018-01-01",
-      "endDate": "2018-01-01",
-      "url": "https://example.com"
+      "name": "Data",
+      "icon": "fa-solid fa-tag",
+      "keywords": [
+        "Text-as-data",
+        "Machine Learning",
+        "Geographic Information System",
+        "Causal Inference"
+      ]
     }
   ]
 }
