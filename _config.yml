@@ -170,6 +170,12 @@ external_sources:
     posts:
       - url: https://blog.google/technology/ai/google-gemini-update-flash-ai-assistant-io-2024/
         published_date: 2024-05-14
+  - name: Fulcrum
+    posts:
+      - url: https://fulcrum.sg/the-thai-senate-a-crisis-of-representation-in-the-making/
+	published_date: 2024-05-27
+      - url: https://fulcrum.sg/political-stakes-of-pheu-thais-10000-baht-digital-wallet-initiative/
+	published_date: 2024-05-2
 
 # -----------------------------------------------------------------------------
 # Collections
