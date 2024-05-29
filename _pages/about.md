@@ -2,24 +2,33 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Moto. Etc.
+subtitle: ณพล จาตุศรีพิทักษ์ | Researcher | Social Scientist
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>555 your office number</p>
-    <p>123 your address street</p>
-    <p>Your City, State 12345</p>
+    <p>Department of Political Science</p>
+    <p>Northwestern University</p>
+    <p>Scott Hall, 601 University Place</p>
+    <p>Evanston IL, 60208</p>
 
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+Hello, and welcome!
 
-Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
+My name is Napon. I'm currently a visiting fellow at the ISEAS-Yusof Ishak Institute in Singapore. I hold a PhD in Political Science from Northwestern University in the field of Comparative Politics and Methodology.
 
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](https://fontawesome.com/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+I read, write and talk about topics in social science and Southeast Asian politics, using both qualitative and quantitative research methods to produce knowledge and insights about the world. I'm also passionate about coding and solving programming challenges.
+
+My research is situated at the intersection of democratization, elite politics, patronage and clientelism.
+
+More specifically, I am interested in how politicians compete for power by providing money, favors, and privileged access to government resources in return for electoral support. I am also interested in understanding the factors that contribute to variations in these practices and the implications they have for democracy. In my dissertation titled "The Politics of Giving: Patterns and Evolution of Patronage and Electoral Networks in Thailand," I examine these questions with a focus on the case of Thailand.
+
+My research agenda is driven thematically by the realization that power relations in many societies are contested and negotiated outside the scope of formal institutions, political parties, legislative affairs and civil society. Instead, they are frequently shaped by informal arrangements and everyday interactions through which all sorts of goods, services, benefits and favors are made to flow.
+
+The intricate networks and enduring relationships of trust, solidarity and compliance that emerge as a result may serve to entrench existing inequalities and power asymmetries. Or they may open up new possibilities for agency, participation, representation and accountability where democratic institutions and governments have failed to deliver.  

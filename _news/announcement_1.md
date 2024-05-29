@@ -5,5 +5,5 @@ inline: true
 related_posts: false
 ---
 
-Cornell Universty  
+Cornell University  
 B.A. in Economics/Asian Studies (double major)
