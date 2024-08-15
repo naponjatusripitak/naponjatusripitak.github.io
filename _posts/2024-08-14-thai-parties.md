@@ -7,4 +7,4 @@ comments: true
 ---
 
 Here is an interactive Plotly plot:
-<iframe src="https://naponjatusripitak.github.io/assets/plot.html" width="100%" height="600" frameborder="0"></iframe>
+<iframe src="https://naponjatusripitak.github.io/assets/html/plot.html" width="100%" height="600" frameborder="0"></iframe>
