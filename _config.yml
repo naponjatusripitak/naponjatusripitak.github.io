@@ -166,6 +166,18 @@ disqus_shortname: al-folio # put your disqus shortname
 external_sources:
   - name: Fulcrum
     posts:
+      - url: https://fulcrum.sg/fanning-the-yellow-flames-not-so-fast/
+        published_date: 2025-01-02
+      - url: https://fulcrum.sg/how-a-provincial-election-in-udon-thani-became-a-national-battleground/
+        published_date: 2024-12-03
+      - url: https://fulcrum.sg/rule-by-good-people-or-rule-by-political-dynasties-ethics-and-moral-politics-in-thailand/
+        published_date: 2024-09-12
+      - url: https://fulcrum.sg/mfp-dissolution-inevitable-but-not-inconsequential/
+        published_date: 2024-08-12
+      - url: https://fulcrum.sg/all-roads-lead-to-bhumjaithai/
+        published_date: 2024-07-22
+      - url: https://fulcrum.sg/thailands-grand-compromise-tested-or-back-to-square-one/
+        published_date: 2024-07-10
       - url: https://fulcrum.sg/the-thai-senate-a-crisis-of-representation-in-the-making/
         published_date: 2024-05-27
       - url: https://fulcrum.sg/political-stakes-of-pheu-thais-10000-baht-digital-wallet-initiative/
