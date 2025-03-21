@@ -27,8 +27,7 @@ My research is situated at the intersection of democratization, elite politics, 
 
 I contribute forward-looking analyses and timely commentaries through ISEAS publications such as Fulcrum, Perspective, and Trends, helping to frame key debates on Southeast Asian politics. As the Acting Coordinator of the Thailand Studies Programme, I oversee research initiatives and policy dialogues that enhance understanding of Thailand's evolving political landscape and its regional implications. My insights on Thailand's political developments are regularly featured in international media outlets, including TIME, the New York Times, Financial Times, Bloomberg, Nikkei, Associated Press, South China Morning Post, Straits Times, the Guardian, Telegraph, Reuters, Al Jazeera, Voice of America, Channel News Asia, CNBC, and Agence France-Presse.
 
-With a PhD in Political Science from Northwestern University, I employ both qualitative and quantitative research methodologies to analyze Thailand's political dynamics. My work provides policymakers, business leaders, and international organizations with the context and analysis needed to navigate Thailand's complex institutional environment and develop strategies that are resilient to political risk and changing power dynamics. 
-
+With a PhD in Political Science from Northwestern University, I employ both qualitative and quantitative research methodologies to draw inferences and make sense of ongoing political developments across Southeast Asia. My work provides policymakers, business leaders, and international organizations with the context and insights needed to navigate complex political environments in this region, particularly in Thailand, and develop strategies that are resilient to emerging political risks and changing power dynamics.
 
 
 
