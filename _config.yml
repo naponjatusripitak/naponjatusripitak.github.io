@@ -2,7 +2,7 @@
 # Site settings
 # -----------------------------------------------------------------------------
 
-title: Napon Jatusripitak ณพล จาตุศรีพิทักษ์ # the website title (if blank, full name will be used instead)
+title: Napon Jatusripitak # the website title (if blank, full name will be used instead)
 first_name: Napon
 middle_name:
 last_name: Jatusripitak
@@ -166,6 +166,8 @@ disqus_shortname: al-folio # put your disqus shortname
 external_sources:
   - name: Fulcrum
     posts:
+      - url: https://fulcrum.sg/the-anwar-thaksin-deal-a-masterstroke-or-miscalculation/
+        published_date: 2025-03-05
       - url: https://fulcrum.sg/fanning-the-yellow-flames-not-so-fast/
         published_date: 2025-01-02
       - url: https://fulcrum.sg/how-a-provincial-election-in-udon-thani-became-a-national-battleground/

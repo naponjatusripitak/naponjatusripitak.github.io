@@ -21,17 +21,13 @@ social: true # includes social icons at the bottom of the page
 
 Hello, and welcome!
 
-My name is Napon. I'm currently a visiting fellow at the ISEAS-Yusof Ishak Institute in Singapore. I hold a PhD in Political Science from Northwestern University in the field of Comparative Politics and Methodology.
+I am a political scientist specializing in politics in Thailand and Southeast Asia, currently serving as a Visiting Fellow and Acting Coordinator of the Thailand Studies Programme at the ISEAS – Yusof Ishak Institute in Singapore.
 
-I read, write and talk about topics in social science and Southeast Asian politics, using both qualitative and quantitative research methods to produce knowledge and insights about the world. I'm also passionate about coding and solving programming challenges.
+My research is situated at the intersection of democratization, elite politics, patronage, and clientelism. I am interested in how politicians compete for power by providing money, favors, and privileged access to government resources in return for electoral support. My scholarly contributions have appeared in leading academic publications, including Pacific Affairs and the Journal of Contemporary Southeast Asia.
 
-My research is situated at the intersection of democratization, elite politics, patronage and clientelism.
+I contribute forward-looking analyses and timely commentaries through ISEAS publications such as Fulcrum, Perspective, and Trends, helping to frame key debates on Southeast Asian politics. As the Acting Coordinator of the Thailand Studies Programme, I oversee research initiatives and policy dialogues that enhance understanding of Thailand's evolving political landscape and its regional implications. My insights on Thailand's political developments are regularly featured in international media outlets, including TIME, the New York Times, Financial Times, Bloomberg, Nikkei, Associated Press, South China Morning Post, Straits Times, the Guardian, Telegraph, Reuters, Al Jazeera, Voice of America, Channel News Asia, CNBC, and Agence France-Presse.
 
-More specifically, I am interested in how politicians compete for power by providing money, favors, and privileged access to government resources in return for electoral support. I am also interested in understanding the factors that contribute to variations in these practices and the implications they have for democracy. In my dissertation titled "The Politics of Giving: Patterns and Evolution of Patronage and Electoral Networks in Thailand," I examine these questions with a focus on the case of Thailand.
-
-My research agenda is driven thematically by the realization that power relations in many societies are contested and negotiated outside the scope of formal institutions, political parties, legislative affairs and civil society. Instead, they are frequently shaped by informal arrangements and everyday interactions through which all sorts of goods, services, benefits and favors are made to flow.
-
-The intricate networks and enduring relationships of trust, solidarity and compliance that emerge as a result may serve to entrench existing inequalities and power asymmetries. Or they may open up new possibilities for agency, participation, representation and accountability where democratic institutions and governments have failed to deliver.  
+With a PhD in Political Science from Northwestern University, I employ both qualitative and quantitative research methodologies to analyze Thailand's political dynamics. My work provides policymakers, business leaders, and international organizations with the context and analysis needed to navigate Thailand's complex institutional environment and develop strategies that are resilient to political risk and changing power dynamics. 
 
 
 
