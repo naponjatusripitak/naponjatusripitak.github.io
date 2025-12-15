@@ -21,7 +21,7 @@ social: true # includes social icons at the bottom of the page
 
 Hello, and welcome!
 
-I am a political scientist specializing in politics in Thailand and Southeast Asia, currently serving as a Visiting Fellow and Acting Coordinator of the Thailand Studies Programme at the ISEAS – Yusof Ishak Institute in Singapore.
+I am a political scientist specializing in politics in Thailand and Southeast Asia. Currently, I am a Visiting Fellow and Coordinator of the Thailand Studies Programme at the ISEAS-Yusof Ishak Institute, Singapore. I also serve as the Managing Director of the Bangkok-based Thailand Future Institute and Director of its Center for Politics and Geopolitics. 
 
 My research is situated at the intersection of democratization, elite politics, patronage, and clientelism. I am interested in how politicians compete for power by providing money, favors, and privileged access to government resources in return for electoral support. My scholarly contributions have appeared in leading academic publications, including Pacific Affairs and the Journal of Contemporary Southeast Asia.
 
