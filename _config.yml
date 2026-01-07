@@ -166,6 +166,20 @@ disqus_shortname: al-folio # put your disqus shortname
 external_sources:
   - name: Fulcrum
     posts:
+      - url: https://fulcrum.sg/momentum-or-mirage-anutins-risky-road-to-re-election/
+        published_date: 2025-12-15
+      - url: https://fulcrum.sg/grand-compromise-or-grand-damage-to-thailands-party-system/
+        published_date: 2025-10-27
+      - url: https://fulcrum.sg/from-deadlock-to-dealmaking-thailands-chaotic-search-for-a-new-prime-minister/
+        published_date: 2025-09-04
+      - url: https://fulcrum.sg/ceasefire-on-borrowed-time-the-fragility-of-great-power-mediation-in-the-thai-cambodian-dispute/
+        published_date: 2025-08-19
+      - url: https://fulcrum.sg/paetongtarns-suspension-spells-the-collapse-of-her-government/
+        published_date: 2025-07-03
+      - url: https://fulcrum.sg/after-the-grand-compromise-voter-profiles-in-thai-politics/
+        published_date: 2025-04-29
+      - url: https://fulcrum.sg/how-the-deal-to-sell-out-the-country-paved-the-way-for-thaksins-return-as-thailands-biggest-red-herring/
+        published_date: 2025-04-01
       - url: https://fulcrum.sg/the-anwar-thaksin-deal-a-masterstroke-or-miscalculation/
         published_date: 2025-03-05
       - url: https://fulcrum.sg/fanning-the-yellow-flames-not-so-fast/
