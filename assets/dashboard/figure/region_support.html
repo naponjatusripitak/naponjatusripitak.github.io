@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <style>
+    html,body,#chart { margin:0; padding:0; width:100%; height:100%; }
+    #wrap { width:100%; height:100%; }
+    .toggle { display:flex; gap:8px; margin:8px 8px 0 8px; }
+    .toggle button { border:1px solid #d7dbe2; background:#fff; border-radius:999px; padding:6px 10px; font-weight:600; cursor:pointer; }
+    .toggle button.active { border-color:#111827; color:#111827; }
+  
+    @media (max-width: 720px) {
+      #chart { height: calc(100% - 52px); }
+      .toggle { flex-wrap: wrap; }
+    }
+</style>
+</head>
+<body>
+  <div id="wrap">
+    <div class="toggle">
+      <button id="btn-const" class="active">แบ่งเขต</button>
+      <button id="btn-list">บัญชีรายชื่อ</button>
+    </div>
+    <div id="chart" style="height: calc(100% - 44px);"></div>
+  </div>
+  <script>
+    const tracesConst = [{"type": "bar", "name": "\u0e01\u0e49\u0e32\u0e27\u0e44\u0e01\u0e25", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [47.40876406392528, 33.007292156528806, 29.364619386943602, 23.560989729667973, 15.590883488273445], "marker": {"color": "#F96627"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [21.7105247535601, 23.063682786938465, 30.463767075445787, 41.0844372136072, 4.293692082950073], "marker": {"color": "#F12829"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [2.6300943831140966, 12.857567813861134, 11.317065348731036, 19.97175538202764, 20.928860537789483], "marker": {"color": "#0E7DFF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1e\u0e25\u0e31\u0e07\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e23\u0e31\u0e10", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [2.8120217960099447, 11.520105446164102, 17.51309810018839, 10.480900342558606, 16.457287470806296], "marker": {"color": "#667CCA"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e23\u0e27\u0e21\u0e44\u0e17\u0e22\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e0a\u0e32\u0e15\u0e34", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [17.41648826156026, 14.491981283056942, 8.314294944973826, 2.8570837261840785, 18.41872687584306], "marker": {"color": "#3545BF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e18\u0e34\u0e1b\u0e31\u0e15\u0e22\u0e4c", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [8.022106741830312, 5.059370513450547, 3.0271551437173634, 2.0448336059545036, 24.310549544337647], "marker": {"color": "#59B8ED"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}];
+    const tracesList = [{"type": "bar", "name": "\u0e01\u0e49\u0e32\u0e27\u0e44\u0e01\u0e25", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [53.92009205714091, 50.557957058864304, 44.358419327600714, 37.88745795238916, 37.682449400896864], "marker": {"color": "#F96627"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [20.220468228866824, 27.175624839343556, 39.422360158563976, 49.22504559008354, 9.304910563821792], "marker": {"color": "#F12829"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [0.9609946267437987, 2.7803175809543563, 2.5074047113517146, 4.6768340767392, 5.156794276539349], "marker": {"color": "#0E7DFF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1e\u0e25\u0e31\u0e07\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e23\u0e31\u0e10", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [0.747088433536314, 1.66483602580106, 2.0180425581178554, 1.1796530379013774, 2.819215544256703], "marker": {"color": "#667CCA"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e23\u0e27\u0e21\u0e44\u0e17\u0e22\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e0a\u0e32\u0e15\u0e34", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [21.255437343844267, 15.628950850834364, 10.081917090790629, 6.016620357820548, 34.72209425680965], "marker": {"color": "#3545BF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e18\u0e34\u0e1b\u0e31\u0e15\u0e22\u0e4c", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [2.8959193098678804, 2.1923136442023585, 1.61185615357511, 1.0143889850661674, 10.314535957675647], "marker": {"color": "#59B8ED"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}];
+    const layout = {"barmode": "group", "margin": {"l": 50, "r": 20, "t": 40, "b": 40}, "xaxis": {"title": "ภูมิภาค", "tickangle": 0, "tickfont": {"size": 12}}, "yaxis": {"title": "สัดส่วนคะแนน (%)", "rangemode": "tozero", "tickfont": {"size": 12}}, "legend": {"orientation": "h", "y": -0.25}, "height": 420, "title": {"text": "สัดส่วนคะแนนรายภาค (แบ่งเขต)", "x": 0.01, "font": {"size": 16}}};
+
+    
+    const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 720;
+    if (isMobile) {
+      layout.xaxis.tickangle = -45;
+      layout.xaxis.tickfont = {size: 11};
+      layout.yaxis.tickfont = {size: 11};
+      layout.margin.b = 50;
+    }
+
+    
+    function applyResponsiveLayout() {
+      const w = window.innerWidth || document.documentElement.clientWidth;
+      if (w <= 720) {
+        layout.xaxis.tickangle = -45;
+        layout.xaxis.tickfont = {size: 11};
+        layout.yaxis.tickfont = {size: 11};
+        layout.margin.b = 60;
+      } else {
+        layout.xaxis.tickangle = 0;
+        layout.xaxis.tickfont = {size: 12};
+        layout.yaxis.tickfont = {size: 12};
+        layout.margin.b = 40;
+      }
+    }
+    applyResponsiveLayout();
+
+    const btnConst = document.getElementById('btn-const');
+    const btnList = document.getElementById('btn-list');
+
+    const LANG_TEXT = {
+      th: {
+        constBtn: 'แบ่งเขต',
+        listBtn: 'บัญชีรายชื่อ',
+        titleConst: 'สัดส่วนคะแนนรายภาค (แบ่งเขต)',
+        titleList: 'สัดส่วนคะแนนรายภาค (บัญชีรายชื่อ)',
+        xAxis: 'ภูมิภาค',
+        yAxis: 'สัดส่วนคะแนน (%)'
+      },
+      en: {
+        constBtn: 'Constituency',
+        listBtn: 'Party List',
+        titleConst: 'Regional Vote Share (Constituency)',
+        titleList: 'Regional Vote Share (Party List)',
+        xAxis: 'Region',
+        yAxis: 'Vote Share (%)'
+      }
+    };
+    let currentLang = 'th';
+
+    const applyLang = (lang) => {
+      currentLang = lang;
+      const t = LANG_TEXT[lang] || LANG_TEXT.th;
+      btnConst.textContent = t.constBtn;
+      btnList.textContent = t.listBtn;
+      layout.xaxis.title = t.xAxis;
+      layout.yaxis.title = t.yAxis;
+      layout.title.text = btnConst.classList.contains('active') ? t.titleConst : t.titleList;
+      Plotly.relayout(chart, layout);
+    };
+
+    const chart = document.getElementById('chart');
+    Plotly.newPlot(chart, tracesConst, layout, {displayModeBar:false, responsive:true});
+    setTimeout(() => Plotly.Plots.resize(chart), 50);
+    window.addEventListener('resize', () => { applyResponsiveLayout(); Plotly.Plots.resize(chart); });
+    applyLang(currentLang);
+
+    btnConst.addEventListener('click', () => {
+      btnConst.classList.add('active');
+      btnList.classList.remove('active');
+      layout.title.text = 'สัดส่วนคะแนนรายภาค (แบ่งเขต)';
+      Plotly.react(chart, tracesConst, layout, {displayModeBar:false, responsive:true});
+    });
+    btnList.addEventListener('click', () => {
+      btnList.classList.add('active');
+      btnConst.classList.remove('active');
+      layout.title.text = 'สัดส่วนคะแนนรายภาค (บัญชีรายชื่อ)';
+      Plotly.react(chart, tracesList, layout, {displayModeBar:false, responsive:true});
+    });
+  
+    window.addEventListener('message', (event) => {
+      if (event && event.data && event.data.type === 'set-lang') {
+        applyLang(event.data.lang || 'th');
+      }
+    });
+
+</script>
+</body>
+</html>
