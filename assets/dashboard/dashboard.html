@@ -142,6 +142,9 @@
       box-shadow: var(--shadow);
       padding: 18px 20px;
     }
+    .density-card {
+      padding: 22px 22px 26px;
+    }
     .summary-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -1897,8 +1900,14 @@
       if (!target) return;
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       const extraBase = isIOS ? 140 : 0;
-      const extra = payload.id === 'density-frame' ? extraBase + 120 : extraBase;
-      const nextHeight = Math.max(300, Math.round((payload.height || 0) + extra));
+      const extra = payload.id === 'density-frame'
+        ? (isIOS ? extraBase + 120 : 24)
+        : extraBase;
+      const rawHeight = Math.round((payload.height || 0) + extra);
+      const maxHeight = payload.id === 'density-frame'
+        ? (window.innerWidth <= 900 ? 1200 : 900)
+        : 1600;
+      const nextHeight = Math.max(300, Math.min(rawHeight, maxHeight));
       if (nextHeight) {
         target.style.height = `${nextHeight}px`;
       }
