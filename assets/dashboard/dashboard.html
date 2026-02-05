@@ -64,8 +64,52 @@
       margin-top: 6px;
     }
     @media (max-width: 720px) {
+      header {
+        padding: 20px 8px 10px;
+      }
+      main {
+        padding: 6px 6px 32px;
+        gap: 16px;
+      }
+      .card {
+        border-radius: 12px;
+        padding: 10px 10px;
+      }
+      .scatter-card {
+        padding: 6px 6px 8px;
+      }
+      .scatter-card .iframe-mid {
+        height: 78vh;
+        min-height: 520px;
+      }
+      .density-card {
+        padding: 6px 6px 8px;
+      }
+      .density-card .iframe-short {
+        height: 68vh;
+        min-height: 520px;
+        max-height: 780px;
+      }
+      .section-title {
+        margin: 0 0 4px 2px;
+      }
+      .site-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .site-header a {
+        order: -1;
+      }
       .header-logo {
-        height: 64px;
+        height: 72px;
+        margin-top: 0;
+      }
+      .title {
+        margin-top: 8px;
+      }
+      .subtitle {
+        margin: 0 auto;
       }
     }
     .title {
@@ -736,7 +780,7 @@
 </head>
 <body>
   <header class="site-header">
-    <div>
+    <div class="header-text">
       <h1 class="title">Thailand 2023 General Election Dashboard</h1>
       <p class="subtitle">ผลสรุปการเลือกตั้งทั่วไป พ.ศ. 2566</p>
     </div>
@@ -798,12 +842,6 @@
 
     <section>
       <h2 class="section-title">Summary Table</h2>
-      <div class="party-select">
-        <label for="party-select">เลือกพรรค</label>
-        <select id="party-select">
-          <option value="ทั้งหมด">ทั้งหมด</option>
-        </select>
-      </div>
       <div class="grid-1">
         <div class="card table-card">
           <div class="arch-card">
@@ -825,6 +863,12 @@
             <div id="arch-legend" class="arch-legend"></div>
           </div>
           <div class="arch-divider"></div>
+          <div class="party-select">
+            <label for="party-select">เลือกพรรค</label>
+            <select id="party-select">
+              <option value="ทั้งหมด">ทั้งหมด</option>
+            </select>
+          </div>
           <div class="table-wrap"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1107,7 +1151,7 @@
         </select>
       </div>
       <div class="grid-1">
-        <div class="card">
+        <div class="card scatter-card">
           <iframe class="iframe-mid" src="plot.html" scrolling="no" id="plotly-frame"></iframe>
         </div>
       </div>
@@ -1116,7 +1160,7 @@
     <section>
       <h2 class="section-title">การกระจายตัวของคะแนนบัญชีรายชื่อ</h2>
       <div class="grid-1">
-        <div class="card">
+        <div class="card density-card">
           <iframe class="iframe-short" src="figure/plot_density.html?v=density24" scrolling="no" id="density-frame"></iframe>
         </div>
       </div>
@@ -1433,15 +1477,27 @@
   };
 
   
-  if (partySelect) appendOptions(partySelect, parties);
-  if (plotPartySelect) appendOptions(plotPartySelect, partiesWithSeats.length ? partiesWithSeats : parties);
-  if (sharePartySelect) appendOptions(sharePartySelect, partiesWithSeats.length ? partiesWithSeats : parties);
-
   const setSelectValue = (select, value) => {
     if (!select) return;
     const option = Array.from(select.options).find((opt) => opt.value === value);
     if (option) select.value = value;
   };
+
+  const refreshPartySelectOptions = () => {
+    if (!partySelect) return;
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    const list = isMobile && partiesWithSeats.length ? partiesWithSeats : parties;
+    const keepValue = partySelect.value || 'ทั้งหมด';
+    while (partySelect.options.length > 1) {
+      partySelect.remove(1);
+    }
+    appendOptions(partySelect, list);
+    setSelectValue(partySelect, keepValue);
+  };
+
+  if (partySelect) refreshPartySelectOptions();
+  if (plotPartySelect) appendOptions(plotPartySelect, partiesWithSeats.length ? partiesWithSeats : parties);
+  if (sharePartySelect) appendOptions(sharePartySelect, partiesWithSeats.length ? partiesWithSeats : parties);
 
   const normalizeParty = (party) => (party || '').trim();
 
@@ -1468,6 +1524,7 @@
   const summaryMedia = window.matchMedia('(max-width: 900px)');
   const handleSummaryResize = () => {
     const currentParty = partySelect ? partySelect.value : defaultParty;
+    refreshPartySelectOptions();
     updateSummaryFilter(currentParty);
   };
   if (summaryMedia.addEventListener) {
