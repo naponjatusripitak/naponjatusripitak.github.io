@@ -7,8 +7,7 @@
   <style>
     html, body { height: 100%; margin: 0; }
     body { background: #fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-    .wrap { height: 100%; display: flex; flex-direction: column; gap: 14px; padding: 12px; box-sizing: border-box; }
-    .wrap { padding-bottom: 18px; }
+    .wrap { height: 100%; display: flex; flex-direction: column; gap: 14px; padding: 16px 16px 22px; box-sizing: border-box; }
     .card { width: 100%; border: 1px solid #e2e6ea; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .title { background: #1f3a4d; color: #fff; padding: 10px 14px; font-weight: 700; font-size: 14px; }
     #chart { width: 100%; height: 380px; }
@@ -167,6 +166,7 @@
     }).join('');
 
     rowsEl.innerHTML = rows;
+    postHeight();
   }
 
   window.addEventListener('message', (event) => {
@@ -176,11 +176,14 @@
     }
   });
 
+  let lastPostedHeight = 0;
   const postHeight = () => {
     const height = Math.max(
       document.body.scrollHeight,
       document.documentElement.scrollHeight
     );
+    if (Math.abs(height - lastPostedHeight) < 4) return;
+    lastPostedHeight = height;
     if (window.parent) {
       window.parent.postMessage({ type: 'iframe-height', id: 'density-frame', height }, '*');
     }
@@ -190,9 +193,7 @@
     postHeight();
     setTimeout(postHeight, 250);
   });
-  window.addEventListener('resize', () => {
-    postHeight();
-  });
+  // Avoid resize feedback loops; let parent drive iframe height.
 
   buildTable(DEFAULT_PARTY);
 
