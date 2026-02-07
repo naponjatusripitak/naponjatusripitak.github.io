@@ -56,6 +56,27 @@
       justify-content: space-between;
       gap: 16px;
     }
+    .lang-toggle {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .lang-toggle button {
+      border: 1px solid #d7dbe2;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .lang-toggle button.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
     .header-logo {
       height: 88px;
       width: auto;
@@ -76,10 +97,10 @@
         padding: 10px 10px;
       }
       .scatter-card {
-        padding: 6px 6px 8px;
+        padding: 0px 0px 8px;
       }
       .scatter-card .iframe-mid {
-        height: 78vh;
+        height: auto;
         min-height: 520px;
       }
       .density-card {
@@ -97,6 +118,9 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
+      }
+      .lang-toggle {
+        margin-top: 6px;
       }
       .site-header a {
         order: -1;
@@ -491,7 +515,7 @@
     .iframe-mid { height: 660px; }
   .iframe-region { height: 55vh; min-height: 420px; max-height: 700px; }
     .iframe-short { height: 720px; }
-    .iframe-xlong { height: 1300px; }
+    .iframe-xlong { height: 2700px; }
     .footer {
       margin: 30px auto 40px;
       text-align: center;
@@ -591,7 +615,7 @@
       .iframe-mid { height: 720px; }
       .iframe-region { height: 70vh; min-height: 520px; max-height: 820px; }
       .iframe-short { height: 700px; }
-      .iframe-xlong { height: 980px; }
+      .iframe-xlong { height: 2700px; }
       .table-card {
         max-width: 100%;
         width: 100%;
@@ -784,14 +808,18 @@
 <body>
   <header class="site-header">
     <div class="header-text">
-      <h1 class="title">Thailand 2023 General Election Dashboard</h1>
-      <p class="subtitle">ผลสรุปการเลือกตั้งทั่วไป พ.ศ. 2566</p>
+      <h1 class="title" data-i18n="title">Thailand 2023 General Election Dashboard</h1>
+      <p class="subtitle" data-i18n="subtitle">ผลสรุปการเลือกตั้งทั่วไป พ.ศ. 2566</p>
+    </div>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" data-lang="th" class="active">ไทย</button>
+      <button type="button" data-lang="en">EN</button>
     </div>
   </header>
 
   <main>
     <section id="summary-section">
-      <h2 class="section-title">Top Parties</h2>
+      <h2 class="section-title" data-i18n="topParties">Top Parties</h2>
       <div class="grid-1">
         <div class="card">
           <div id="summary-cards" class="summary-cards"></div>
@@ -800,39 +828,40 @@
     </section>
 
     <section>
-      <h2 class="section-title">Map</h2>
+      <h2 class="section-title" data-i18n="map">Map</h2>
       <div class="map-controls">
         <label class="map-toggle">
-          แบ่งเขต
+          <span data-i18n="constituencyLabel">แบ่งเขต</span>
           <span class="switch">
             <input type="checkbox" id="map-mode-toggle" />
             <span class="slider"></span>
           </span>
-          บัญชีรายชื่อ
+          <span data-i18n="partyListLabel">บัญชีรายชื่อ</span>
         </label>
         <div class="map-select">
           <select id="map-province">
-            <option value="">จังหวัด…</option>
+            <option value="" data-i18n="provincePlaceholder">จังหวัด…</option>
           </select>
           <select id="map-district" disabled>
-            <option value="">เขต…</option>
+            <option value="" data-i18n="districtPlaceholder">เขต…</option>
           </select>
         </div>
         <div class="map-actions" id="map-actions">
-          <button type="button" class="map-btn" id="map-btn-hhi" data-tip="ดูความกระจุกตัวของคะแนนพรรคในเขตนั้น (ค่าสูง = กระจุกตัวมาก)">HHI</button>
-          <button type="button" class="map-btn" id="map-btn-tv" data-tip="ดูความต่างระหว่างผลผู้ชนะเขตกับคะแนนบัญชีรายชื่อในแต่ละเขต (ค่าสูง = ต่างกันมาก)">Total Variation</button>
+          <button type="button" class="map-btn" id="map-btn-hhi" data-tip="ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)">Vote Concentration</button>
+          <button type="button" class="map-btn" id="map-btn-tv" data-tip="ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)">Ballot Splitting</button>
+          <button type="button" class="map-btn" id="map-btn-mov" data-tip="See winner margin over runner-up">Margin of Victory</button>
           <div id="map-btn-pop" class="map-btn-pop" role="status" aria-live="polite"></div>
         </div>
       </div>
       <div class="grid-1">
         <div class="card">
-          <iframe class="iframe-tall" src="figure/thailand_election_2023.html?v=home10" scrolling="no" id="map-iframe"></iframe>
+          <iframe class="iframe-tall" src="figure/thailand_election_2023.html?v=home15" scrolling="no" id="map-iframe"></iframe>
         </div>
       </div>
     </section>
 
     <section class="region-section">
-      <h2 class="section-title">Regional Support (Top 6 Parties)</h2>
+      <h2 class="section-title" data-i18n="regionalSupport">Regional Support (Top 6 Parties)</h2>
       <div class="grid-1">
         <div class="card">
           <iframe class="iframe-mid iframe-region" src="figure/region_support.html?v=rs3" scrolling="no" id="region-support-frame"></iframe>
@@ -841,22 +870,22 @@
     </section>
 
     <section>
-      <h2 class="section-title">Summary Table</h2>
+      <h2 class="section-title" data-i18n="summaryTable">Summary Table</h2>
       <div class="grid-1">
         <div class="card table-card">
           <div class="arch-card">
-            <div class="arch-title">โครงสร้างสภาผู้แทนราษฎร</div>
+            <div class="arch-title" data-i18n="parliamentStructure">โครงสร้างสภาผู้แทนราษฎร</div>
             <div class="coalition-panel">
-              <span class="coalition-chip" id="coalition-total">รวม 0 ที่นั่ง</span>
+              <span class="coalition-chip" id="coalition-total" data-i18n="coalitionTotal">รวม 0 ที่นั่ง</span>
               <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-                <div class="coalition-bar" aria-label="คะแนนเสียงข้างมาก 251 ที่นั่ง">
+                <div class="coalition-bar" aria-label="Majority threshold 251 seats">
                   <div class="coalition-bar-fill" id="coalition-bar-fill"></div>
                   <div class="coalition-bar-marker" style="left:50.2%"></div>
                 </div>
-                <div class="coalition-bar-label">เกณฑ์เสียงข้างมาก 251 จาก 500</div>
+                <div class="coalition-bar-label" data-i18n="majorityLabel">เกณฑ์เสียงข้างมาก 251 จาก 500</div>
               </div>
-              <button class="coalition-reset" id="coalition-reset" type="button">ล้างการเลือก</button>
-              <div class="coalition-help">คลิกที่พรรคเพื่อเลือก/ยกเลิก</div>
+              <button class="coalition-reset" id="coalition-reset" type="button" data-i18n="resetSelection">ล้างการเลือก</button>
+              <div class="coalition-help" data-i18n="coalitionHelp">คลิกที่พรรคเพื่อเลือก/ยกเลิก</div>
             </div>
             <div id="parliament-arch" class="arch-wrap"></div>
             <div id="arch-tooltip" class="arch-tooltip"></div>
@@ -864,9 +893,9 @@
           </div>
           <div class="arch-divider"></div>
           <div class="party-select">
-            <label for="party-select">เลือกพรรค</label>
+            <label for="party-select" data-i18n="selectParty">เลือกพรรค</label>
             <select id="party-select">
-              <option value="ทั้งหมด">ทั้งหมด</option>
+              <option value="ทั้งหมด" data-i18n="allParties">ทั้งหมด</option>
             </select>
           </div>
           <div class="table-wrap"><div>
@@ -886,17 +915,17 @@
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
-      <th></th>
-      <th>พรรค</th>
-      <th>จำนวน ส.ส.เขต</th>
-      <th>จำนวน ส.ส.บัญชีรายชื่อ</th>
-      <th>จำนวน ส.ส.รวม</th>
-      <th>สัดส่วนที่นั่ง (%)</th>
-      <th>คะแนนรวม (เขต)</th>
-      <th>สัดส่วนคะแนน (เขต) (%)</th>
-      <th>คะแนนรวม (บัญชีรายชื่อ)</th>
-      <th>สัดส่วนคะแนน (บัญชีรายชื่อ) (%)</th>
-      <th>ส่วนต่าง (บัญชีรายชื่อ−เขต) (%)</th>
+      <th data-col="index"></th>
+      <th data-col="party" data-i18n="thParty">พรรค</th>
+      <th data-col="constSeats" data-i18n="thConstSeats">จำนวน ส.ส.เขต</th>
+      <th data-col="listSeats" data-i18n="thListSeats">จำนวน ส.ส.บัญชีรายชื่อ</th>
+      <th data-col="totalSeats" data-i18n="thTotalSeats">จำนวน ส.ส.รวม</th>
+      <th data-col="seatShare" data-i18n="thSeatShare">สัดส่วนที่นั่ง (%)</th>
+      <th data-col="constVotes" data-i18n="thConstVotes">คะแนนรวม (เขต)</th>
+      <th data-col="constShare" data-i18n="thConstShare">สัดส่วนคะแนน (เขต) (%)</th>
+      <th data-col="listVotes" data-i18n="thListVotes">คะแนนรวม (บัญชีรายชื่อ)</th>
+      <th data-col="listShare" data-i18n="thListShare">สัดส่วนคะแนน (บัญชีรายชื่อ) (%)</th>
+      <th data-col="listDiff" data-i18n="thListDiff">ส่วนต่าง (บัญชีรายชื่อ−เขต) (%)</th>
     </tr>
   </thead>
   <tbody>
@@ -1143,22 +1172,22 @@
     </section>
 
     <section>
-      <h2 class="section-title">Scatter</h2>
+      <h2 class="section-title" data-i18n="scatter">Scatter</h2>
       <div class="plot-select">
-        <label for="plot-party-select">เลือกพรรค</label>
+        <label for="plot-party-select" data-i18n="selectParty">เลือกพรรค</label>
         <select id="plot-party-select">
-          <option value="ทั้งหมด">ทั้งหมด</option>
+          <option value="ทั้งหมด" data-i18n="allParties">ทั้งหมด</option>
         </select>
       </div>
       <div class="grid-1">
         <div class="card scatter-card">
-          <iframe class="iframe-mid" src="plot.html" scrolling="no" id="plotly-frame"></iframe>
+          <iframe class="iframe-mid" src="plot.html?v=scatter11" scrolling="no" id="plotly-frame"></iframe>
         </div>
       </div>
     </section>
 
     <section>
-      <h2 class="section-title">การกระจายตัวของคะแนนบัญชีรายชื่อ</h2>
+      <h2 class="section-title" data-i18n="densityTitle">การกระจายตัวของคะแนนบัญชีรายชื่อ</h2>
       <div class="grid-1">
         <div class="card density-card">
           <iframe class="iframe-short" src="figure/plot_density.html?v=density24" scrolling="no" id="density-frame"></iframe>
@@ -1168,33 +1197,33 @@
 
 
     <section>
-      <h2 class="section-title">Vote Share Map</h2>
+      <h2 class="section-title" data-i18n="voteShareMap">Vote Share Map</h2>
       <div class="map-controls">
         <div class="map-select">
           <select id="share-party-select">
-            <option value="">เลือกพรรค…</option>
+            <option value="" data-i18n="selectPartyPlaceholder">เลือกพรรค…</option>
           </select>
           <select id="share-province">
-            <option value="">จังหวัด…</option>
+            <option value="" data-i18n="provincePlaceholder">จังหวัด…</option>
           </select>
           <select id="share-district" disabled>
-            <option value="">เขต…</option>
+            <option value="" data-i18n="districtPlaceholder">เขต…</option>
           </select>
         </div>
       </div>
       <div class="grid-1" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;">
         <div class="card">
-          <h3>แบ่งเขต</h3>
+          <h3 data-i18n="constituencyLabel">แบ่งเขต</h3>
           <iframe class="iframe-tall" src="figure/share_vote_map_const_pure.html?v=share24" scrolling="no" id="share-map-const"></iframe>
         </div>
         <div class="card">
-          <h3>บัญชีรายชื่อ</h3>
+          <h3 data-i18n="partyListLabel">บัญชีรายชื่อ</h3>
           <iframe class="iframe-tall" src="figure/share_vote_map_list_pure.html?v=share24" scrolling="no" id="share-map-list"></iframe>
         </div>
       </div>
     </section>
     <section>
-      <h2 class="section-title">Top Provinces (Vote Share)</h2>
+      <h2 class="section-title" data-i18n="topProvinces">Top Provinces (Vote Share)</h2>
       <div class="grid-1">
         <div class="card">
           <iframe class="iframe-xlong" src="figure/province_support.html?v=ps7" scrolling="no" id="province-support-frame"></iframe>
@@ -1202,16 +1231,16 @@
       </div>
     </section>
     <section>
-      <h2 class="section-title">Top 10 Constituencies</h2>
+      <h2 class="section-title" data-i18n="topConstituencies">Top 10 Constituencies</h2>
       <div class="grid-1">
         <div class="card">
           <div class="top-list-grid">
             <div>
-              <h3>เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)</h3>
+              <h3 data-i18n="topConstHeading">เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)</h3>
               <div id="top-const-list" class="top-list" data-mode="const"></div>
             </div>
             <div>
-              <h3>บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)</h3>
+              <h3 data-i18n="topListHeading">บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)</h3>
               <div id="top-list-list" class="top-list" data-mode="list"></div>
             </div>
           </div>
@@ -1219,7 +1248,7 @@
       </div>
     </section>
     <section>
-      <h2 class="section-title">Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด</h2>
+      <h2 class="section-title" data-i18n="heatmapTitle">Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด</h2>
       <div class="grid-1">
         <div class="card">
           <iframe class="iframe-mid" src="figure/heatmap_interactive.html?v=hm5" scrolling="no" id="heatmap-frame"></iframe>
@@ -1228,13 +1257,13 @@
     </section>
   </main>
   <footer class="footer">
-    © 2026 <a href="https://naponjatusripitak.github.io" target="_blank" rel="noopener">Napon Jatusripitak</a>. All rights reserved.
-    <span> | ที่มาขอบเขตการเลือกตั้งทั่วไป: <a href="https://github.com/KittapatR/Thai-ECT-election-map" target="_blank" rel="noopener">KittapatR/Thai-ECT-election-map</a></span>
+    © 2026 <a href="https://naponjatusripitak.github.io" target="_blank" rel="noopener">Napon Jatusripitak</a>. <span data-i18n="rights">All rights reserved.</span>
+    <span> | <span data-i18n="boundaryCredit">ที่มาขอบเขตการเลือกตั้งทั่วไป</span>: <a href="https://github.com/KittapatR/Thai-ECT-election-map" target="_blank" rel="noopener">KittapatR/Thai-ECT-election-map</a></span>
   </footer>
   <div class="modal-backdrop" id="party-modal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="party-modal-title">
       <div class="modal-header">
-        <h3 class="modal-title" id="party-modal-title">รายละเอียดพรรค</h3>
+        <h3 class="modal-title" id="party-modal-title" data-i18n="modalTitle">รายละเอียดพรรค</h3>
         <button class="modal-close" type="button" id="party-modal-close">✕</button>
       </div>
       <div id="party-modal-body"></div>
@@ -1268,11 +1297,288 @@
     'ท้องที่ไทย': '#7C8B2B',
     'ใหม่': '#D1A054',
   };
+  const PARTY_NAME_EN = {
+    'ก้าวไกล': 'Move Forward',
+    'เพื่อไทย': 'Pheu Thai',
+    'ภูมิใจไทย': 'Bhumjaithai',
+    'พลังประชารัฐ': 'Palang Pracharath',
+    'รวมไทยสร้างชาติ': 'United Thai Nation',
+    'ประชาธิปัตย์': 'Democrat',
+    'ชาติไทยพัฒนา': 'Chart Thai Pattana',
+    'ประชาชาติ': 'Prachachat',
+    'ไทยสร้างไทย': 'Thai Sang Thai',
+    'ชาติพัฒนากล้า': 'Chart Pattana Kla',
+    'เพื่อไทรวมพลัง': 'Pheu Thai Ruam Palang',
+    'เสรีรวมไทย': 'Seri Ruam Thai',
+    'เป็นธรรม': 'Pen Tham',
+    'ประชาธิปไตยใหม่': 'New Democracy',
+    'ครูไทยเพื่อประชาชน': 'Thai Teachers for People',
+    'พลังสังคมใหม่': 'New Social Power',
+    'ท้องที่ไทย': 'Local Power',
+    'ใหม่': 'New',
+    'กรีน': 'Green',
+    'คลองไทย': 'Khlong Thai',
+    'ความหวังใหม่': 'New Hope',
+    'ชาติรุ่งเรือง': 'Chat Rung Rueang',
+    'ไทยรวมไทย': 'Thai United',
+    'ไทยศรีวิไลย์': 'Thai Sriwilai',
+    'ไทยสมาร์ท': 'Thai Smart',
+    'ไทยเป็นหนึ่ง': 'Thai As One',
+    'ไทยก้าวหน้า': 'Thai Progress',
+    'ไทยชนะ': 'Thai Win',
+    'ไทยธรรม': 'Thai Tham',
+    'ไทยพร้อม': 'Thai Ready',
+    'ไทยภักดี': 'Thai Loyalist',
+    'ช่วยชาติ': 'Help the Nation',
+    'ถิ่นกาขาวชาววิไล': 'Thin Ka Khao Chao Wilai',
+    'ทางเลือกใหม่': 'New Choice',
+    'ประชากรไทย': 'Thai Citizens',
+    'ประชาภิวัฒน์': 'Pracha Piwat',
+    'ประชาสามัคคี': 'Pracha Samakkhi',
+    'ประชาไทย': 'Pracha Thai',
+    'พลัง': 'Phalang',
+    'พลังธรรมใหม่': 'New Dharma Power',
+    'พลังบูรพา': 'Burapha Power',
+    'พลังประชาธิปไตย': 'Democratic Power',
+    'พลังปวงชนไทย': 'Thai People Power',
+    'พลังสยาม': 'Siam Power',
+    'พลังสหกรณ์': 'Cooperative Power',
+    'พลังสังคม': 'Social Power',
+    'พลังเพื่อไทย': 'Power for Thailand',
+    'พลังไทยรักชาติ': 'Thai Nation Love Power',
+    'ภราดรภาพ': 'Brotherhood',
+    'ภาคีเครือข่ายไทย': 'Thai Network Alliance',
+    'มิติใหม่': 'New Dimension',
+    'รวมพลัง': 'United Power',
+    'รวมแผ่นดิน': 'United Land',
+    'รวมใจไทย': 'United Thai Heart',
+    'รักษ์ธรรม': 'Rak Tham',
+    'รักษ์ผืนป่าประเทศไทย': 'Save Thai Forest',
+    'ราษฎร์วิถี': "People's Way",
+    'สังคมประชาธิปไตยไทย': 'Thai Social Democracy',
+    'สามัญชน': 'Commoners',
+    'อนาคตไทย': 'Thai Future',
+    'เปลี่ยน': 'Change',
+    'เปลี่ยนอนาคต': 'Change Future',
+    'เพื่อชาติ': 'For the Nation',
+    'เพื่อชาติไทย': 'For Thai Nation',
+    'เพื่ออนาคตไทย': 'For Thai Future',
+    'เสมอภาค': 'Equality',
+    'เส้นด้าย': 'Sen Dai',
+    'แนวทางใหม่': 'New Path',
+    'แผ่นดินธรรม': 'Phaendin Tham',
+    'แรงงานสร้างชาติ': 'Workers Build Nation'
+  };
+  const PROVINCE_NAME_EN = {
+    'กระบี่': 'Krabi',
+    'กรุงเทพมหานคร': 'Bangkok',
+    'กาญจนบุรี': 'Kanchanaburi',
+    'กาฬสินธุ์': 'Kalasin',
+    'กำแพงเพชร': 'Kamphaeng Phet',
+    'ขอนแก่น': 'Khon Kaen',
+    'จันทบุรี': 'Chanthaburi',
+    'ฉะเชิงเทรา': 'Chachoengsao',
+    'ชลบุรี': 'Chonburi',
+    'ชัยนาท': 'Chainat',
+    'ชัยภูมิ': 'Chaiyaphum',
+    'ชุมพร': 'Chumphon',
+    'เชียงราย': 'Chiang Rai',
+    'เชียงใหม่': 'Chiang Mai',
+    'ตรัง': 'Trang',
+    'ตราด': 'Trat',
+    'ตาก': 'Tak',
+    'นครนายก': 'Nakhon Nayok',
+    'นครปฐม': 'Nakhon Pathom',
+    'นครพนม': 'Nakhon Phanom',
+    'นครราชสีมา': 'Nakhon Ratchasima',
+    'นครศรีธรรมราช': 'Nakhon Si Thammarat',
+    'นครสวรรค์': 'Nakhon Sawan',
+    'นนทบุรี': 'Nonthaburi',
+    'นราธิวาส': 'Narathiwat',
+    'น่าน': 'Nan',
+    'บึงกาฬ': 'Bueng Kan',
+    'บุรีรัมย์': 'Buriram',
+    'ปทุมธานี': 'Pathum Thani',
+    'ประจวบคีรีขันธ์': 'Prachuap Khiri Khan',
+    'ปราจีนบุรี': 'Prachinburi',
+    'ปัตตานี': 'Pattani',
+    'พระนครศรีอยุธยา': 'Phra Nakhon Si Ayutthaya',
+    'พะเยา': 'Phayao',
+    'พังงา': 'Phang Nga',
+    'พัทลุง': 'Phatthalung',
+    'พิจิตร': 'Phichit',
+    'พิษณุโลก': 'Phitsanulok',
+    'เพชรบุรี': 'Phetchaburi',
+    'เพชรบูรณ์': 'Phetchabun',
+    'แพร่': 'Phrae',
+    'ภูเก็ต': 'Phuket',
+    'มหาสารคาม': 'Maha Sarakham',
+    'มุกดาหาร': 'Mukdahan',
+    'แม่ฮ่องสอน': 'Mae Hong Son',
+    'ยโสธร': 'Yasothon',
+    'ยะลา': 'Yala',
+    'ร้อยเอ็ด': 'Roi Et',
+    'ระนอง': 'Ranong',
+    'ระยอง': 'Rayong',
+    'ราชบุรี': 'Ratchaburi',
+    'ลพบุรี': 'Lopburi',
+    'ลำปาง': 'Lampang',
+    'ลำพูน': 'Lamphun',
+    'เลย': 'Loei',
+    'ศรีสะเกษ': 'Si Sa Ket',
+    'สกลนคร': 'Sakon Nakhon',
+    'สงขลา': 'Songkhla',
+    'สตูล': 'Satun',
+    'สมุทรปราการ': 'Samut Prakan',
+    'สมุทรสงคราม': 'Samut Songkhram',
+    'สมุทรสาคร': 'Samut Sakhon',
+    'สระแก้ว': 'Sa Kaeo',
+    'สระบุรี': 'Saraburi',
+    'สิงห์บุรี': 'Sing Buri',
+    'สุโขทัย': 'Sukhothai',
+    'สุพรรณบุรี': 'Suphan Buri',
+    'สุราษฎร์ธานี': 'Surat Thani',
+    'สุรินทร์': 'Surin',
+    'หนองคาย': 'Nong Khai',
+    'หนองบัวลำภู': 'Nong Bua Lamphu',
+    'อ่างทอง': 'Ang Thong',
+    'อำนาจเจริญ': 'Amnat Charoen',
+    'อุดรธานี': 'Udon Thani',
+    'อุตรดิตถ์': 'Uttaradit',
+    'อุทัยธานี': 'Uthai Thani',
+    'อุบลราชธานี': 'Ubon Ratchathani'
+  };
+  const I18N = {
+    th: {
+      title: 'Thailand 2023 General Election Dashboard',
+      subtitle: 'ผลสรุปการเลือกตั้งทั่วไป พ.ศ. 2566',
+      topParties: 'Top Parties',
+      map: 'Map',
+      constituencyLabel: 'แบ่งเขต',
+      partyListLabel: 'บัญชีรายชื่อ',
+      provincePlaceholder: 'จังหวัด…',
+      districtPlaceholder: 'เขต…',
+      regionalSupport: 'Regional Support (Top 6 Parties)',
+      summaryTable: 'Summary Table',
+      parliamentStructure: 'โครงสร้างสภาผู้แทนราษฎร',
+      coalitionTotal: 'รวม 0 ที่นั่ง',
+      majorityLabel: 'เกณฑ์เสียงข้างมาก 251 จาก 500',
+      resetSelection: 'ล้างการเลือก',
+      coalitionHelp: 'คลิกที่พรรคเพื่อเลือก/ยกเลิก',
+      scatter: 'Scatter',
+      selectParty: 'เลือกพรรค',
+      allParties: 'ทั้งหมด',
+      densityTitle: 'การกระจายตัวของคะแนนบัญชีรายชื่อ',
+      voteShareMap: 'Vote Share Map',
+      selectPartyPlaceholder: 'เลือกพรรค…',
+      topProvinces: 'Top Provinces (Vote Share)',
+      topConstituencies: 'Top 10 Constituencies',
+      topConstHeading: 'เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)',
+      topListHeading: 'บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)',
+      heatmapTitle: 'Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
+      hhiTip: 'ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)',
+      tvTip: 'ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)',
+      movTip: 'ดูส่วนต่างคะแนนผู้ชนะเหนืออันดับสอง',
+      rights: 'All rights reserved.',
+      boundaryCredit: 'ที่มาขอบเขตการเลือกตั้งทั่วไป',
+      votes: 'คะแนน',
+      constShort: 'เขต',
+      listShort: 'บัญชีรายชื่อ',
+      seats: 'ที่นั่ง',
+      noData: 'ไม่มีข้อมูล',
+      from: 'จาก',
+      modalTitle: 'รายละเอียดพรรค',
+      thParty: 'พรรค',
+      thConstSeats: 'จำนวน ส.ส.เขต',
+      thListSeats: 'จำนวน ส.ส.บัญชีรายชื่อ',
+      thTotalSeats: 'จำนวน ส.ส.รวม',
+      thSeatShare: 'สัดส่วนที่นั่ง (%)',
+      thConstVotes: 'คะแนนรวม (เขต)',
+      thConstShare: 'สัดส่วนคะแนน (เขต) (%)',
+      thListVotes: 'คะแนนรวม (บัญชีรายชื่อ)',
+      thListShare: 'สัดส่วนคะแนน (บัญชีรายชื่อ) (%)',
+      thListDiff: 'ส่วนต่าง (บัญชีรายชื่อ−เขต) (%)'
+    },
+    en: {
+      title: 'Thailand 2023 General Election Dashboard',
+      subtitle: 'Summary of the 2023 General Election',
+      topParties: 'Top Parties',
+      map: 'Map',
+      constituencyLabel: 'Constituency',
+      partyListLabel: 'Party-list',
+      provincePlaceholder: 'Province…',
+      districtPlaceholder: 'District…',
+      regionalSupport: 'Regional Support (Top 6 Parties)',
+      summaryTable: 'Summary Table',
+      parliamentStructure: 'House of Representatives Composition',
+      coalitionTotal: 'Total 0 seats',
+      majorityLabel: 'Majority threshold 251 of 500',
+      resetSelection: 'Reset selection',
+      coalitionHelp: 'Click parties to select/deselect',
+      scatter: 'Scatter',
+      selectParty: 'Select party',
+      allParties: 'All',
+      densityTitle: 'Distribution of Party-list Vote Share',
+      voteShareMap: 'Vote Share Map',
+      selectPartyPlaceholder: 'Select party…',
+      topProvinces: 'Top Provinces (Vote Share)',
+      topConstituencies: 'Top 10 Constituencies',
+      topConstHeading: 'Constituency (Top vote share)',
+      topListHeading: 'Party-list (Top vote share)',
+      heatmapTitle: 'Heatmap: Constituency winner vs Top party-list winner',
+      hhiTip: 'See how concentrated candidate votes are in that constituency (higher = more concentrated)',
+      tvTip: 'See how different constituency and party list results are (higher = more different)',
+      movTip: 'See winner margin over runner-up',
+      rights: 'All rights reserved.',
+      boundaryCredit: 'Election boundary source',
+      votes: 'votes',
+      constShort: 'const.',
+      listShort: 'party-list',
+      seats: 'seats',
+      noData: 'No data',
+      from: 'from',
+      modalTitle: 'Party details',
+      thParty: 'Party',
+      thConstSeats: 'Const. seats',
+      thListSeats: 'Party-list seats',
+      thTotalSeats: 'Total seats',
+      thSeatShare: 'Seat share (%)',
+      thConstVotes: 'Const. votes',
+      thConstShare: 'Const. vote share (%)',
+      thListVotes: 'Party-list votes',
+      thListShare: 'Party-list share (%)',
+      thListDiff: 'Party-list − Const. (%)'
+    }
+  };
+  let currentLang = localStorage.getItem('lang') || 'th';
+  const t = (key) => (I18N[currentLang] && I18N[currentLang][key]) ? I18N[currentLang][key] : key;
+  const displayPartyName = (party) => (currentLang === 'en' ? (PARTY_NAME_EN[party] || party) : party);
   const mobileCards = document.getElementById('mobile-table-cards');
   const partyData = {};
   let summaryRows = [];
 
   const tables = document.querySelectorAll('.table-wrap table');
+  const buildMobileCards = (headers, rows) => {
+    if (!mobileCards) return;
+    mobileCards.innerHTML = rows.map((row) => {
+      const items = headers.map((label, idx) => {
+        if (!label || label === t('thParty') || label === t('thParty')) return '';
+        return `
+          <div class="mobile-table-item">
+            <div class="mobile-table-label">${label}</div>
+            <div>${row.values[idx] || '—'}</div>
+          </div>
+        `;
+      }).join('');
+      return `
+        <div class="mobile-table-card" data-party="${row.party}">
+          <div class="mobile-table-title">${displayPartyName(row.party)}</div>
+          <div class="mobile-table-grid">${items}</div>
+        </div>
+      `;
+    }).join('');
+  };
+
   tables.forEach((table) => {
     const headRow = table.querySelector('thead tr');
     if (headRow && headRow.children.length) {
@@ -1296,6 +1602,7 @@
       const partyCell = row.querySelector('td');
       if (partyCell) {
         const party = partyCell.textContent.trim();
+        partyCell.dataset.party = party;
         row.setAttribute('data-party', party);
         const slug = party.replace(/\s+/g, '-');
         row.setAttribute('id', `party-${slug}`);
@@ -1310,23 +1617,7 @@
         const party = row.getAttribute('data-party') || values[0] || '';
         return { party, values };
       });
-      mobileCards.innerHTML = rows.map((row) => {
-        const items = headers.map((label, idx) => {
-          if (label === 'พรรค') return '';
-          return `
-            <div class="mobile-table-item">
-              <div class="mobile-table-label">${label}</div>
-              <div>${row.values[idx] || '—'}</div>
-            </div>
-          `;
-        }).join('');
-        return `
-          <div class="mobile-table-card" data-party="${row.party}">
-            <div class="mobile-table-title">${row.party}</div>
-            <div class="mobile-table-grid">${items}</div>
-          </div>
-        `;
-      }).join('');
+      buildMobileCards(headers, rows);
     }
   });
 
@@ -1340,15 +1631,12 @@
     if (!summaryCards) return;
     const table = document.querySelector('.table-wrap table');
     if (!table) return;
-    const headers = Array.from(table.querySelectorAll('thead th')).map((th) => th.textContent.trim());
-    const getIndex = (label) => headers.findIndex((h) => h === label);
-    const idxParty = getIndex('พรรค');
-    const idxSeats = getIndex('จำนวน ส.ส.รวม');
-    const idxConstSeats = getIndex('จำนวน ส.ส.เขต');
-    const idxListSeats = getIndex('จำนวน ส.ส.บัญชีรายชื่อ');
-    const idxListVotes = getIndex('คะแนนรวม (บัญชีรายชื่อ)');
-    const idxConstShare = getIndex('สัดส่วนคะแนน (เขต) (%)');
-    const idxListShare = getIndex('สัดส่วนคะแนน (บัญชีรายชื่อ) (%)');
+    const headers = Array.from(table.querySelectorAll('thead th'));
+    const getIndex = (col) => headers.findIndex((h) => h.getAttribute('data-col') === col);
+    const idxSeats = getIndex('totalSeats');
+    const idxConstSeats = getIndex('constSeats');
+    const idxListSeats = getIndex('listSeats');
+    const idxListVotes = getIndex('listVotes');
 
     const rows = Array.from(table.querySelectorAll('tbody tr')).map((row) => {
       const cells = row.querySelectorAll('th, td');
@@ -1356,7 +1644,7 @@
       const seats = Number(get(idxSeats).replace(/,/g, '')) || 0;
       const listVotes = Number(get(idxListVotes).replace(/,/g, '')) || 0;
       return {
-        party: get(idxParty),
+        party: row.getAttribute('data-party') || get(0),
         seats,
         constSeats: Number(get(idxConstSeats).replace(/,/g, '')) || 0,
         listSeats: Number(get(idxListSeats).replace(/,/g, '')) || 0,
@@ -1371,33 +1659,151 @@
     summaryCards.innerHTML = topRows.map((row, i) => {
       const color = PARTY_COLORS[row.party] || '#2b3a55';
       const pct = Math.round((row.seats / maxSeats) * 100);
+      const votesText = new Intl.NumberFormat(currentLang === 'en' ? 'en-US' : 'th-TH').format(row.listVotes);
       return `
         <div class="summary-card" data-party="${row.party}">
           <div class="summary-rank" style="background:${color}">${i + 1}</div>
           <div>
-            <p class="summary-title">${row.party}</p>
-            <p class="summary-meta">${row.listVotes.toLocaleString('en-US')} คะแนน | เขต ${row.constSeats} | บัญชีรายชื่อ ${row.listSeats}</p>
+            <p class="summary-title">${displayPartyName(row.party)}</p>
+            <p class="summary-meta">${votesText} ${t('votes')} | ${t('constShort')} ${row.constSeats} | ${t('listShort')} ${row.listSeats}</p>
             <div class="summary-bar"><span style="width:${pct}%; background:${color}"></span></div>
           </div>
-          <div class="summary-total">${row.seats} ที่นั่ง</div>
+          <div class="summary-total">${row.seats} ${t('seats')}</div>
         </div>
       `;
     }).join('');
   };
 
+  const updateTableLanguage = () => {
+    const table = document.querySelector('.table-wrap table');
+    if (!table) return;
+    const headers = Array.from(table.querySelectorAll('thead th'));
+    headers.forEach((th) => {
+      const key = th.getAttribute('data-i18n');
+      if (key) th.textContent = t(key);
+    });
+    const headerTexts = headers.map((th) => th.textContent.trim());
+    table.querySelectorAll('tbody tr').forEach((row) => {
+      const cells = row.querySelectorAll('th, td');
+      cells.forEach((cell, idx) => {
+        const label = headerTexts[idx] || '';
+        if (label) cell.setAttribute('data-label', label);
+      });
+      const partyCell = row.querySelector('td');
+      if (partyCell && partyCell.dataset.party) {
+        partyCell.textContent = displayPartyName(partyCell.dataset.party);
+      }
+    });
+    if (mobileCards) {
+      const rows = Array.from(table.querySelectorAll('tbody tr')).map((row) => {
+        const cells = row.querySelectorAll('th, td');
+        const values = cells.length ? Array.from(cells).map((c) => c.textContent.trim()) : [];
+        const party = row.getAttribute('data-party') || values[0] || '';
+        return { party, values };
+      });
+      buildMobileCards(headerTexts, rows);
+    }
+  };
+
+  const applyLang = (lang) => {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (key && I18N[currentLang] && I18N[currentLang][key]) {
+        el.textContent = I18N[currentLang][key];
+      }
+    });
+    if (mapBtnHHI) mapBtnHHI.dataset.tip = getHHIHelp();
+    if (mapBtnTV) mapBtnTV.dataset.tip = getTVHelp();
+    if (mapBtnMOV) mapBtnMOV.dataset.tip = getMOVHelp();
+    updateTableLanguage();
+    buildSummaryCards();
+    renderParliamentArch();
+    refreshPartySelectOptions();
+    updateSummaryFilter(partySelect ? partySelect.value : defaultParty);
+    [mapProvince, shareProvince].forEach((select) => {
+      if (!select) return;
+      Array.from(select.options).forEach((opt) => {
+        if (!opt.value) {
+          opt.textContent = t('provincePlaceholder');
+          return;
+        }
+        const th = opt.dataset.th || opt.value;
+        opt.textContent = currentLang === 'en' ? (PROVINCE_NAME_EN[th] || th) : th;
+      });
+    });
+    [mapDistrict, shareDistrict].forEach((select) => {
+      if (!select) return;
+      Array.from(select.options).forEach((opt) => {
+        if (!opt.value) {
+          opt.textContent = t('districtPlaceholder');
+          return;
+        }
+        const no = opt.dataset.no || opt.textContent.replace(/[^\d]/g, '');
+        opt.textContent = currentLang === 'en' ? `District ${no}` : `เขต ${no}`;
+      });
+    });
+    if (plotPartySelect) {
+      const current = plotPartySelect.value || defaultParty;
+      plotPartySelect.innerHTML = '';
+      const allOpt = document.createElement('option');
+      allOpt.value = 'ทั้งหมด';
+      allOpt.textContent = t('allParties');
+      plotPartySelect.appendChild(allOpt);
+      appendOptions(plotPartySelect, parties);
+      setSelectValue(plotPartySelect, current);
+    }
+    if (sharePartySelect) {
+      const current = sharePartySelect.value || defaultParty;
+      sharePartySelect.innerHTML = '<option value=""></option>';
+      const first = sharePartySelect.querySelector('option');
+      if (first) first.textContent = t('selectPartyPlaceholder');
+      appendOptions(sharePartySelect, parties);
+      setSelectValue(sharePartySelect, current);
+    }
+    if (partySelect) {
+      const first = partySelect.querySelector('option[value=\"ทั้งหมด\"]');
+      if (first) first.textContent = t('allParties');
+    }
+    renderTopLists(plotPartySelect ? plotPartySelect.value : defaultParty);
+    setPlotFrameSrc(lang);
+
+    const frames = [
+      document.getElementById('plotly-frame'),
+      document.getElementById('density-frame'),
+      document.getElementById('heatmap-frame'),
+      document.getElementById('map-iframe'),
+      document.getElementById('share-map-const'),
+      document.getElementById('share-map-list'),
+      document.getElementById('region-support-frame'),
+      document.getElementById('province-support-frame'),
+    ];
+    frames.forEach((frame) => {
+      if (frame && frame.contentWindow) {
+        frame.contentWindow.postMessage({ type: 'set-lang', lang }, '*');
+      }
+    });
+  };
+
   const showPartyModal = (party) => {
     if (!modal || !modalBody || !modalTitle) return;
     const info = partyData[party] || [];
-    modalTitle.textContent = party;
+    modalTitle.textContent = displayPartyName(party);
     if (info.length) {
-      const labels = Array.from(document.querySelectorAll('.table-wrap thead th')).map((th) => th.textContent.trim());
-      const items = labels.map((label, idx) => {
-        if (!label || label === 'พรรค') return '';
+      const headerCells = Array.from(document.querySelectorAll('.table-wrap thead th'));
+      const items = headerCells.map((th, idx) => {
+        const label = th.textContent.trim();
+        const col = th.getAttribute('data-col') || '';
+        if (!label || col === 'party' || col === 'index') return '';
         return `<div class="modal-item"><strong>${label}</strong><span>${info[idx] || '—'}</span></div>`;
       }).join('');
       modalBody.innerHTML = `<div class="modal-grid">${items}</div>`;
     } else {
-      modalBody.innerHTML = '<p>ไม่มีข้อมูลเพิ่มเติม</p>';
+      modalBody.innerHTML = `<p>${t('noData')}</p>`;
     }
     modal.classList.add('show');
   };
@@ -1471,7 +1877,17 @@
     list.forEach((party) => {
       const opt = document.createElement('option');
       opt.value = party;
-      opt.textContent = party;
+      opt.textContent = displayPartyName(party);
+      select.appendChild(opt);
+    });
+  };
+  const appendProvinceOptions = (select, list) => {
+    if (!select) return;
+    list.forEach((prov) => {
+      const opt = document.createElement('option');
+      opt.value = prov;
+      opt.dataset.th = prov;
+      opt.textContent = currentLang === 'en' ? (PROVINCE_NAME_EN[prov] || prov) : prov;
       select.appendChild(opt);
     });
   };
@@ -1486,7 +1902,7 @@
   const refreshPartySelectOptions = () => {
     if (!partySelect) return;
     const isMobile = window.matchMedia('(max-width: 900px)').matches;
-    const list = isMobile && partiesWithSeats.length ? partiesWithSeats : parties;
+    const list = parties;
     const keepValue = partySelect.value || 'ทั้งหมด';
     while (partySelect.options.length > 1) {
       partySelect.remove(1);
@@ -1496,8 +1912,8 @@
   };
 
   if (partySelect) refreshPartySelectOptions();
-  if (plotPartySelect) appendOptions(plotPartySelect, partiesWithSeats.length ? partiesWithSeats : parties);
-  if (sharePartySelect) appendOptions(sharePartySelect, partiesWithSeats.length ? partiesWithSeats : parties);
+  if (plotPartySelect) appendOptions(plotPartySelect, parties);
+  if (sharePartySelect) appendOptions(sharePartySelect, parties);
 
   const normalizeParty = (party) => (party || '').trim();
 
@@ -1541,19 +1957,20 @@
       const listList = data && data.list ? data.list : [];
       const renderList = (items) => {
         if (!items.length) {
-          return '<div class="top-meta">ไม่มีข้อมูล</div>';
+          return `<div class="top-meta">${t('noData')}</div>`;
         }
         return items.slice(0, 10).map((entry, idx) => {
           const distId = entry.constituency ? entry.constituency.replace(/\s+/g, '_') : '';
           const share = entry.share ? `${(entry.share).toFixed(2)}%` : '—';
-          const votes = entry.votes ? entry.votes.toLocaleString('en-US') : '—';
-          const total = entry.total ? entry.total.toLocaleString('en-US') : '—';
+          const locale = currentLang === 'en' ? 'en-US' : 'th-TH';
+          const votes = entry.votes ? entry.votes.toLocaleString(locale) : '—';
+          const total = entry.total ? entry.total.toLocaleString(locale) : '—';
           return `
           <div class="top-list-item" data-dist="${distId}">
             <div class="top-rank">${idx + 1}</div>
             <div>
-              <div class="top-title">${entry.constituency || '—'}</div>
-              <div class="top-meta">${votes} จาก ${total}</div>
+              <div class="top-title">${translateConstituencyName(entry.constituency || '—')}</div>
+              <div class="top-meta">${votes} ${t('from')} ${total}</div>
             </div>
             <div class="top-share">${share}</div>
           </div>
@@ -1564,6 +1981,13 @@
     topListList.innerHTML = renderList(listList);
   };
 
+  function setPlotFrameSrc(lang) {
+    const frame = document.getElementById('plotly-frame');
+    if (!frame) return;
+    const safeLang = lang === 'en' ? 'en' : 'th';
+    const newSrc = `plot.html?v=scatter13&lang=${safeLang}&t=${Date.now()}`;
+    frame.src = newSrc;
+  }
   const plotFrame = document.getElementById('plotly-frame');
   const densityFrame = document.getElementById('density-frame');
   const provinceSupportFrame = document.getElementById('province-support-frame');
@@ -1572,7 +1996,7 @@
 
   const sendToPlot = (party) => {
     if (!plotFrame || !plotFrame.contentWindow) return;
-    plotFrame.contentWindow.postMessage({ type: 'party-select', party }, '*');
+    plotFrame.contentWindow.postMessage({ type: 'party-select', party, lang: currentLang }, '*');
   };
   const sendToDensity = (party) => {
     if (!densityFrame || !densityFrame.contentWindow) return;
@@ -1595,7 +2019,7 @@
 
   const applyPartySelection = (party, source) => {
     const normalized = normalizeParty(party);
-    const plotValue = partiesWithSeats.includes(normalized) ? normalized : defaultParty;
+    const plotValue = normalized || defaultParty;
     const summaryValue = normalized || defaultParty;
     const shareValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
     const provinceValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
@@ -1640,7 +2064,11 @@
 
     const updateCoalitionUI = () => {
       const totalSeats = Array.from(selectedParties).reduce((sum, party) => sum + (seatCounts[party] || 0), 0);
-      if (totalEl) totalEl.textContent = `รวม ${totalSeats} ที่นั่ง`;
+      if (totalEl) {
+        totalEl.textContent = currentLang === 'en'
+          ? `Total ${totalSeats} ${t('seats')}`
+          : `รวม ${totalSeats} ${t('seats')}`;
+      }
       if (barFill) {
         const pct = Math.min(100, (totalSeats / 500) * 100);
         barFill.style.width = `${pct}%`;
@@ -1679,7 +2107,7 @@
         return `
           <div class="arch-legend-item" data-party="${row.party}">
             <span class="arch-swatch" style="background:${color}"></span>
-            <span>${row.party} ${row.seats}</span>
+            <span>${displayPartyName(row.party)} ${row.seats}</span>
           </div>
         `;
       }).join('');
@@ -1770,7 +2198,7 @@
     }
 
     container.innerHTML = `
-      <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" role="img" aria-label="โครงสร้างที่นั่งแบบโค้ง">
+      <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" role="img" aria-label="${t('parliamentStructure')}">
         ${circles.join('')}
       </svg>
     `;
@@ -1842,6 +2270,14 @@
       sendToPlot(party);
     });
   }
+  window.addEventListener('message', (event) => {
+    if (event && event.data && event.data.type === 'scatter-height') {
+      const h = Number(event.data.height || 0);
+      if (plotFrame && h > 0) {
+        plotFrame.style.height = `${Math.min(800, Math.max(300, h + 20))}px`;
+      }
+    }
+  });
   if (provinceSupportFrame) {
     provinceSupportFrame.addEventListener('load', () => {
       const party = partySelect ? partySelect.value : (plotPartySelect ? plotPartySelect.value : defaultParty);
@@ -1911,11 +2347,7 @@
     }
   });
 
-  buildSummaryCards();
-  renderParliamentArch();
-  const initialParty = partiesWithSeats.includes(defaultParty)
-    ? defaultParty
-    : (partiesWithSeats[0] || parties[0] || 'ทั้งหมด');
+  const initialParty = defaultParty || parties[0] || 'ทั้งหมด';
   if (partySelect) setSelectValue(partySelect, initialParty);
   if (plotPartySelect) setSelectValue(plotPartySelect, initialParty);
   if (sharePartySelect) setSelectValue(sharePartySelect, initialParty);
@@ -1927,6 +2359,7 @@
   const mapToggle = document.getElementById('map-mode-toggle');
   const mapBtnHHI = document.getElementById('map-btn-hhi');
   const mapBtnTV = document.getElementById('map-btn-tv');
+  const mapBtnMOV = document.getElementById('map-btn-mov');
   const mapActions = document.getElementById('map-actions');
   const mapBtnPop = document.getElementById('map-btn-pop');
   const mapProvince = document.getElementById('map-province');
@@ -1942,20 +2375,10 @@
   }
   const provinces = Array.from(new Set(mapDistIndex.map((d) => d['จังหวัด']))).sort();
   if (mapProvince) {
-    provinces.forEach((prov) => {
-      const opt = document.createElement('option');
-      opt.value = prov;
-      opt.textContent = prov;
-      mapProvince.appendChild(opt);
-    });
+    appendProvinceOptions(mapProvince, provinces);
   }
   if (shareProvince) {
-    provinces.forEach((prov) => {
-      const opt = document.createElement('option');
-      opt.value = prov;
-      opt.textContent = prov;
-      shareProvince.appendChild(opt);
-    });
+    appendProvinceOptions(shareProvince, provinces);
   }
 
   const updateDistricts = (province) => {
@@ -1969,7 +2392,8 @@
     dists.forEach((d) => {
       const opt = document.createElement('option');
       opt.value = d['dist_id'];
-      opt.textContent = d['เขต'];
+      opt.dataset.no = d['เขต'];
+      opt.textContent = currentLang === 'en' ? `District ${d['เขต']}` : `เขต ${d['เขต']}`;
       mapDistrict.appendChild(opt);
     });
     mapDistrict.disabled = false;
@@ -1985,7 +2409,8 @@
     dists.forEach((d) => {
       const opt = document.createElement('option');
       opt.value = d['dist_id'];
-      opt.textContent = d['เขต'];
+      opt.dataset.no = d['เขต'];
+      opt.textContent = currentLang === 'en' ? `District ${d['เขต']}` : `เขต ${d['เขต']}`;
       shareDistrict.appendChild(opt);
     });
     shareDistrict.disabled = false;
@@ -2008,8 +2433,9 @@
     mapIframe.contentWindow.postMessage(message, '*');
   };
 
-  const HHI_HELP = 'ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น';
-  const TV_HELP = 'ดูความต่างระหว่างผลผู้ชนะเขตกับคะแนนบัญชีรายชื่อในแต่ละเขต (ค่าสูง = ต่างกันมาก)';
+  const getHHIHelp = () => t('hhiTip');
+  const getTVHelp = () => t('tvTip');
+  const getMOVHelp = () => t('movTip');
   let mapPopTimer = null;
 
   const setMapPop = (text, anchor) => {
@@ -2048,6 +2474,17 @@
       return `${prov} — เขต ${distNo}`;
     };
 
+  function translateConstituencyName(label) {
+    if (!label || currentLang !== 'en') return label || '—';
+    const text = String(label).trim();
+    const m = text.match(/^(.*?)(?:\s+เขต\s*|\s+District\s*)(\d+)$/i);
+    if (!m) return PROVINCE_NAME_EN[text] || text;
+    const provTh = m[1].trim();
+    const distNo = m[2];
+    const provEn = PROVINCE_NAME_EN[provTh] || provTh;
+    return `${provEn} District ${distNo}`;
+  }
+
   const findMaxEntry = (obj) => {
     if (!obj) return null;
     let maxVal = -Infinity;
@@ -2064,24 +2501,49 @@
     return { distId: maxId, value: maxVal };
   };
 
+  const findMaxMovEntry = (cfg) => {
+    if (!cfg || !cfg.divergenceDetailsByDist) return null;
+    let maxVal = -Infinity;
+    let maxId = null;
+    Object.keys(cfg.divergenceDetailsByDist).forEach((distId) => {
+      const payload = cfg.divergenceDetailsByDist[distId];
+      const rows = payload && Array.isArray(payload.rows) ? payload.rows : [];
+      if (!rows.length) return;
+      const sorted = rows.slice().sort((a, b) => (b.const_pp || 0) - (a.const_pp || 0));
+      const top1 = sorted[0] ? (sorted[0].const_pp || 0) : 0;
+      const top2 = sorted[1] ? (sorted[1].const_pp || 0) : 0;
+      const margin = Math.max(0, top1 - top2);
+      if (margin > maxVal) {
+        maxVal = margin;
+        maxId = distId;
+      }
+    });
+    if (!maxId) return null;
+    return { distId: maxId, value: maxVal };
+  };
+
     const updateMapMetricHint = (kind) => {
       if (!mapBtnPop) return;
       const win = mapIframe && mapIframe.contentWindow ? mapIframe.contentWindow : null;
       const cfg = win && win.CONFIG ? win.CONFIG : null;
       if (!cfg) {
-      setMapPop(kind === 'hhi' ? HHI_HELP : TV_HELP);
+      if (kind === 'hhi') setMapPop(getHHIHelp());
+      else if (kind === 'mov') setMapPop(getMOVHelp());
+      else setMapPop(getTVHelp());
       return;
     }
     const entry = kind === 'hhi'
       ? findMaxEntry(cfg.hhiNormByDist)
-      : findMaxEntry(cfg.divergenceByDist);
+      : (kind === 'mov' ? findMaxMovEntry(cfg) : findMaxEntry(cfg.divergenceByDist));
     if (!entry) {
       setMapPop('');
       return;
     }
     const label = formatDistLabel(entry.distId);
-    const value = typeof entry.value === 'number' ? entry.value.toFixed(3) : entry.value;
-    const title = kind === 'hhi' ? 'HHI สูงสุด' : 'ความต่างสูงสุด';
+    const value = typeof entry.value === 'number'
+      ? (kind === 'mov' ? `${entry.value.toFixed(1)} pp` : entry.value.toFixed(3))
+      : entry.value;
+    const title = kind === 'hhi' ? 'HHI สูงสุด' : (kind === 'mov' ? 'MOV สูงสุด' : 'ความต่างสูงสุด');
     setMapPop(`${title}: ${label} (${value})`);
     autoHideMapPop(3000);
   };
@@ -2090,15 +2552,20 @@
     if (!mapIframe || !mapIframe.contentWindow) return;
     const win = mapIframe.contentWindow;
     try {
+      if (typeof win.setOverlayMode === 'function') {
+        win.setOverlayMode(null);
+      }
+    } catch (e) {}
+    try {
       const toggle = win.document.getElementById('ios-toggle');
       if (toggle) {
         toggle.checked = mode === 'list';
-        toggle.dispatchEvent(new Event('change'));
-        return;
+        const Ev = win.Event || Event;
+        toggle.dispatchEvent(new Ev('change'));
       }
     } catch (e) {
-      postToMap({ type: 'set-mode', mode });
     }
+    postToMap({ type: 'set-overlay', overlay: null });
     postToMap({ type: 'set-mode', mode });
   };
 
@@ -2155,6 +2622,10 @@
   if (mapToggle) {
     mapToggle.addEventListener('change', () => {
       const mode = mapToggle.checked ? 'list' : 'const';
+      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+      if (mapBtnTV) mapBtnTV.classList.remove('active');
+      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      setMapPop('');
       syncMapMode(mode);
     });
   }
@@ -2171,11 +2642,12 @@
       }
       mapBtnHHI.classList.add('active');
       if (mapBtnTV) mapBtnTV.classList.remove('active');
+      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
       updateMapMetricHint('hhi');
     });
-    mapBtnHHI.addEventListener('mouseenter', () => setMapPop(HHI_HELP, mapBtnHHI));
+    mapBtnHHI.addEventListener('mouseenter', () => setMapPop(getHHIHelp(), mapBtnHHI));
     mapBtnHHI.addEventListener('mouseleave', () => setMapPop(''));
-    mapBtnHHI.addEventListener('focus', () => setMapPop(HHI_HELP, mapBtnHHI));
+    mapBtnHHI.addEventListener('focus', () => setMapPop(getHHIHelp(), mapBtnHHI));
     mapBtnHHI.addEventListener('blur', () => setMapPop(''));
   }
 
@@ -2191,12 +2663,35 @@
       }
       mapBtnTV.classList.add('active');
       if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
       updateMapMetricHint('div');
     });
-    mapBtnTV.addEventListener('mouseenter', () => setMapPop(TV_HELP, mapBtnTV));
+    mapBtnTV.addEventListener('mouseenter', () => setMapPop(getTVHelp(), mapBtnTV));
     mapBtnTV.addEventListener('mouseleave', () => setMapPop(''));
-    mapBtnTV.addEventListener('focus', () => setMapPop(TV_HELP, mapBtnTV));
+    mapBtnTV.addEventListener('focus', () => setMapPop(getTVHelp(), mapBtnTV));
     mapBtnTV.addEventListener('blur', () => setMapPop(''));
+  }
+
+  if (mapBtnMOV) {
+    mapBtnMOV.addEventListener('click', () => {
+      if (!mapIframe || !mapIframe.contentWindow) return;
+      const win = mapIframe.contentWindow;
+      try {
+        const btn = win.document.getElementById('mov-btn');
+        if (btn) btn.click();
+        else postToMap({ type: 'set-overlay', overlay: 'mov' });
+      } catch (e) {
+        postToMap({ type: 'set-overlay', overlay: 'mov' });
+      }
+      mapBtnMOV.classList.add('active');
+      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+      if (mapBtnTV) mapBtnTV.classList.remove('active');
+      updateMapMetricHint('mov');
+    });
+    mapBtnMOV.addEventListener('mouseenter', () => setMapPop(getMOVHelp(), mapBtnMOV));
+    mapBtnMOV.addEventListener('mouseleave', () => setMapPop(''));
+    mapBtnMOV.addEventListener('focus', () => setMapPop(getMOVHelp(), mapBtnMOV));
+    mapBtnMOV.addEventListener('blur', () => setMapPop(''));
   }
 
   const scrollToShareMaps = () => {
@@ -2252,6 +2747,11 @@
   if (topListList) {
     topListList.addEventListener('click', handleTopListClick);
   }
+
+  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang || 'th'));
+  });
+  applyLang(currentLang);
 
 </script>
 </body>
