@@ -855,7 +855,7 @@
       </div>
       <div class="grid-1">
         <div class="card">
-          <iframe class="iframe-tall" src="figure/thailand_election_2023.html?v=home15" scrolling="no" id="map-iframe"></iframe>
+          <iframe class="iframe-tall" src="figure/thailand_election_2023.html?v=home23" scrolling="no" id="map-iframe"></iframe>
         </div>
       </div>
     </section>
@@ -1784,7 +1784,12 @@
     ];
     frames.forEach((frame) => {
       if (frame && frame.contentWindow) {
-        frame.contentWindow.postMessage({ type: 'set-lang', lang }, '*');
+        frame.contentWindow.postMessage({
+          type: 'set-lang',
+          lang,
+          provinceMap: PROVINCE_NAME_EN,
+          partyMap: PARTY_NAME_EN
+        }, '*');
       }
     });
   };
@@ -2383,7 +2388,7 @@
 
   const updateDistricts = (province) => {
     if (!mapDistrict) return;
-    mapDistrict.innerHTML = '<option value="">เขต…</option>';
+    mapDistrict.innerHTML = `<option value="">${t('districtPlaceholder')}</option>`;
     if (!province) {
       mapDistrict.disabled = true;
       return;
@@ -2400,7 +2405,7 @@
   };
   const updateShareDistricts = (province) => {
     if (!shareDistrict) return;
-    shareDistrict.innerHTML = '<option value="">เขต…</option>';
+    shareDistrict.innerHTML = `<option value="">${t('districtPlaceholder')}</option>`;
     if (!province) {
       shareDistrict.disabled = true;
       return;
@@ -2418,7 +2423,10 @@
 
   if (mapProvince) {
     mapProvince.addEventListener('change', (event) => {
-      updateDistricts(event.target.value);
+      const province = event.target.value;
+      updateDistricts(province);
+      if (mapDistrict) mapDistrict.value = '';
+      postToMapReliable({ type: 'set-province', province, mode: (mapToggle && mapToggle.checked) ? 'list' : 'const' });
     });
   }
   if (shareProvince) {
@@ -2432,6 +2440,12 @@
     if (!mapIframe || !mapIframe.contentWindow) return;
     mapIframe.contentWindow.postMessage(message, '*');
   };
+  const postToMapReliable = (message) => {
+    postToMap(message);
+    setTimeout(() => postToMap(message), 80);
+    setTimeout(() => postToMap(message), 220);
+  };
+  let mapModeSeq = 0;
 
   const getHHIHelp = () => t('hhiTip');
   const getTVHelp = () => t('tvTip');
@@ -2550,54 +2564,36 @@
 
   const syncMapMode = (mode) => {
     if (!mapIframe || !mapIframe.contentWindow) return;
-    const win = mapIframe.contentWindow;
-    try {
-      if (typeof win.setOverlayMode === 'function') {
-        win.setOverlayMode(null);
-      }
-    } catch (e) {}
-    try {
-      const toggle = win.document.getElementById('ios-toggle');
-      if (toggle) {
-        toggle.checked = mode === 'list';
-        const Ev = win.Event || Event;
-        toggle.dispatchEvent(new Ev('change'));
-      }
-    } catch (e) {
-    }
-    postToMap({ type: 'set-overlay', overlay: null });
-    postToMap({ type: 'set-mode', mode });
+    const seq = ++mapModeSeq;
+    postToMapReliable({ type: 'set-overlay', overlay: null, seq });
+    postToMapReliable({ type: 'set-mode', mode, seq });
+    setTimeout(() => {
+      try {
+        const win = mapIframe.contentWindow;
+        if (win && typeof win.setMapMode === 'function') {
+          win.setMapMode(mode);
+        }
+      } catch (e) {}
+    }, 120);
   };
+
+  if (mapIframe) {
+    mapIframe.addEventListener('load', () => {
+      const mode = mapToggle && mapToggle.checked ? 'list' : 'const';
+      syncMapMode(mode);
+    });
+  }
 
   if (mapDistrict) {
     mapDistrict.addEventListener('change', (event) => {
       const distId = event.target.value;
       if (!distId) return;
       const mode = mapToggle && mapToggle.checked ? 'list' : 'const';
-      if (!mapIframe || !mapIframe.contentWindow) return;
-      const win = mapIframe.contentWindow;
-      try {
-        const provSel = win.document.getElementById('prov-select');
-        const distSel = win.document.getElementById('dist-select');
-        const toggle = win.document.getElementById('ios-toggle');
-        if (toggle) {
-          toggle.checked = mode === 'list';
-          toggle.dispatchEvent(new Event('change'));
-        }
-        if (provSel) {
-          const parts = distId.split('_');
-          const district = parts.pop();
-          const province = parts.join('_');
-          provSel.value = province;
-          provSel.dispatchEvent(new Event('change'));
-        }
-        if (distSel) {
-          distSel.value = distId;
-          distSel.dispatchEvent(new Event('change'));
-        }
-      } catch (e) {
-        postToMap({ type: 'select-constituency', distId, mode });
-      }
+      const parts = distId.split('_');
+      parts.pop();
+      const province = parts.join('_');
+      postToMapReliable({ type: 'set-province', province, mode });
+      postToMapReliable({ type: 'select-constituency', distId, mode });
     });
   }
   if (shareDistrict) {
@@ -2620,13 +2616,16 @@
   }
 
   if (mapToggle) {
-    mapToggle.addEventListener('change', () => {
-      const mode = mapToggle.checked ? 'list' : 'const';
+    mapToggle.addEventListener('change', (event) => {
+      const mode = event && event.target && event.target.checked ? 'list' : 'const';
       if (mapBtnHHI) mapBtnHHI.classList.remove('active');
       if (mapBtnTV) mapBtnTV.classList.remove('active');
       if (mapBtnMOV) mapBtnMOV.classList.remove('active');
       setMapPop('');
       syncMapMode(mode);
+      if (mapProvince && mapProvince.value) {
+        postToMapReliable({ type: 'set-province', province: mapProvince.value, mode });
+      }
     });
   }
 
@@ -2705,23 +2704,24 @@
     if (!iframe || !iframe.contentWindow) return;
     const win = iframe.contentWindow;
     try {
+      const Ev = win.Event || Event;
       const provSel = win.document.getElementById('prov-select');
       const distSel = win.document.getElementById('dist-select');
       const toggle = win.document.getElementById('ios-toggle');
       if (toggle) {
         toggle.checked = mode === 'list' || mode === 'plist';
-        toggle.dispatchEvent(new Event('change'));
+        toggle.dispatchEvent(new Ev('change'));
       }
       if (provSel) {
         const parts = distId.split('_');
         parts.pop();
         const province = parts.join('_');
         provSel.value = province;
-        provSel.dispatchEvent(new Event('change'));
+        provSel.dispatchEvent(new Ev('change'));
       }
       if (distSel) {
         distSel.value = distId;
-        distSel.dispatchEvent(new Event('change'));
+        distSel.dispatchEvent(new Ev('change'));
       }
     } catch (e) {
       win.postMessage({ type: 'select-constituency', distId, mode }, '*');
