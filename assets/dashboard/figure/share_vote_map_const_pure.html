@@ -49,6 +49,201 @@
   const mode = 'const';
   const label = '(แบ่งเขต)';
 
+  const LANG_TEXT = {
+    th: {
+      scaleLabel: 'สัดส่วนคะแนน (แบ่งเขต)',
+      partyLabel: 'พรรค',
+      shareLabel: 'สัดส่วนคะแนน',
+      votesLabel: 'คะแนน',
+      noCandidate: 'ไม่มีข้อมูลผู้สมัคร',
+      districtLabel: 'เขต',
+      modeLabel: 'แบ่งเขต'
+    },
+    en: {
+      scaleLabel: 'Vote share (constituency)',
+      partyLabel: 'Party',
+      shareLabel: 'Vote share',
+      votesLabel: 'votes',
+      noCandidate: 'No candidate data',
+      districtLabel: 'District',
+      modeLabel: 'Constituency'
+    }
+  };
+
+  const PARTY_NAME_EN = {
+    'ก้าวไกล': 'Move Forward',
+    'เพื่อไทย': 'Pheu Thai',
+    'ภูมิใจไทย': 'Bhumjaithai',
+    'พลังประชารัฐ': 'Palang Pracharath',
+    'รวมไทยสร้างชาติ': 'United Thai Nation',
+    'ประชาธิปัตย์': 'Democrat',
+    'ชาติไทยพัฒนา': 'Chart Thai Pattana',
+    'ประชาชาติ': 'Prachachat',
+    'ไทยสร้างไทย': 'Thai Sang Thai',
+    'ชาติพัฒนากล้า': 'Chart Pattana Kla',
+    'เพื่อไทรวมพลัง': 'Pheu Thai Ruam Palang',
+    'เสรีรวมไทย': 'Seri Ruam Thai',
+    'เป็นธรรม': 'Pen Tham',
+    'ประชาธิปไตยใหม่': 'New Democracy',
+    'ครูไทยเพื่อประชาชน': 'Thai Teachers for People',
+    'พลังสังคมใหม่': 'New Social Power',
+    'ท้องที่ไทย': 'Local Power',
+    'ใหม่': 'New',
+    'กรีน': 'Green',
+    'คลองไทย': 'Khlong Thai',
+    'ความหวังใหม่': 'New Hope',
+    'ชาติรุ่งเรือง': 'Chat Rung Rueang',
+    'ไทยรวมไทย': 'Thai United',
+    'ไทยศรีวิไลย์': 'Thai Sriwilai',
+    'ไทยสมาร์ท': 'Thai Smart',
+    'ไทยเป็นหนึ่ง': 'Thai As One',
+    'ไทยก้าวหน้า': 'Thai Progress',
+    'ไทยชนะ': 'Thai Win',
+    'ไทยธรรม': 'Thai Tham',
+    'ไทยพร้อม': 'Thai Ready',
+    'ไทยภักดี': 'Thai Loyalist',
+    'ช่วยชาติ': 'Help the Nation',
+    'ถิ่นกาขาวชาววิไล': 'Thin Ka Khao Chao Wilai',
+    'ทางเลือกใหม่': 'New Choice',
+    'ประชากรไทย': 'Thai Citizens',
+    'ประชาภิวัฒน์': 'Pracha Piwat',
+    'ประชาสามัคคี': 'Pracha Samakkhi',
+    'ประชาไทย': 'Pracha Thai',
+    'พลัง': 'Phalang',
+    'พลังธรรมใหม่': 'New Dharma Power',
+    'พลังบูรพา': 'Burapha Power',
+    'พลังประชาธิปไตย': 'Democratic Power',
+    'พลังปวงชนไทย': 'Thai People Power',
+    'พลังสยาม': 'Siam Power',
+    'พลังสหกรณ์': 'Cooperative Power',
+    'พลังสังคม': 'Social Power',
+    'พลังเพื่อไทย': 'Power for Thailand',
+    'พลังไทยรักชาติ': 'Thai Nation Love Power',
+    'ภราดรภาพ': 'Brotherhood',
+    'ภาคีเครือข่ายไทย': 'Thai Network Alliance',
+    'มิติใหม่': 'New Dimension',
+    'รวมพลัง': 'United Power',
+    'รวมแผ่นดิน': 'United Land',
+    'รวมใจไทย': 'United Thai Heart',
+    'รักษ์ธรรม': 'Rak Tham',
+    'รักษ์ผืนป่าประเทศไทย': 'Save Thai Forest',
+    'ราษฎร์วิถี': "People's Way",
+    'สังคมประชาธิปไตยไทย': 'Thai Social Democracy',
+    'สามัญชน': 'Commoners',
+    'อนาคตไทย': 'Thai Future',
+    'เปลี่ยน': 'Change',
+    'เปลี่ยนอนาคต': 'Change Future',
+    'เพื่อชาติ': 'For the Nation',
+    'เพื่อชาติไทย': 'For Thai Nation',
+    'เพื่ออนาคตไทย': 'For Thai Future',
+    'เสมอภาค': 'Equality',
+    'เส้นด้าย': 'Sen Dai',
+    'แนวทางใหม่': 'New Path',
+    'แผ่นดินธรรม': 'Phaendin Tham',
+    'แรงงานสร้างชาติ': 'Workers Build Nation'
+  };
+
+  const PROVINCE_NAME_EN = {
+    'กระบี่': 'Krabi',
+    'กรุงเทพมหานคร': 'Bangkok',
+    'กาญจนบุรี': 'Kanchanaburi',
+    'กาฬสินธุ์': 'Kalasin',
+    'กำแพงเพชร': 'Kamphaeng Phet',
+    'ขอนแก่น': 'Khon Kaen',
+    'จันทบุรี': 'Chanthaburi',
+    'ฉะเชิงเทรา': 'Chachoengsao',
+    'ชลบุรี': 'Chonburi',
+    'ชัยนาท': 'Chainat',
+    'ชัยภูมิ': 'Chaiyaphum',
+    'ชุมพร': 'Chumphon',
+    'เชียงราย': 'Chiang Rai',
+    'เชียงใหม่': 'Chiang Mai',
+    'ตรัง': 'Trang',
+    'ตราด': 'Trat',
+    'ตาก': 'Tak',
+    'นครนายก': 'Nakhon Nayok',
+    'นครปฐม': 'Nakhon Pathom',
+    'นครพนม': 'Nakhon Phanom',
+    'นครราชสีมา': 'Nakhon Ratchasima',
+    'นครศรีธรรมราช': 'Nakhon Si Thammarat',
+    'นครสวรรค์': 'Nakhon Sawan',
+    'นนทบุรี': 'Nonthaburi',
+    'นราธิวาส': 'Narathiwat',
+    'น่าน': 'Nan',
+    'บึงกาฬ': 'Bueng Kan',
+    'บุรีรัมย์': 'Buriram',
+    'ปทุมธานี': 'Pathum Thani',
+    'ประจวบคีรีขันธ์': 'Prachuap Khiri Khan',
+    'ปราจีนบุรี': 'Prachinburi',
+    'ปัตตานี': 'Pattani',
+    'พระนครศรีอยุธยา': 'Phra Nakhon Si Ayutthaya',
+    'พะเยา': 'Phayao',
+    'พังงา': 'Phang Nga',
+    'พัทลุง': 'Phatthalung',
+    'พิจิตร': 'Phichit',
+    'พิษณุโลก': 'Phitsanulok',
+    'เพชรบุรี': 'Phetchaburi',
+    'เพชรบูรณ์': 'Phetchabun',
+    'แพร่': 'Phrae',
+    'ภูเก็ต': 'Phuket',
+    'มหาสารคาม': 'Maha Sarakham',
+    'มุกดาหาร': 'Mukdahan',
+    'แม่ฮ่องสอน': 'Mae Hong Son',
+    'ยโสธร': 'Yasothon',
+    'ยะลา': 'Yala',
+    'ร้อยเอ็ด': 'Roi Et',
+    'ระนอง': 'Ranong',
+    'ระยอง': 'Rayong',
+    'ราชบุรี': 'Ratchaburi',
+    'ลพบุรี': 'Lopburi',
+    'ลำปาง': 'Lampang',
+    'ลำพูน': 'Lamphun',
+    'เลย': 'Loei',
+    'ศรีสะเกษ': 'Si Sa Ket',
+    'สกลนคร': 'Sakon Nakhon',
+    'สงขลา': 'Songkhla',
+    'สตูล': 'Satun',
+    'สมุทรปราการ': 'Samut Prakan',
+    'สมุทรสงคราม': 'Samut Songkhram',
+    'สมุทรสาคร': 'Samut Sakhon',
+    'สระแก้ว': 'Sa Kaeo',
+    'สระบุรี': 'Saraburi',
+    'สิงห์บุรี': 'Sing Buri',
+    'สุโขทัย': 'Sukhothai',
+    'สุพรรณบุรี': 'Suphan Buri',
+    'สุราษฎร์ธานี': 'Surat Thani',
+    'สุรินทร์': 'Surin',
+    'หนองคาย': 'Nong Khai',
+    'หนองบัวลำภู': 'Nong Bua Lamphu',
+    'อ่างทอง': 'Ang Thong',
+    'อำนาจเจริญ': 'Amnat Charoen',
+    'อุดรธานี': 'Udon Thani',
+    'อุตรดิตถ์': 'Uttaradit',
+    'อุทัยธานี': 'Uthai Thani',
+    'อุบลราชธานี': 'Ubon Ratchathani'
+  };
+
+  let currentLang = (new URLSearchParams(location.search).get('lang') || (localStorage.getItem('lang') || localStorage.getItem('dashboardLang')) || 'th');
+  if (!['th','en'].includes(currentLang)) currentLang = 'th';
+
+  const t = (key) => (LANG_TEXT[currentLang] || LANG_TEXT.th)[key] || key;
+  const translatePartyName = (name) => currentLang === 'en' ? (PARTY_NAME_EN[name] || name) : name;
+  const translateProvinceName = (name) => currentLang === 'en' ? (PROVINCE_NAME_EN[name] || name) : name;
+  const formatDistrictLabel = (no) => currentLang === 'en' ? `District ${no}` : `เขต ${no}`;
+
+  const applyLang = (lang) => {
+    currentLang = lang || currentLang;
+    if (!['th','en'].includes(currentLang)) currentLang = 'th';
+    updateScale();
+    if (geoLayer) {
+      geoLayer.eachLayer((layer) => {
+        const v = getShareVal(layer.feature.properties.dist_id);
+        layer.setPopupContent(buildPopup(layer.feature.properties, v));
+      });
+    }
+  };
+
+
   const map = L.map('map', { zoomSnap: 0.1, zoomDelta: 0.1, wheelDebounceTime: 20, wheelPxPerZoomLevel: 60, zoomControl: false, preferCanvas: true, zoomAnimation: true, fadeAnimation: true, markerZoomAnimation: false, inertia: true });
   const bounds = L.geoJSON(GEOJSON).getBounds();
   map.fitBounds(bounds, { padding: [10, 10] });
@@ -104,26 +299,26 @@
     const maxLabel = document.getElementById('scale-max-label');
     const base = COLOR[currentParty] || '#2b3a55';
     bar.style.background = `linear-gradient(180deg, ${base}, #ffffff)`;
-    labelEl.textContent = `${currentParty} — สัดส่วนคะแนน ${label}`;
+    labelEl.textContent = `${translatePartyName(currentParty)} — ${t('scaleLabel')}`;
     if (maxLabel) maxLabel.textContent = `${shareMax}%`;
   }
 
   function buildPopup(props, shareVal) {
-    const province = props['จังหวัด'] || '';
+    const province = translateProvinceName(props['จังหวัด'] || '');
     const district = props['เขต'] != null ? props['เขต'] : '';
-    const titleTxt = `${province} — เขต ${district}`;
+    const titleTxt = `${province} — ${formatDistrictLabel(district)}`;
     const shareTxt = shareVal != null ? shareVal.toFixed(2) + '%' : '—';
     const candMap = CANDIDATE[props['dist_id']] || {};
     const c = candMap[currentParty] || null;
     const candHtml = c
       ? `<div style="margin-top:6px; font-size:12.5px;">
            <div style="font-weight:700;">${c.candidate}</div>
-           <div style="color:#666; font-variant-numeric:tabular-nums;">${c.share ? c.share + '% · ' : ''}${c.votes ? c.votes + ' คะแนน' : ''}</div>
+           <div style="color:#666; font-variant-numeric:tabular-nums;">${c.share ? c.share + '% · ' : ''}${c.votes ? c.votes + ' ' + t('votesLabel') : ''}</div>
          </div>`
-      : `<div style="margin-top:6px; font-size:12px; color:#777;">ไม่มีข้อมูลผู้สมัคร</div>`;
+      : `<div style="margin-top:6px; font-size:12px; color:#777;">${t('noCandidate')}</div>`;
     return `<div style="font-family:system-ui; font-size:13px; line-height:1.25;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${titleTxt}</div>
-      <div style="color:#666; font-size:12.5px; margin-bottom:6px;">พรรค: ${currentParty} · ${label} ${shareTxt}</div>
+      <div style="color:#666; font-size:12.5px; margin-bottom:6px;">${t('partyLabel')}: ${translatePartyName(currentParty)} · ${t('modeLabel')} ${shareTxt}</div>
       ${candHtml}
     </div>`;
   }
@@ -177,6 +372,10 @@
 
   window.addEventListener('message', (event) => {
     if (!event || !event.data) return;
+    if (event.data.type === 'set-lang') {
+      applyLang(event.data.lang);
+      return;
+    }
     if (event.data.type === 'share-set') {
       updateParty(event.data.party);
       return;

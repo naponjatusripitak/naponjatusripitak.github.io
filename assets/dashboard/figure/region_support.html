@@ -91,17 +91,52 @@
         yAxis: 'Vote Share (%)'
       }
     };
-    let currentLang = 'th';
+    const PARTY_NAME_EN = {
+      'ก้าวไกล': 'Move Forward',
+      'เพื่อไทย': 'Pheu Thai',
+      'ภูมิใจไทย': 'Bhumjaithai',
+      'พลังประชารัฐ': 'Palang Pracharath',
+      'รวมไทยสร้างชาติ': 'United Thai Nation',
+      'ประชาธิปัตย์': 'Democrat'
+    };
+    const REGION_NAME_EN = {
+      'กรุงเทพมหานคร': 'Bangkok',
+      'ภาคกลาง': 'Central',
+      'ภาคเหนือ': 'North',
+      'ภาคตะวันออกเฉียงเหนือ': 'Northeast',
+      'ภาคใต้': 'South'
+    };
+    let currentLang = (localStorage.getItem('lang') || 'th');
+
+    const translateParty = (name, lang) => {
+      if (lang === 'en') return PARTY_NAME_EN[name] || name;
+      return name;
+    };
+    const translateRegion = (name, lang) => {
+      if (lang === 'en') return REGION_NAME_EN[name] || name;
+      return name;
+    };
+    const buildTraces = (baseTraces, lang) => {
+      const copy = JSON.parse(JSON.stringify(baseTraces));
+      return copy.map((trace) => ({
+        ...trace,
+        name: translateParty(trace.name, lang),
+        x: (trace.x || []).map((r) => translateRegion(r, lang))
+      }));
+    };
 
     const applyLang = (lang) => {
       currentLang = lang;
+      try { localStorage.setItem('lang', lang); } catch (err) {}
       const t = LANG_TEXT[lang] || LANG_TEXT.th;
       btnConst.textContent = t.constBtn;
       btnList.textContent = t.listBtn;
       layout.xaxis.title = t.xAxis;
       layout.yaxis.title = t.yAxis;
-      layout.title.text = btnConst.classList.contains('active') ? t.titleConst : t.titleList;
-      Plotly.relayout(chart, layout);
+      const isConstActive = btnConst.classList.contains('active');
+      layout.title.text = isConstActive ? t.titleConst : t.titleList;
+      const nextTraces = isConstActive ? buildTraces(tracesConst, lang) : buildTraces(tracesList, lang);
+      Plotly.react(chart, nextTraces, layout, {displayModeBar:false, responsive:true});
     };
 
     const chart = document.getElementById('chart');
@@ -128,14 +163,16 @@
     btnConst.addEventListener('click', () => {
       btnConst.classList.add('active');
       btnList.classList.remove('active');
-      layout.title.text = 'สัดส่วนคะแนนรายภาค (แบ่งเขต)';
-      Plotly.react(chart, tracesConst, layout, {displayModeBar:false, responsive:true});
+      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
+      layout.title.text = t.titleConst;
+      Plotly.react(chart, buildTraces(tracesConst, currentLang), layout, {displayModeBar:false, responsive:true});
     });
     btnList.addEventListener('click', () => {
       btnList.classList.add('active');
       btnConst.classList.remove('active');
-      layout.title.text = 'สัดส่วนคะแนนรายภาค (บัญชีรายชื่อ)';
-      Plotly.react(chart, tracesList, layout, {displayModeBar:false, responsive:true});
+      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
+      layout.title.text = t.titleList;
+      Plotly.react(chart, buildTraces(tracesList, currentLang), layout, {displayModeBar:false, responsive:true});
     });
   
     window.addEventListener('message', (event) => {
