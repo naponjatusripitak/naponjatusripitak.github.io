@@ -847,9 +847,16 @@
           </select>
         </div>
         <div class="map-actions" id="map-actions">
+          <button type="button" class="map-btn" id="map-btn-turnout" data-tip="See turnout in that constituency (votes cast / eligible voters)">Turnout</button>
+          <button type="button" class="map-btn" id="map-btn-mov" data-tip="See winner margin over runner-up">Margin of Victory</button>
           <button type="button" class="map-btn" id="map-btn-hhi" data-tip="ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)">Vote Concentration</button>
           <button type="button" class="map-btn" id="map-btn-tv" data-tip="ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)">Ballot Splitting</button>
-          <button type="button" class="map-btn" id="map-btn-mov" data-tip="See winner margin over runner-up">Margin of Victory</button>
+          <button type="button" class="map-btn" id="map-btn-enp" data-tip="See effective number of parties in that constituency (higher = more fragmented)">Effective # of Parties</button>
+          <div class="map-select" id="map-enp-select-wrap" style="display:none; min-width: 180px;">
+            <select id="map-enp-winner-party">
+              <option value="" data-i18n="all">ทั้งหมด</option>
+            </select>
+          </div>
           <div id="map-btn-pop" class="map-btn-pop" role="status" aria-live="polite"></div>
         </div>
       </div>
@@ -1476,7 +1483,7 @@
       topConstHeading: 'เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)',
       topListHeading: 'บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)',
       heatmapTitle: 'Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
-      hhiTip: 'ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)',
+      hhiTip: 'ดูความกระจุกตัวของคะแนนผู้สมัคร (ยิ่งสูง = ยิ่งกระจุกตัว)',
       tvTip: 'ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)',
       movTip: 'ดูส่วนต่างคะแนนผู้ชนะเหนืออันดับสอง',
       rights: 'All rights reserved.',
@@ -1526,7 +1533,7 @@
       topConstHeading: 'Constituency (Top vote share)',
       topListHeading: 'Party-list (Top vote share)',
       heatmapTitle: 'Heatmap: Constituency winner vs Top party-list winner',
-      hhiTip: 'See how concentrated candidate votes are in that constituency (higher = more concentrated)',
+      hhiTip: 'See how concentrated candidate votes are (higher = more concentrated)',
       tvTip: 'See how different constituency and party list results are (higher = more different)',
       movTip: 'See winner margin over runner-up',
       rights: 'All rights reserved.',
@@ -1720,6 +1727,15 @@
     if (mapBtnHHI) mapBtnHHI.dataset.tip = getHHIHelp();
     if (mapBtnTV) mapBtnTV.dataset.tip = getTVHelp();
     if (mapBtnMOV) mapBtnMOV.dataset.tip = getMOVHelp();
+    if (mapBtnENP) {
+      mapBtnENP.dataset.tip = getENPHelp();
+      mapBtnENP.textContent = 'Effective # of Parties';
+    }
+    if (mapBtnTurnout) {
+      mapBtnTurnout.dataset.tip = getTurnoutHelp();
+      mapBtnTurnout.textContent = 'Turnout';
+    }
+    refreshEnpPartyOptions();
     updateTableLanguage();
     buildSummaryCards();
     renderParliamentArch();
@@ -2365,8 +2381,12 @@
   const mapBtnHHI = document.getElementById('map-btn-hhi');
   const mapBtnTV = document.getElementById('map-btn-tv');
   const mapBtnMOV = document.getElementById('map-btn-mov');
+  const mapBtnENP = document.getElementById('map-btn-enp');
+  const mapBtnTurnout = document.getElementById('map-btn-turnout');
   const mapActions = document.getElementById('map-actions');
   const mapBtnPop = document.getElementById('map-btn-pop');
+  const mapEnpSelectWrap = document.getElementById('map-enp-select-wrap');
+  const mapEnpWinnerParty = document.getElementById('map-enp-winner-party');
   const mapProvince = document.getElementById('map-province');
   const mapDistrict = document.getElementById('map-district');
   const mapDataScript = document.getElementById('map-dist-data');
@@ -2450,6 +2470,12 @@
   const getHHIHelp = () => t('hhiTip');
   const getTVHelp = () => t('tvTip');
   const getMOVHelp = () => t('movTip');
+  const getENPHelp = () => (currentLang === 'en'
+    ? 'See effective number of parties in that constituency (higher = more fragmented)'
+    : 'ดูจำนวนพรรคที่มีผลจริงในเขตนั้น (ค่าสูง = แข่งขันหลายพรรค)');
+  const getTurnoutHelp = () => (currentLang === 'en'
+    ? 'See turnout in that constituency (votes cast / eligible voters)'
+    : 'ดูอัตราการใช้สิทธิในเขตนั้น (ผู้ใช้สิทธิ/ผู้มีสิทธิ)');
   let mapPopTimer = null;
 
   const setMapPop = (text, anchor) => {
@@ -2536,28 +2562,42 @@
     return { distId: maxId, value: maxVal };
   };
 
-    const updateMapMetricHint = (kind) => {
+  const updateMapMetricHint = (kind) => {
       if (!mapBtnPop) return;
       const win = mapIframe && mapIframe.contentWindow ? mapIframe.contentWindow : null;
       const cfg = win && win.CONFIG ? win.CONFIG : null;
-      if (!cfg) {
+    if (!cfg) {
       if (kind === 'hhi') setMapPop(getHHIHelp());
       else if (kind === 'mov') setMapPop(getMOVHelp());
+      else if (kind === 'enp') setMapPop(getENPHelp());
+      else if (kind === 'turnout') setMapPop(getTurnoutHelp());
       else setMapPop(getTVHelp());
       return;
     }
     const entry = kind === 'hhi'
       ? findMaxEntry(cfg.hhiNormByDist)
-      : (kind === 'mov' ? findMaxMovEntry(cfg) : findMaxEntry(cfg.divergenceByDist));
+      : (kind === 'mov'
+        ? findMaxMovEntry(cfg)
+        : (kind === 'enp'
+          ? findMaxEntry(win && win.enpByDist ? win.enpByDist : null)
+          : findMaxEntry(cfg.divergenceByDist)));
     if (!entry) {
       setMapPop('');
       return;
     }
     const label = formatDistLabel(entry.distId);
     const value = typeof entry.value === 'number'
-      ? (kind === 'mov' ? `${entry.value.toFixed(1)} pp` : entry.value.toFixed(3))
+      ? (kind === 'mov'
+        ? `${entry.value.toFixed(1)} pp`
+        : (kind === 'enp' ? entry.value.toFixed(2) : entry.value.toFixed(3)))
       : entry.value;
-    const title = kind === 'hhi' ? 'HHI สูงสุด' : (kind === 'mov' ? 'MOV สูงสุด' : 'ความต่างสูงสุด');
+    const title = kind === 'hhi'
+      ? (currentLang === 'en' ? 'Highest HHI' : 'HHI สูงสุด')
+      : (kind === 'mov'
+        ? (currentLang === 'en' ? 'Highest MOV' : 'MOV สูงสุด')
+        : (kind === 'enp'
+          ? (currentLang === 'en' ? 'Highest ENP' : 'ENP สูงสุด')
+          : (currentLang === 'en' ? 'Largest divergence' : 'ความต่างสูงสุด')));
     setMapPop(`${title}: ${label} (${value})`);
     autoHideMapPop(3000);
   };
@@ -2621,6 +2661,11 @@
       if (mapBtnHHI) mapBtnHHI.classList.remove('active');
       if (mapBtnTV) mapBtnTV.classList.remove('active');
       if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      if (mapBtnENP) mapBtnENP.classList.remove('active');
+      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+      if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = 'none';
+      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
+      postToMapReliable({ type: 'set-winner-party', party: '' });
       setMapPop('');
       syncMapMode(mode);
       if (mapProvince && mapProvince.value) {
@@ -2642,6 +2687,11 @@
       mapBtnHHI.classList.add('active');
       if (mapBtnTV) mapBtnTV.classList.remove('active');
       if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      if (mapBtnENP) mapBtnENP.classList.remove('active');
+      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+      if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = 'none';
+      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
+      postToMapReliable({ type: 'set-winner-party', party: '' });
       updateMapMetricHint('hhi');
     });
     mapBtnHHI.addEventListener('mouseenter', () => setMapPop(getHHIHelp(), mapBtnHHI));
@@ -2663,6 +2713,11 @@
       mapBtnTV.classList.add('active');
       if (mapBtnHHI) mapBtnHHI.classList.remove('active');
       if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      if (mapBtnENP) mapBtnENP.classList.remove('active');
+      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+      if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = 'none';
+      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
+      postToMapReliable({ type: 'set-winner-party', party: '' });
       updateMapMetricHint('div');
     });
     mapBtnTV.addEventListener('mouseenter', () => setMapPop(getTVHelp(), mapBtnTV));
@@ -2685,12 +2740,94 @@
       mapBtnMOV.classList.add('active');
       if (mapBtnHHI) mapBtnHHI.classList.remove('active');
       if (mapBtnTV) mapBtnTV.classList.remove('active');
+      if (mapBtnENP) mapBtnENP.classList.remove('active');
+      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+      if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = 'none';
+      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
+      postToMapReliable({ type: 'set-winner-party', party: '' });
       updateMapMetricHint('mov');
     });
     mapBtnMOV.addEventListener('mouseenter', () => setMapPop(getMOVHelp(), mapBtnMOV));
     mapBtnMOV.addEventListener('mouseleave', () => setMapPop(''));
     mapBtnMOV.addEventListener('focus', () => setMapPop(getMOVHelp(), mapBtnMOV));
     mapBtnMOV.addEventListener('blur', () => setMapPop(''));
+  }
+
+  if (mapBtnENP) {
+    mapBtnENP.addEventListener('click', () => {
+      if (!mapIframe || !mapIframe.contentWindow) return;
+      const win = mapIframe.contentWindow;
+      try {
+        const btn = win.document.getElementById('enp-btn');
+        if (btn) btn.click();
+        else postToMap({ type: 'set-overlay', overlay: 'enp' });
+      } catch (e) {
+        postToMap({ type: 'set-overlay', overlay: 'enp' });
+      }
+      mapBtnENP.classList.add('active');
+      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+      if (mapBtnTV) mapBtnTV.classList.remove('active');
+      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+      if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = 'block';
+      updateMapMetricHint('enp');
+    });
+    mapBtnENP.addEventListener('mouseenter', () => setMapPop(getENPHelp(), mapBtnENP));
+    mapBtnENP.addEventListener('mouseleave', () => setMapPop(''));
+    mapBtnENP.addEventListener('focus', () => setMapPop(getENPHelp(), mapBtnENP));
+    mapBtnENP.addEventListener('blur', () => setMapPop(''));
+  }
+
+  if (mapBtnTurnout) {
+    mapBtnTurnout.addEventListener('click', () => {
+      if (!mapIframe || !mapIframe.contentWindow) return;
+      const win = mapIframe.contentWindow;
+      try {
+        const btn = win.document.getElementById('turnout-btn');
+        if (btn) btn.click();
+        else postToMap({ type: 'set-overlay', overlay: 'turnout' });
+      } catch (e) {
+        postToMap({ type: 'set-overlay', overlay: 'turnout' });
+      }
+      mapBtnTurnout.classList.add('active');
+      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+      if (mapBtnTV) mapBtnTV.classList.remove('active');
+      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      if (mapBtnENP) mapBtnENP.classList.remove('active');
+      if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = 'none';
+      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
+      postToMapReliable({ type: 'set-winner-party', party: '' });
+      setMapPop(getTurnoutHelp(), mapBtnTurnout);
+      autoHideMapPop(2500);
+    });
+    mapBtnTurnout.addEventListener('mouseenter', () => setMapPop(getTurnoutHelp(), mapBtnTurnout));
+    mapBtnTurnout.addEventListener('mouseleave', () => setMapPop(''));
+    mapBtnTurnout.addEventListener('focus', () => setMapPop(getTurnoutHelp(), mapBtnTurnout));
+    mapBtnTurnout.addEventListener('blur', () => setMapPop(''));
+  }
+
+  const refreshEnpPartyOptions = () => {
+    if (!mapEnpWinnerParty) return;
+    const curr = mapEnpWinnerParty.value || '';
+    mapEnpWinnerParty.innerHTML = '';
+    const optAll = document.createElement('option');
+    optAll.value = '';
+    optAll.textContent = currentLang === 'en' ? 'All' : 'ทั้งหมด';
+    mapEnpWinnerParty.appendChild(optAll);
+    partiesWithSeats.forEach((p) => {
+      const opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = displayPartyName(p);
+      mapEnpWinnerParty.appendChild(opt);
+    });
+    mapEnpWinnerParty.value = curr;
+  };
+
+  refreshEnpPartyOptions();
+  if (mapEnpWinnerParty) {
+    mapEnpWinnerParty.addEventListener('change', (event) => {
+      postToMapReliable({ type: 'set-winner-party', party: event.target.value || '' });
+    });
   }
 
   const scrollToShareMaps = () => {
