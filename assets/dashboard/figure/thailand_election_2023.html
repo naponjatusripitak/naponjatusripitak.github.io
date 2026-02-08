@@ -44,12 +44,15 @@
                 }
             </style>
 
-            <script>
-                L_NO_TOUCH = false;
-                L_DISABLE_3D = false;
-            </script>
+	            <script>
+	                L_NO_TOUCH = false;
+	                L_DISABLE_3D = false;
+	            </script>
 
-        
+	            <!-- Turnout (2566) by constituency, generated from EC spreadsheet -->
+	            <script src="../data/turnout_2566_by_dist.js"></script>
+
+	        
 
 <style>
 #ctrl-body, #ctrl-collapse { display: none !important; }
@@ -214,9 +217,17 @@
                         <option value="">เขต…</option>
                     </select>
                 </div>
-                <button id="mismatch-btn" class="btn" type="button" data-tip="ดูความต่างระหว่างผลผู้ชนะเขตกับคะแนนบัญชีรายชื่อในแต่ละเขต (ค่าสูง = ต่างกันมาก)">เทียบ แบ่งเขต vs บัญชีรายชื่อ</button>
+                <button id="turnout-btn" class="btn" type="button" data-tip="ดูอัตราการใช้สิทธิในเขตนั้น (ผู้ใช้สิทธิ/ผู้มีสิทธิ)">Turnout</button>
                 <button id="mov-btn" class="btn" type="button" data-tip="ดูความสูสีของผลการเลือกตั้งในเขตนั้น (ส่วนต่างคะแนนผู้ชนะ)">MOV</button>
                 <button id="hhi-btn" class="btn" type="button" data-tip="ดูความกระจุกตัวของคะแนนพรรคในเขตนั้น (ค่าสูง = กระจุกตัวมาก)">กระจุกตัว (HHI)</button>
+                <button id="mismatch-btn" class="btn" type="button" data-tip="ดูความต่างระหว่างผลผู้ชนะเขตกับคะแนนบัญชีรายชื่อในแต่ละเขต (ค่าสูง = ต่างกันมาก)">เทียบ แบ่งเขต vs บัญชีรายชื่อ</button>
+                <button id="enp-btn" class="btn" type="button" data-tip="ดูจำนวนพรรคที่มีผลจริงในเขตนั้น (ค่าสูง = แข่งขันหลายพรรค)">ENP</button>
+                <div id="winner-filter-wrap" style="display:none; margin-top:8px;">
+                    <div style="font-size:12px; color:#666; margin-bottom:4px;" id="winner-filter-label">ไฮไลต์เขตที่พรรคชนะ</div>
+                    <select class="jump" id="winner-party-select">
+                        <option value="">ทั้งหมด</option>
+                    </select>
+                </div>
                 <div id="metric-hint" class="metric-hint" aria-live="polite"></div>
             </div>
         </div>
@@ -253,31 +264,49 @@
       return isEn() ? (window.__partyNameEn[name] || name) : name;
     }
 
-    function syncControlLanguage() {
-      var btnHHI = document.getElementById("hhi-btn");
-      var btnTV = document.getElementById("mismatch-btn");
-      var btnMOV = document.getElementById("mov-btn");
-      var provSel = document.getElementById("prov-select");
-      var distSel = document.getElementById("dist-select");
+	    function syncControlLanguage() {
+	      var btnHHI = document.getElementById("hhi-btn");
+	      var btnTV = document.getElementById("mismatch-btn");
+	      var btnMOV = document.getElementById("mov-btn");
+	      var btnENP = document.getElementById("enp-btn");
+	      var btnTurnout = document.getElementById("turnout-btn");
+	      var provSel = document.getElementById("prov-select");
+	      var distSel = document.getElementById("dist-select");
+	      var winnerLabel = document.getElementById("winner-filter-label");
 
-      if (btnHHI) {
-        btnHHI.textContent = isEn() ? "Vote Concentration" : "กระจุกตัว (HHI)";
-        btnHHI.setAttribute("data-tip", isEn()
-          ? "See how concentrated candidate votes are in that constituency (higher = more concentrated)"
-          : "ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)");
-      }
+	      if (btnHHI) {
+	        btnHHI.textContent = isEn() ? "Vote Concentration" : "กระจุกตัว (HHI)";
+	        btnHHI.setAttribute("data-tip", isEn()
+	          ? "See how concentrated candidate votes are (higher = more concentrated)"
+	          : "ดูความกระจุกตัวของคะแนนผู้สมัคร (ยิ่งสูง = ยิ่งกระจุกตัว)");
+	      }
       if (btnTV) {
         btnTV.textContent = isEn() ? "Ballot Splitting" : "เทียบ แบ่งเขต vs บัญชีรายชื่อ";
         btnTV.setAttribute("data-tip", isEn()
           ? "See how different constituency and party list results are (higher = more different)"
           : "ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)");
       }
-      if (btnMOV) {
-        btnMOV.textContent = isEn() ? "Margin of Victory" : "MOV";
-        btnMOV.setAttribute("data-tip", isEn()
-          ? "See winner margin over runner-up"
-          : "ดูส่วนต่างคะแนนผู้ชนะกับรองชนะเลิศ");
-      }
+	      if (btnMOV) {
+	        btnMOV.textContent = isEn() ? "Margin of Victory" : "MOV";
+	        btnMOV.setAttribute("data-tip", isEn()
+	          ? "See winner margin over runner-up"
+	          : "ดูส่วนต่างคะแนนผู้ชนะกับรองชนะเลิศ");
+	      }
+	      if (btnENP) {
+	        btnENP.textContent = isEn() ? "Effective # of Parties" : "ENP";
+	        btnENP.setAttribute("data-tip", isEn()
+	          ? "See effective number of parties in that constituency (higher = more fragmented)"
+	          : "ดูจำนวนพรรคที่มีผลจริงในเขตนั้น (ค่าสูง = แข่งขันหลายพรรค)");
+	      }
+	      if (btnTurnout) {
+	        btnTurnout.textContent = isEn() ? "Turnout" : "ใช้สิทธิ";
+	        btnTurnout.setAttribute("data-tip", isEn()
+	          ? "See turnout in that constituency (votes cast / eligible voters)"
+	          : "ดูอัตราการใช้สิทธิในเขตนั้น (ผู้ใช้สิทธิ/ผู้มีสิทธิ)");
+	      }
+	      if (winnerLabel) {
+	        winnerLabel.textContent = isEn() ? "Highlight seats won by" : "ไฮไลต์เขตที่พรรคชนะ";
+	      }
 
       if (provSel && provSel.options && provSel.options.length) {
         provSel.options[0].textContent = i18n("จังหวัด…", "Province…");
@@ -299,8 +328,8 @@
       return null;
     }
 
-    window.addEventListener('message', function(event) {
-      if (!event || !event.data) return;
+	    window.addEventListener('message', function(event) {
+	      if (!event || !event.data) return;
 
       if (event.data.type === "set-lang") {
         uiLang = event.data.lang === "en" ? "en" : "th";
@@ -320,19 +349,29 @@
         return;
       }
 
-      if (event.data.type === 'set-overlay') {
-        var overlay = event.data.overlay;
-        var btnHHI = document.getElementById('hhi-btn');
-        var btnTV = document.getElementById('mismatch-btn');
-        var btnMOV = document.getElementById('mov-btn');
-        if (overlay === 'hhi' && btnHHI) { btnHHI.click(); }
-        if (overlay === 'div' && btnTV) { btnTV.click(); }
-        if (overlay === 'mov' && btnMOV) { btnMOV.click(); }
-        return;
-      }
+	      if (event.data.type === 'set-overlay') {
+	        var overlay = event.data.overlay;
+	        var btnHHI = document.getElementById('hhi-btn');
+	        var btnTV = document.getElementById('mismatch-btn');
+	        var btnMOV = document.getElementById('mov-btn');
+	        var btnENP = document.getElementById('enp-btn');
+	        var btnTurnout = document.getElementById('turnout-btn');
+	        if (overlay === 'hhi' && btnHHI) { btnHHI.click(); }
+	        if (overlay === 'div' && btnTV) { btnTV.click(); }
+	        if (overlay === 'mov' && btnMOV) { btnMOV.click(); }
+	        if (overlay === 'enp' && btnENP) { btnENP.click(); }
+	        if (overlay === 'turnout' && btnTurnout) { btnTurnout.click(); }
+	        return;
+	      }
 
-      if (event.data.type !== 'select-constituency' && event.data.type !== 'set-mode') return;
-      var distId = event.data.distId;
+	      if (event.data.type === "set-winner-party") {
+	        window.__winnerPartyFilter = (event.data.party || "");
+	        if (typeof window.__refreshAll === "function") window.__refreshAll();
+	        return;
+	      }
+
+	      if (event.data.type !== 'select-constituency' && event.data.type !== 'set-mode') return;
+	      var distId = event.data.distId;
 
       var mode = event.data.mode || null;
       var toggle = document.getElementById('ios-toggle');
@@ -503,12 +542,12 @@ function clearShareMap() {
         var provSel = document.getElementById("prov-select");
         var distSel = document.getElementById("dist-select");
 
-        if (btnHHI) {
-          btnHHI.textContent = isEn() ? "Vote Concentration" : "กระจุกตัว (HHI)";
-          btnHHI.setAttribute("data-tip", isEn()
-            ? "See how concentrated candidate votes are in that constituency (higher = more concentrated)"
-            : "ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)");
-        }
+	        if (btnHHI) {
+	          btnHHI.textContent = isEn() ? "Vote Concentration" : "กระจุกตัว (HHI)";
+	          btnHHI.setAttribute("data-tip", isEn()
+	            ? "See how concentrated candidate votes are (higher = more concentrated)"
+	            : "ดูความกระจุกตัวของคะแนนผู้สมัคร (ยิ่งสูง = ยิ่งกระจุกตัว)");
+	        }
         if (btnTV) {
           btnTV.textContent = isEn() ? "Ballot Splitting" : "เทียบ แบ่งเขต vs บัญชีรายชื่อ";
           btnTV.setAttribute("data-tip", isEn()
@@ -581,6 +620,11 @@ function clearShareMap() {
         // HHI: pale peach -> deep red
         return rampColor(t, [254, 224, 210], [153, 0, 13]);
       }
+
+      function enpColor(t) {
+        // ENP: pale green -> deep teal
+        return rampColor(t, [231, 246, 239], [0, 109, 109]);
+      }
     
       // ---- base styles (fills only; boundaries are separate overlay) ----
       function styleFor(distId, mode) {
@@ -600,6 +644,56 @@ function clearShareMap() {
         var h = (CONFIG.hhiNormByDist && CONFIG.hhiNormByDist[distId] != null) ? CONFIG.hhiNormByDist[distId] : 0.0;
         var t = Math.pow(clamp01(h), 0.70);
         return { fillColor: hhiColor(t), fillOpacity: 1.0, stroke: false };
+      }
+
+      // Effective Number of Parties (ENP) = 1 / sum(p_i^2), where p_i are constituency vote shares.
+      // ENP bins: 1-2, 2-3, 3-4, 4-5, 5-6, 6+
+      var ENP_BINS = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 99.0];
+      var enpByDist = {};
+      if (CONFIG.divergenceDetailsByDist) {
+        Object.keys(CONFIG.divergenceDetailsByDist).forEach(function(distId) {
+          var payload = CONFIG.divergenceDetailsByDist[distId];
+          var rows = payload && payload.rows ? payload.rows : [];
+          if (!rows.length) { enpByDist[distId] = 0; return; }
+          var sumsq = 0;
+          for (var i=0; i<rows.length; i++) {
+            var p = Number(rows[i].const_pp || 0) / 100.0;
+            if (!isFinite(p) || p <= 0) continue;
+            sumsq += p * p;
+          }
+          enpByDist[distId] = sumsq > 0 ? (1.0 / sumsq) : 0;
+        });
+      }
+      window.enpByDist = enpByDist;
+
+      function enpBinIndex(v) {
+        if (!isFinite(v) || v <= 0) return 0;
+        for (var i=0; i<ENP_BINS.length-1; i++) {
+          if (v >= ENP_BINS[i] && v < ENP_BINS[i+1]) return i;
+        }
+        // Anything above the last edge falls into the last visible bin.
+        return ENP_BINS.length - 2;
+      }
+
+      function styleForENP(distId, winnerPartyFilter) {
+        var v = (enpByDist[distId] != null) ? enpByDist[distId] : 0;
+        var idx = enpBinIndex(v);
+        idx = Math.min(5, Math.max(0, idx));
+        var t = idx / 5.0;
+        var s = { fillColor: enpColor(t), fillOpacity: 1.0, stroke: false };
+
+        if (winnerPartyFilter) {
+          var winner = (CONFIG.partyByMode && CONFIG.partyByMode.const) ? CONFIG.partyByMode.const[distId] : null;
+          if (winner && winner === winnerPartyFilter) {
+            s.stroke = true;
+            s.color = "rgba(0,0,0,0.75)";
+            s.weight = 2.6;
+            s.opacity = 1.0;
+          } else {
+            s.fillOpacity = 0.75;
+          }
+        }
+        return s;
       }
 
       var MOV_BINS = [0, 2, 5, 10, 20, 100];
@@ -629,11 +723,34 @@ function clearShareMap() {
         var idx = movBinIndex(v);
         return { fillColor: MOV_COLORS[idx] || MOV_COLORS[0], fillOpacity: 1.0, stroke: false };
       }
+
+      // Turnout: from EC spreadsheet (Reแบ่งเขต เขต). Values in [0,1].
+      var TURNOUT_BINS = [0.0, 0.60, 0.65, 0.70, 0.75, 0.80, 1.00];
+      var TURNOUT_COLORS = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#d7301f"];
+      var turnoutByDist = (window.__turnoutByDist && typeof window.__turnoutByDist === "object") ? window.__turnoutByDist : {};
+      var turnoutMetaByDist = (window.__turnoutMetaByDist && typeof window.__turnoutMetaByDist === "object") ? window.__turnoutMetaByDist : {};
+
+      function turnoutBinIndex(v) {
+        var x = Number(v);
+        if (!isFinite(x) || x < 0) x = 0;
+        for (var i=0; i<TURNOUT_BINS.length-1; i++) {
+          if (x >= TURNOUT_BINS[i] && x < TURNOUT_BINS[i+1]) return i;
+        }
+        return TURNOUT_BINS.length - 2;
+      }
+
+      function styleForTurnout(distId) {
+        var v = (turnoutByDist[distId] != null) ? Number(turnoutByDist[distId]) : 0;
+        var idx = turnoutBinIndex(v);
+        return { fillColor: TURNOUT_COLORS[idx] || TURNOUT_COLORS[0], fillOpacity: 1.0, stroke: false };
+      }
     
       function baseStyle(distId, mode) {
         if (mode === "div") return styleForDiv(distId);
         if (mode === "hhi") return styleForHHI(distId);
         if (mode === "mov") return styleForMov(distId);
+        if (mode === "turnout") return styleForTurnout(distId);
+        if (mode === "enp") return styleForENP(distId, window.__winnerPartyFilter || "");
         return styleFor(distId, mode);
       }
     
@@ -894,12 +1011,88 @@ function clearShareMap() {
           '</div>'
         );
       }
+
+      function popupHtmlForENP(distId) {
+        var payload = (CONFIG.divergenceDetailsByDist && CONFIG.divergenceDetailsByDist[distId]) ? CONFIG.divergenceDetailsByDist[distId] : null;
+        if (!payload) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var province = payload.province || "";
+        var district = payload.district != null ? payload.district : "";
+        var title = escapeHtml(provinceLabel(province)) + " — " + i18n("เขต ", "District ") + escapeHtml(district);
+        var v = (enpByDist[distId] != null) ? Number(enpByDist[distId]) : 0;
+
+        var rows = payload.rows || [];
+        var sorted = rows.slice().sort(function(a, b) { return (b.const_pp || 0) - (a.const_pp || 0); });
+        var top = sorted.slice(0, 3);
+
+        var lines = "";
+        for (var i=0; i<top.length; i++) {
+          var r = top[i] || {};
+          var p = Number(r.const_pp || 0);
+          var party = escapeHtml(partyLabel(r.party || ""));
+          var cand = escapeHtml(r.candidate || "");
+          lines += (
+            '<div style="display:flex; justify-content:space-between; gap:10px; font-size:12.5px; margin:4px 0;">' +
+              '<div style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+                (cand ? (cand + ' <span style="color:#777;">(' + party + ')</span>') : party) +
+              '</div>' +
+              '<div style="font-variant-numeric:tabular-nums; color:#444; font-weight:700; white-space:nowrap;">' + p.toFixed(1) + '%</div>' +
+            '</div>'
+          );
+        }
+
+        return (
+          '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+            '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + '</div>' +
+            '<div style="color:#666; font-size:12.5px; margin-bottom:8px;">' +
+              i18n("จำนวนพรรคที่มีผลจริง (ENP):", "Effective # of parties (ENP):") +
+              ' <b style="color:#222; font-variant-numeric:tabular-nums;">' + (isFinite(v) ? v.toFixed(2) : "—") + '</b>' +
+            '</div>' +
+            '<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.06);">' +
+              '<div style="font-size:12px; color:#777; margin-bottom:4px;">' + i18n("ผู้สมัครคะแนนนำ (แบ่งเขต)", "Top candidates (constituency)") + '</div>' +
+              (lines || ('<div style="font-size:12px; color:#777;">' + i18n("ไม่มีข้อมูล", "No details available") + '</div>')) +
+            '</div>' +
+          '</div>'
+        );
+      }
     
       function popupHtmlFor(distId, mode) {
         if (mode === "div") return popupHtmlForDiv(distId);
         if (mode === "hhi") return popupHtmlForHHI(distId);
         if (mode === "mov") return popupHtmlForMov(distId);
+        if (mode === "enp") return popupHtmlForENP(distId);
+        if (mode === "turnout") return popupHtmlForTurnout(distId);
         return popupHtmlForAB(distId, mode);
+      }
+
+      function popupHtmlForTurnout(distId) {
+        var meta = turnoutMetaByDist && turnoutMetaByDist[distId] ? turnoutMetaByDist[distId] : null;
+        var v = (turnoutByDist && turnoutByDist[distId] != null) ? Number(turnoutByDist[distId]) : null;
+
+        var prov = meta && meta.province ? meta.province : (distId ? String(distId).split("_").slice(0, -1).join("_") : "");
+        var distNo = meta && meta.district != null ? meta.district : (distId ? String(distId).split("_").slice(-1)[0] : "");
+        var title = escapeHtml(provinceLabel(prov)) + " — " + i18n("เขต ", "District ") + escapeHtml(distNo);
+
+        var turnoutPct = (v != null && isFinite(v)) ? (v * 100.0) : null;
+        var eligible = meta && meta.eligible != null ? Number(meta.eligible) : null;
+        var voted = meta && meta.voted != null ? Number(meta.voted) : null;
+        var invalid = meta && meta.invalid != null ? Number(meta.invalid) : null;
+        var novote = meta && meta.no_vote != null ? Number(meta.no_vote) : null;
+
+        return (
+          '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+            '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + '</div>' +
+            '<div style="color:#666; font-size:12.5px; margin-bottom:10px;">' +
+              i18n("อัตราการใช้สิทธิ:", "Turnout:") +
+              ' <b style="color:#222; font-variant-numeric:tabular-nums;">' + (turnoutPct == null ? "—" : turnoutPct.toFixed(1) + "%") + '</b>' +
+            '</div>' +
+            '<div style="display:grid; grid-template-columns: 1fr auto; gap:6px 10px; font-size:12.5px; color:#444;">' +
+              '<div>' + i18n("ผู้มีสิทธิเลือกตั้ง", "Eligible voters") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (eligible == null ? "—" : eligible.toLocaleString()) + '</div>' +
+              '<div>' + i18n("ผู้ใช้สิทธิเลือกตั้ง", "Votes cast") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (voted == null ? "—" : voted.toLocaleString()) + '</div>' +
+              '<div>' + i18n("บัตรเสีย", "Invalid ballots") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (invalid == null ? "—" : invalid.toLocaleString()) + '</div>' +
+              '<div>' + i18n("ไม่เลือกผู้สมัครผู้ใด", "No-candidate ballots") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (novote == null ? "—" : novote.toLocaleString()) + '</div>' +
+            '</div>' +
+          '</div>'
+        );
       }
     
       function buildLegend(mode) {
@@ -957,6 +1150,82 @@ function clearShareMap() {
                 '<div class="legend-left">' +
                   '<span class="legend-swatch" style="background:' + bins[i].color + '"></span>' +
                   '<span class="legend-name">' + bins[i].label + '</span>' +
+                '</div>' +
+                '<span class="legend-count">' + (counts[i] || 0) + ' ' + i18n("เขต", "constituencies") + '</span>' +
+              '</div>'
+            );
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "enp") {
+          if (titleEl) titleEl.textContent = i18n("จำนวนพรรคที่มีผลจริง (ENP)", "Effective # of Parties (ENP)");
+          if (modeEl) modeEl.textContent = i18n("ค่าสูง = แข่งขันหลายพรรค", "Higher = more fragmented competition");
+
+          var labels = ["1–2", "2–3", "3–4", "4–5", "5–6", "6+"];
+          var counts = [0, 0, 0, 0, 0, 0];
+          var winCounts = [0, 0, 0, 0, 0, 0];
+          var winnerPartyFilter = window.__winnerPartyFilter || "";
+
+          Object.keys(enpByDist).forEach(function(distId) {
+            var v = enpByDist[distId] || 0;
+            var idx = Math.min(5, Math.max(0, enpBinIndex(v)));
+            counts[idx] = (counts[idx] || 0) + 1;
+            if (winnerPartyFilter) {
+              var winner = (CONFIG.partyByMode && CONFIG.partyByMode.const) ? CONFIG.partyByMode.const[distId] : null;
+              if (winner && winner === winnerPartyFilter) {
+                winCounts[idx] = (winCounts[idx] || 0) + 1;
+              }
+            }
+          });
+
+          var html = '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">' + (isEn() ? "ENP bins" : "ช่วงค่า ENP") + '</div>';
+          for (var i = 0; i < labels.length; i++) {
+            var t = i / 5.0;
+            var col = enpColor(t);
+            var right = (counts[i] || 0) + ' ' + i18n("เขต", "constituencies");
+            if (winnerPartyFilter) {
+              right += ' · ' + (winCounts[i] || 0) + ' ' + i18n("เขตที่ชนะ", "won");
+            }
+            html += (
+              '<div class="legend-item">' +
+                '<div class="legend-left">' +
+                  '<span class="legend-swatch" style="background:' + col + '"></span>' +
+                  '<span class="legend-name">' + labels[i] + '</span>' +
+                '</div>' +
+                '<span class="legend-count">' + right + '</span>' +
+              '</div>'
+            );
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "turnout") {
+          if (titleEl) titleEl.textContent = i18n("อัตราการใช้สิทธิ (%)", "Turnout (%)");
+          if (modeEl) modeEl.textContent = i18n("ผู้ใช้สิทธิ / ผู้มีสิทธิ", "Votes cast / eligible voters");
+
+          var labels = ["<60%", "60–65%", "65–70%", "70–75%", "75–80%", "80%+"];
+          var counts = [0, 0, 0, 0, 0, 0];
+          Object.keys(turnoutByDist || {}).forEach(function(distId) {
+            var v = turnoutByDist[distId];
+            var idx = turnoutBinIndex(v);
+            counts[idx] = (counts[idx] || 0) + 1;
+          });
+
+          var html = '' +
+            '<div style="font-size:12.5px; color:#444; margin-bottom:6px; font-weight:800;">' + (isEn() ? "Turnout bins" : "ช่วงอัตราการใช้สิทธิ") + '</div>' +
+            '<div style="font-size:12px; color:#666; margin:-2px 0 10px 0; line-height:1.35;">' +
+              (isEn() ? 'Turnout = votes cast / eligible voters' : 'Turnout = ผู้ใช้สิทธิ / ผู้มีสิทธิ') +
+            '</div>';
+          for (var i=0; i<labels.length; i++) {
+            var col = TURNOUT_COLORS[i] || TURNOUT_COLORS[0];
+            html += (
+              '<div class="legend-item">' +
+                '<div class="legend-left">' +
+                  '<span class="legend-swatch" style="background:' + col + '"></span>' +
+                  '<span class="legend-name">' + labels[i] + '</span>' +
                 '</div>' +
                 '<span class="legend-count">' + (counts[i] || 0) + ' ' + i18n("เขต", "constituencies") + '</span>' +
               '</div>'
@@ -1142,6 +1411,7 @@ function clearShareMap() {
         var entry = null;
         if (kind === "hhi") entry = findMaxEntry(cfg.hhiNormByDist);
         else if (kind === "mov") entry = findMaxEntry(movByDist);
+        else if (kind === "enp") entry = findMaxEntry(enpByDist);
         else entry = findMaxEntry(cfg.divergenceByDist);
         if (!entry) {
           el.textContent = "";
@@ -1149,10 +1419,12 @@ function clearShareMap() {
           return;
         }
         var label = formatDistLabel(entry.distId);
-        var value = typeof entry.value === "number" ? entry.value.toFixed(kind === "mov" ? 1 : 3) : entry.value;
+        var value = typeof entry.value === "number" ? entry.value.toFixed(kind === "mov" ? 1 : (kind === "enp" ? 2 : 3)) : entry.value;
         var title = kind === "hhi"
           ? i18n("HHI สูงสุด", "Highest HHI")
-          : (kind === "mov" ? i18n("MOV สูงสุด", "Highest MOV") : i18n("ความต่างสูงสุด", "Largest divergence"));
+          : (kind === "mov"
+            ? i18n("MOV สูงสุด", "Highest MOV")
+            : (kind === "enp" ? i18n("ENP สูงสุด", "Highest ENP") : i18n("ความต่างสูงสุด", "Largest divergence")));
         var suffix = kind === "mov" ? " pp" : "";
         el.textContent = title + ": " + label + " (" + value + suffix + ")";
         el.classList.add("show");
@@ -1223,31 +1495,40 @@ function clearShareMap() {
           var map = getObj(MAP_NAME);
           var gj = getObj(GEOJSON_NAME);
           var toggle = document.getElementById("ios-toggle");
-          var btnMismatch = document.getElementById("mismatch-btn");
-          var btnMOV = document.getElementById("mov-btn");
-          var btnHHI = document.getElementById("hhi-btn");
-          var provSel = document.getElementById("prov-select");
-          var distSel = document.getElementById("dist-select");
+	          var btnMismatch = document.getElementById("mismatch-btn");
+	          var btnMOV = document.getElementById("mov-btn");
+	          var btnHHI = document.getElementById("hhi-btn");
+	          var btnENP = document.getElementById("enp-btn");
+	          var btnTurnout = document.getElementById("turnout-btn");
+	          var provSel = document.getElementById("prov-select");
+	          var distSel = document.getElementById("dist-select");
+	          var winnerWrap = document.getElementById("winner-filter-wrap");
+	          var winnerSel = document.getElementById("winner-party-select");
     
-          if (map && gj && toggle && btnMismatch && btnHHI && provSel && distSel) {
-            clearInterval(timer);
+	          if (map && gj && toggle && btnMismatch && btnHHI && btnENP && btnTurnout && provSel && distSel) {
+	            clearInterval(timer);
     
             setAttributionPrefix(map);
             wireLegendCollapse();
             wireCtrlCollapse();
     
-            var baseMode = "const";
-            var mismatchOn = false;
-            var hhiOn = false;
-            var movOn = false;
-            bindHoverHints(btnHHI, btnMismatch, btnMOV, function() { return { hhiOn: hhiOn, mismatchOn: mismatchOn, movOn: movOn }; });
+		            var baseMode = "const";
+		            var mismatchOn = false;
+		            var hhiOn = false;
+		            var movOn = false;
+		            var enpOn = false;
+		            var turnoutOn = false;
+		            window.__winnerPartyFilter = window.__winnerPartyFilter || "";
+	            bindHoverHints(btnHHI, btnMismatch, btnMOV, function() { return { hhiOn: hhiOn, mismatchOn: mismatchOn, movOn: movOn }; });
     
-            function currentMode() {
-              if (hhiOn) return "hhi";
-              if (mismatchOn) return "div";
-              if (movOn) return "mov";
-              return baseMode;
-            }
+		            function currentMode() {
+		              if (hhiOn) return "hhi";
+		              if (mismatchOn) return "div";
+		              if (movOn) return "mov";
+		              if (enpOn) return "enp";
+		              if (turnoutOn) return "turnout";
+		              return baseMode;
+		            }
     
             var layerByDistId = buildLayerIndex(gj);
     
@@ -1283,32 +1564,44 @@ function clearShareMap() {
               } catch (err) {}
             }
     
-            function refreshAll() {
-              var mode = currentMode();
-              buildLegend(mode);
-              applyMode(gj, mode);
-              refreshOpenPopupIfAny(mode);
-              if (hhiOn) {
-                updateMetricHint("hhi");
-              } else if (mismatchOn) {
-                updateMetricHint("div");
-              } else if (movOn) {
-                updateMetricHint("mov");
-              } else {
-                updateMetricHint(null);
-              }
-            }
+		            function refreshAll() {
+		              var mode = currentMode();
+		              if (winnerWrap) winnerWrap.style.display = (mode === "enp") ? "block" : "none";
+		              buildLegend(mode);
+		              applyMode(gj, mode);
+	              refreshOpenPopupIfAny(mode);
+	              if (hhiOn) {
+	                updateMetricHint("hhi");
+	              } else if (mismatchOn) {
+	                updateMetricHint("div");
+	              } else if (movOn) {
+	                updateMetricHint("mov");
+		              } else if (enpOn) {
+		                updateMetricHint("enp");
+		              } else if (turnoutOn) {
+		                updateMetricHint(null);
+		              } else {
+		                updateMetricHint(null);
+		              }
+		            }
+		            window.__refreshAll = refreshAll;
     
             // Init state
             toggle.checked = false;
             baseMode = "const";
-            mismatchOn = false;
-            hhiOn = false;
-            movOn = false;
-            btnMismatch.classList.remove("on");
-            btnHHI.classList.remove("on");
-            if (btnMOV) btnMOV.classList.remove("on");
-            refreshAll();
+		            mismatchOn = false;
+		            hhiOn = false;
+		            movOn = false;
+		            enpOn = false;
+		            turnoutOn = false;
+		            btnMismatch.classList.remove("on");
+		            btnHHI.classList.remove("on");
+		            if (btnMOV) btnMOV.classList.remove("on");
+		            if (btnENP) btnENP.classList.remove("on");
+		            if (btnTurnout) btnTurnout.classList.remove("on");
+	            if (winnerSel) winnerSel.value = "";
+	            window.__winnerPartyFilter = "";
+	            refreshAll();
     
             var refreshDropdownLanguage = initDropdowns(CONFIG.distIndex || [], layerByDistId, map, function() { return currentMode(); });
 
@@ -1331,67 +1624,170 @@ function clearShareMap() {
               window.applyElectionMapLang(window.__mapLang || uiLang);
             }
     
-            toggle.addEventListener("change", function() {
-              baseMode = toggle.checked ? "plist" : "const";
-              mismatchOn = false;
-              hhiOn = false;
-              movOn = false;
-              btnMismatch.classList.remove("on");
-              btnHHI.classList.remove("on");
-              if (btnMOV) btnMOV.classList.remove("on");
-              updateMetricHint(null);
-              refreshAll();
-            });
+		            toggle.addEventListener("change", function() {
+		              baseMode = toggle.checked ? "plist" : "const";
+		              mismatchOn = false;
+		              hhiOn = false;
+		              movOn = false;
+		              enpOn = false;
+		              turnoutOn = false;
+		              btnMismatch.classList.remove("on");
+		              btnHHI.classList.remove("on");
+		              if (btnMOV) btnMOV.classList.remove("on");
+		              if (btnENP) btnENP.classList.remove("on");
+		              if (btnTurnout) btnTurnout.classList.remove("on");
+	              if (winnerSel) winnerSel.value = "";
+	              window.__winnerPartyFilter = "";
+	              updateMetricHint(null);
+	              refreshAll();
+	            });
     
-            btnMismatch.addEventListener("click", function() {
-              mismatchOn = !mismatchOn;
-              if (mismatchOn) {
-                hhiOn = false;
-                movOn = false;
-                btnHHI.classList.remove("on");
-                if (btnMOV) btnMOV.classList.remove("on");
-                btnMismatch.classList.add("on");
-                updateMetricHint("div");
-              } else {
-                btnMismatch.classList.remove("on");
-                updateMetricHint(null);
-              }
-              refreshAll();
-            });
+		            btnMismatch.addEventListener("click", function() {
+		              mismatchOn = !mismatchOn;
+		              if (mismatchOn) {
+		                hhiOn = false;
+		                movOn = false;
+		                enpOn = false;
+		                turnoutOn = false;
+	                btnHHI.classList.remove("on");
+		                if (btnMOV) btnMOV.classList.remove("on");
+		                if (btnENP) btnENP.classList.remove("on");
+		                if (btnTurnout) btnTurnout.classList.remove("on");
+	                btnMismatch.classList.add("on");
+	                updateMetricHint("div");
+	              } else {
+	                btnMismatch.classList.remove("on");
+	                updateMetricHint(null);
+	              }
+	              refreshAll();
+	            });
     
-            btnHHI.addEventListener("click", function() {
-              hhiOn = !hhiOn;
-              if (hhiOn) {
-                mismatchOn = false;
-                movOn = false;
-                btnMismatch.classList.remove("on");
-                if (btnMOV) btnMOV.classList.remove("on");
-                btnHHI.classList.add("on");
-                updateMetricHint("hhi");
-              } else {
-                btnHHI.classList.remove("on");
-                updateMetricHint(null);
-              }
-              refreshAll();
-            });
-            if (btnMOV) {
-              btnMOV.addEventListener("click", function() {
-                movOn = !movOn;
-                if (movOn) {
-                  mismatchOn = false;
-                  hhiOn = false;
-                  btnMismatch.classList.remove("on");
-                  btnHHI.classList.remove("on");
-                  btnMOV.classList.add("on");
-                  updateMetricHint("mov");
-                } else {
-                  btnMOV.classList.remove("on");
-                  updateMetricHint(null);
-                }
-                refreshAll();
-              });
-            }
-          }
+		            btnHHI.addEventListener("click", function() {
+		              hhiOn = !hhiOn;
+		              if (hhiOn) {
+		                mismatchOn = false;
+		                movOn = false;
+		                enpOn = false;
+		                turnoutOn = false;
+	                btnMismatch.classList.remove("on");
+		                if (btnMOV) btnMOV.classList.remove("on");
+		                if (btnENP) btnENP.classList.remove("on");
+		                if (btnTurnout) btnTurnout.classList.remove("on");
+	                btnHHI.classList.add("on");
+	                updateMetricHint("hhi");
+	              } else {
+	                btnHHI.classList.remove("on");
+	                updateMetricHint(null);
+	              }
+	              refreshAll();
+	            });
+		            if (btnMOV) {
+		              btnMOV.addEventListener("click", function() {
+	                movOn = !movOn;
+		                if (movOn) {
+		                  mismatchOn = false;
+		                  hhiOn = false;
+		                  enpOn = false;
+		                  turnoutOn = false;
+	                  btnMismatch.classList.remove("on");
+		                  btnHHI.classList.remove("on");
+		                  if (btnENP) btnENP.classList.remove("on");
+		                  if (btnTurnout) btnTurnout.classList.remove("on");
+	                  btnMOV.classList.add("on");
+	                  updateMetricHint("mov");
+	                } else {
+	                  btnMOV.classList.remove("on");
+	                  updateMetricHint(null);
+	                }
+	                refreshAll();
+		              });
+		            }
+
+		            function fillWinnerPartyOptions() {
+		              if (!winnerSel) return;
+		              var curr = winnerSel.value || "";
+		              var wins = CONFIG.winsA || {};
+		              var items = [];
+		              Object.keys(wins).forEach(function(p) {
+		                if (!p || p === "nan") return;
+		                items.push([p, wins[p] || 0]);
+		              });
+		              items.sort(function(a, b) { return b[1] - a[1]; });
+		              winnerSel.innerHTML = "";
+		              var optAll = document.createElement("option");
+		              optAll.value = "";
+		              optAll.textContent = isEn() ? "All" : "ทั้งหมด";
+		              winnerSel.appendChild(optAll);
+		              for (var i=0; i<items.length; i++) {
+		                var opt = document.createElement("option");
+		                opt.value = items[i][0];
+		                opt.textContent = partyLabel(items[i][0]);
+		                winnerSel.appendChild(opt);
+		              }
+		              winnerSel.value = curr;
+		            }
+
+		            fillWinnerPartyOptions();
+		            if (winnerSel) {
+		              winnerSel.addEventListener("change", function() {
+		                window.__winnerPartyFilter = winnerSel.value || "";
+		                refreshAll();
+		              });
+		            }
+
+		            btnENP.addEventListener("click", function() {
+		                enpOn = !enpOn;
+		                if (enpOn) {
+		                mismatchOn = false;
+		                hhiOn = false;
+		                  movOn = false;
+		                  turnoutOn = false;
+		                btnMismatch.classList.remove("on");
+		                btnHHI.classList.remove("on");
+		                  if (btnMOV) btnMOV.classList.remove("on");
+		                  if (btnTurnout) btnTurnout.classList.remove("on");
+		                btnENP.classList.add("on");
+		                updateMetricHint("enp");
+		              } else {
+		                btnENP.classList.remove("on");
+		                updateMetricHint(null);
+		                if (winnerSel) winnerSel.value = "";
+		                window.__winnerPartyFilter = "";
+		              }
+		                refreshAll();
+		              });
+
+		            btnTurnout.addEventListener("click", function() {
+		              turnoutOn = !turnoutOn;
+		              if (turnoutOn) {
+		                mismatchOn = false;
+		                hhiOn = false;
+		                movOn = false;
+		                enpOn = false;
+		                btnMismatch.classList.remove("on");
+		                btnHHI.classList.remove("on");
+		                if (btnMOV) btnMOV.classList.remove("on");
+		                btnENP.classList.remove("on");
+		                btnTurnout.classList.add("on");
+		                if (winnerSel) winnerSel.value = "";
+		                window.__winnerPartyFilter = "";
+		                updateMetricHint(null);
+		              } else {
+		                btnTurnout.classList.remove("on");
+		                updateMetricHint(null);
+		              }
+		              refreshAll();
+		            });
+
+		            // Extend language handler to also refresh the ENP party dropdown labels
+		            (function() {
+		              var prev = window.applyElectionMapLang;
+		              window.applyElectionMapLang = function(lang) {
+		                if (typeof prev === "function") prev(lang);
+		                fillWinnerPartyOptions();
+		              };
+		            })();
+	          }
     
           if (tries > 400) clearInterval(timer);
         }, 50);
