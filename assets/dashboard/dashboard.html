@@ -883,7 +883,7 @@
     <div style="display:flex; align-items:center; gap:10px;">
       <select id="year-select" aria-label="Election year" style="border:1px solid #e5e7eb; border-radius:999px; padding:8px 12px; font-weight:800; background:#fff;">
         <option value="2566">2566</option>
-        <option value="2569">2569</option>
+        <option value="2569" selected>2569</option>
       </select>
       <div class="lang-toggle" role="group" aria-label="Language">
         <button type="button" data-lang="th" class="active">ไทย</button>
@@ -938,7 +938,7 @@
       </div>
       <div class="grid-1">
         <div class="card">
-          <iframe class="iframe-tall" src="figure/thailand_election_2023.html?v=home23" scrolling="no" id="map-iframe"></iframe>
+          <iframe class="iframe-tall" src="figure/thailand_election_2026.html?v=home26" scrolling="no" id="map-iframe"></iframe>
         </div>
       </div>
     </section>
@@ -1756,7 +1756,7 @@
   const storedYear = (() => {
     try { return localStorage.getItem('year'); } catch (e) { return null; }
   })();
-  activeYear = storedYear || ((yearSelectEl && yearSelectEl.value) ? yearSelectEl.value : '2569');
+  activeYear = storedYear || '2569';
   if (yearSelectEl) yearSelectEl.value = activeYear;
 
   const PARTY_COLORS_2569 = (window.__partyColors2569 && typeof window.__partyColors2569 === 'object')
