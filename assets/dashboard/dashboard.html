@@ -2197,7 +2197,7 @@
     }
     if (mapBtnTurnoutList) {
       mapBtnTurnoutList.dataset.tip = getTurnoutListHelp();
-      mapBtnTurnoutList.textContent = currentLang === 'en' ? 'Party-list Turnout' : 'Party-list Turnout';
+      mapBtnTurnoutList.textContent = currentLang === 'en' ? 'Party-list Turnout' : 'ใช้สิทธิ (บัญชีรายชื่อ)';
     }
     refreshEnpPartyOptions();
     updateTableLanguage();
@@ -3292,8 +3292,17 @@
 
   const updateMapMetricHint = (kind) => {
       if (!mapBtnPop) return;
-      const win = mapIframe && mapIframe.contentWindow ? mapIframe.contentWindow : null;
-      const cfg = win && win.CONFIG ? win.CONFIG : null;
+      let win = null;
+      let cfg = null;
+      let enpMap = null;
+      try {
+        win = mapIframe && mapIframe.contentWindow ? mapIframe.contentWindow : null;
+        cfg = win && win.CONFIG ? win.CONFIG : null;
+        enpMap = win && win.enpByDist ? win.enpByDist : null;
+      } catch (e) {
+        cfg = null;
+        enpMap = null;
+      }
     if (!cfg) {
       if (kind === 'hhi') setMapPop(getHHIHelp());
       else if (kind === 'mov') setMapPop(getMOVHelp());
@@ -3307,7 +3316,7 @@
       : (kind === 'mov'
         ? findMaxMovEntry(cfg)
         : (kind === 'enp'
-          ? findMaxEntry(win && win.enpByDist ? win.enpByDist : null)
+          ? findMaxEntry(enpMap)
           : findMaxEntry(cfg.divergenceByDist)));
     if (!entry) {
       setMapPop('');
@@ -3408,13 +3417,7 @@
   if (mapBtnHHI) {
     mapBtnHHI.addEventListener('click', () => {
       if (!mapIframe || !mapIframe.contentWindow) return;
-      const win = mapIframe.contentWindow;
-      try {
-        const btn = win.document.getElementById('hhi-btn');
-        if (btn) btn.click();
-      } catch (e) {
-        postToMap({ type: 'set-overlay', overlay: 'hhi' });
-      }
+      postToMapReliable({ type: 'set-overlay', overlay: 'hhi' });
       mapBtnHHI.classList.add('active');
       if (mapBtnTV) mapBtnTV.classList.remove('active');
       if (mapBtnMOV) mapBtnMOV.classList.remove('active');
@@ -3435,13 +3438,7 @@
   if (mapBtnTV) {
     mapBtnTV.addEventListener('click', () => {
       if (!mapIframe || !mapIframe.contentWindow) return;
-      const win = mapIframe.contentWindow;
-      try {
-        const btn = win.document.getElementById('mismatch-btn');
-        if (btn) btn.click();
-      } catch (e) {
-        postToMap({ type: 'set-overlay', overlay: 'div' });
-      }
+      postToMapReliable({ type: 'set-overlay', overlay: 'div' });
       mapBtnTV.classList.add('active');
       if (mapBtnHHI) mapBtnHHI.classList.remove('active');
       if (mapBtnMOV) mapBtnMOV.classList.remove('active');
