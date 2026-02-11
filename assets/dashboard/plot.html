@@ -343,7 +343,8 @@
           xaxis: { title: { text: axis.x }, range: [0, xMax] },
           yaxis: { title: { text: axis.y }, range: [0, yMax] },
           margin: { l: 60, r: 30, t: 50, b: isMobile ? 60 : 90 },
-          legend: { orientation: 'h', y: isMobile ? -0.18 : -0.28 },
+          showlegend: true,
+          legend: { orientation: 'h', x: 0, xanchor: 'left', y: isMobile ? -0.18 : -0.28 },
           font: { family: 'Sarabun, sans-serif', size: 12 },
           height: Math.round(width + legendSpace),
           autosize: true
@@ -357,11 +358,14 @@
         const layout = updateLayout(party, currentLang, traces);
         Plotly.react('plot', traces, layout, { displayModeBar: false, responsive: true }).then(() => {
           try {
-            const plotEl = document.getElementById('plot');
-            const height = plotEl ? plotEl.getBoundingClientRect().height : layout.height || 520;
-            if (window.parent && window.parent !== window) {
-              window.parent.postMessage({ type: 'scatter-height', height: Math.ceil(height) }, '*');
-            }
+            Plotly.Plots.resize('plot');
+            requestAnimationFrame(() => {
+              const plotEl = document.getElementById('plot');
+              const height = plotEl ? plotEl.getBoundingClientRect().height : layout.height || 520;
+              if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'scatter-height', height: Math.ceil(height) }, '*');
+              }
+            });
           } catch (err) {}
         });
       };

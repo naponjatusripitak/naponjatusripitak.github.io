@@ -294,7 +294,8 @@
           xaxis: { title: { text: axis.x }, range: [0, maxRange] },
           yaxis: { title: { text: axis.y }, range: [0, maxRange] },
           margin: { l: 60, r: 30, t: 50, b: isMobile ? 60 : 90 },
-          legend: { orientation: 'h', y: isMobile ? -0.18 : -0.28 },
+          showlegend: true,
+          legend: { orientation: 'h', x: 0, xanchor: 'left', y: isMobile ? -0.18 : -0.28 },
           font: { family: 'Sarabun, sans-serif', size: 12 },
           height: Math.round(width + legendSpace),
           autosize: true,
@@ -316,7 +317,8 @@
         const traces = buildTraces(party, currentLang);
         const layout = updateLayout(party, currentLang, traces);
         Plotly.react('plot', traces, layout, { displayModeBar: false, responsive: true }).then(() => {
-          emitHeight(layout);
+          try { Plotly.Plots.resize('plot'); } catch (err) {}
+          requestAnimationFrame(() => emitHeight(layout));
         });
       };
 
