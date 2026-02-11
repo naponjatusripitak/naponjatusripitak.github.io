@@ -173,8 +173,7 @@
       var overlayMode = null;
       window.__winnerPartyFilter = "";
 
-      // Prefer full 2569 boundaries so rendering matches the 2023 map detail.
-      var GEOJSON_URL = "../data/Election Boundaries/2569/geojson/2569_constituencies.geojson";
+      // Always use simplified 2569 boundaries to reduce payload size.
       var GEOJSON_SIMPLIFIED_URL = "../data/Election Boundaries/2569/geojson/2569_constituencies_simplified.geojson";
       var RESULTS_URL = "../data/election_results_2569_by_dist.json";
       var results = null;
@@ -936,14 +935,11 @@
 
         if (usePreloadOnly) {
           geoPromise = Promise.resolve(window.__geojson2569Simplified);
+        } else if (hasSimplifiedPreload) {
+          geoPromise = Promise.resolve(window.__geojson2569Simplified);
         } else {
-          geoPromise = fetch(GEOJSON_URL, { cache: "no-store" })
-            .then(function(r) { if (!r.ok) throw new Error("geojson " + r.status); return r.json(); })
-            .catch(function() {
-              if (hasSimplifiedPreload) return window.__geojson2569Simplified;
-              return fetch(GEOJSON_SIMPLIFIED_URL, { cache: "no-store" })
-                .then(function(r) { if (!r.ok) throw new Error("geojson " + r.status); return r.json(); });
-            });
+          geoPromise = fetch(GEOJSON_SIMPLIFIED_URL, { cache: "no-store" })
+            .then(function(r) { if (!r.ok) throw new Error("geojson " + r.status); return r.json(); });
         }
 
         if (window.__electionResults2569 && window.__electionResults2569.byDist) {
