@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="figure/plotly.min.js"></script>
+  <script src="data/election_results_2569_by_dist.js"></script>
+  <script src="data/party_assets_2569/party_name_map_2569.js"></script>
+  <style>
+    html, body { margin:0; padding:0; width:100%; height:100%; }
+    #plot { width:100%; height:100%; }
+  </style>
+</head>
+<body>
+  <div id="plot"></div>
+  <script>
+    (() => {
+      const FALLBACK_EN = {
+        'ไทรวมพลัง': 'Thai Rumphalang Party',
+        'ประชาชน': "People's Party",
+      };
+      const ALIASES_2026 = {
+        'ก้าวไกล': 'ประชาชน',
+        'เพื่อไทรวมพลัง': 'ไทรวมพลัง',
+      };
+      const TITLE_TEXT = {
+        th: {
+          all: 'สัดส่วนคะแนน แบ่งเขต vs บัญชีรายชื่อ: ทุกพรรค',
+          party: (party) => `สัดส่วนคะแนน แบ่งเขต vs บัญชีรายชื่อ: ${party}`,
+        },
+        en: {
+          all: 'Constituency vs Party-List Vote Share: All Parties',
+          party: (party) => `Constituency vs Party-List Vote Share: ${party}`,
+        },
+      };
+      const AXIS_TEXT = {
+        th: { x: 'สัดส่วนคะแนนแบบแบ่งเขต (%)', y: 'สัดส่วนคะแนนแบบบัญชีรายชื่อ (%)' },
+        en: { x: 'Constituency vote share (%)', y: 'Party-list vote share (%)' },
+      };
+      const NAME_MAP = {
+        th: { winner: 'ผู้ชนะ', loser: 'ผู้แพ้', regression: 'เส้นถดถอยเชิงเส้น', yEquals: 'เส้น y = x' },
+        en: { winner: 'Winners', loser: 'Losers', regression: 'Linear regression', yEquals: 'y = x line' },
+      };
+
+      const getUrlLang = () => {
+        try {
+          const v = new URLSearchParams(window.location.search).get('lang');
+          return v === 'en' ? 'en' : 'th';
+        } catch (err) {
+          return 'th';
+        }
+      };
+
+      let currentLang = getUrlLang();
+      try {
+        const saved = localStorage.getItem('lang');
+        if (saved === 'th' || saved === 'en') currentLang = saved;
+      } catch (err) {}
+      let currentParty = 'ทั้งหมด';
+
+      let partyNameMapEn = {
+        ...(window.PARTY_NAME_MAP_2569 || {}),
+        ...FALLBACK_EN,
+      };
+      let partyNameMapFromParent = {};
+      let provinceNameMapEn = {};
+
+      const rawResults = window.__electionResults2569 || {};
+      const byDist = rawResults.byDist || {};
+      const pointsByParty = {};
+
+      const resolvePartyAlias = (party) => ALIASES_2026[party] || party;
+
+      const buildResultsCache = () => {
+        Object.keys(byDist).forEach((distId) => {
+          const dist = byDist[distId] || {};
+          const constParties = Array.isArray(dist.const_parties) ? dist.const_parties : [];
+          const listParties = Array.isArray(dist.plist_parties) ? dist.plist_parties : [];
+          const candidates = Array.isArray(dist.const_candidates) ? dist.const_candidates : [];
+
+          const constMap = {};
+          const listMap = {};
+
+          constParties.forEach((entry) => {
+            if (!entry || !entry.party) return;
+            constMap[entry.party] = Number(entry.const_pp || 0);
+          });
+          listParties.forEach((entry) => {
+            if (!entry || !entry.party) return;
+            listMap[entry.party] = Number(entry.plist_pp || 0);
+          });
+
+          const winnerParty = dist.winner_const_party || '';
+          const topCandidateByParty = {};
+          candidates.forEach((c) => {
+            if (!c || !c.party) return;
+            const party = c.party;
+            const votes = Number(c.votes || 0);
+            const existing = topCandidateByParty[party];
+            if (!existing || votes > existing.votes) {
+              topCandidateByParty[party] = {
+                votes,
+                candidate: c.candidate || '—',
+              };
+            }
+          });
+
+          const label = `${dist.province || ''} ${dist.district || ''}`.trim();
+          const parties = new Set([...Object.keys(constMap), ...Object.keys(listMap)]);
+          parties.forEach((party) => {
+            if (!pointsByParty[party]) pointsByParty[party] = { win: [], lose: [] };
+            const point = {
+              x: Number(constMap[party] || 0),
+              y: Number(listMap[party] || 0),
+              label,
+              candidate: (topCandidateByParty[party] && topCandidateByParty[party].candidate) || '—',
+              party,
+            };
+            if (party === winnerParty) pointsByParty[party].win.push(point);
+            else pointsByParty[party].lose.push(point);
+          });
+        });
+      };
+
+      const translatePartyName = (name, lang) => {
+        if (lang !== 'en') return name;
+        return partyNameMapFromParent[name] || partyNameMapEn[name] || name;
+      };
+
+      const translateDistrictLabel = (label, lang) => {
+        if (lang !== 'en') return label;
+        const m = String(label || '').match(/^(.*)\s+(\d+)$/);
+        if (!m) return label;
+        const provinceTh = m[1].trim();
+        const districtNo = m[2].trim();
+        const provinceEn = provinceNameMapEn[provinceTh] || provinceTh;
+        return `${provinceEn} District ${districtNo}`;
+      };
+
+      const buildHoverTemplate = (lang) => {
+        if (lang === 'en') {
+          return '<b>%{customdata[0]}</b><br>Candidate: %{customdata[1]}<br>Party: %{customdata[2]}<br>Constituency (%): %{x:.1f}%<br>Party-list (%): %{y:.1f}%<extra></extra>';
+        }
+        return '<b>%{customdata[0]}</b><br>ผู้สมัคร: %{customdata[1]}<br>พรรค: %{customdata[2]}<br>เขต (%): %{x:.1f}%<br>บัญชีรายชื่อ (%): %{y:.1f}%<extra></extra>';
+      };
+
+      const pointsToSeries = (arr, lang) => ({
+        x: arr.map((p) => p.x),
+        y: arr.map((p) => p.y),
+        custom: arr.map((p) => [
+          translateDistrictLabel(p.label, lang),
+          p.candidate || '—',
+          translatePartyName(p.party, lang),
+        ]),
+      });
+
+      const buildPoints = (party, lang) => {
+        const resolved = resolvePartyAlias(party);
+        const entry = pointsByParty[resolved] || { win: [], lose: [] };
+        return {
+          win: pointsToSeries(entry.win, lang),
+          lose: pointsToSeries(entry.lose, lang),
+        };
+      };
+
+      const buildAllPoints = (lang) => {
+        const win = [];
+        const lose = [];
+        Object.keys(pointsByParty).forEach((party) => {
+          const entry = pointsByParty[party];
+          entry.win.forEach((p) => win.push(p));
+          entry.lose.forEach((p) => lose.push(p));
+        });
+        return {
+          win: pointsToSeries(win, lang),
+          lose: pointsToSeries(lose, lang),
+        };
+      };
+
+      const regressionLine = (x, y) => {
+        if (!x.length || x.length !== y.length) return null;
+        const n = x.length;
+        const mx = x.reduce((a, b) => a + b, 0) / n;
+        const my = y.reduce((a, b) => a + b, 0) / n;
+        let num = 0;
+        let den = 0;
+        for (let i = 0; i < n; i += 1) {
+          num += (x[i] - mx) * (y[i] - my);
+          den += (x[i] - mx) * (x[i] - mx);
+        }
+        if (den === 0) return null;
+        const slope = num / den;
+        const intercept = my - slope * mx;
+        let ssTot = 0;
+        let ssRes = 0;
+        for (let i = 0; i < n; i += 1) {
+          const yi = y[i];
+          const yhat = slope * x[i] + intercept;
+          ssTot += (yi - my) * (yi - my);
+          ssRes += (yi - yhat) * (yi - yhat);
+        }
+        const r2 = ssTot ? (1 - ssRes / ssTot) : null;
+        const minX = Math.min(...x);
+        const maxX = Math.max(...x);
+        return {
+          x: [minX, maxX],
+          y: [slope * minX + intercept, slope * maxX + intercept],
+          slope,
+          r2,
+        };
+      };
+
+      const buildTraces = (party, lang) => {
+        const data = party === 'ทั้งหมด' ? buildAllPoints(lang) : buildPoints(party, lang);
+        const hovertemplate = buildHoverTemplate(lang);
+        const win = {
+          type: 'scatter',
+          mode: 'markers',
+          name: lang === 'en' ? NAME_MAP.en.winner : NAME_MAP.th.winner,
+          x: data.win.x,
+          y: data.win.y,
+          marker: { color: '#1f4bff', size: 6 },
+          customdata: data.win.custom,
+          text: data.win.custom.map((row) => row[0]),
+          hovertemplate,
+        };
+        const lose = {
+          type: 'scatter',
+          mode: 'markers',
+          name: lang === 'en' ? NAME_MAP.en.loser : NAME_MAP.th.loser,
+          x: data.lose.x,
+          y: data.lose.y,
+          marker: { color: '#e03131', size: 6, symbol: 'x' },
+          customdata: data.lose.custom,
+          text: data.lose.custom.map((row) => row[0]),
+          hovertemplate,
+        };
+        const traces = [win, lose];
+
+        const allX = data.win.x.concat(data.lose.x);
+        const allY = data.win.y.concat(data.lose.y);
+        const reg = regressionLine(allX, allY);
+        if (reg) {
+          traces.push({
+            type: 'scatter',
+            mode: 'lines',
+            name: lang === 'en'
+              ? `${NAME_MAP.en.regression} (slope=${reg.slope.toFixed(2)}, R²=${reg.r2 !== null ? reg.r2.toFixed(2) : '—'})`
+              : `${NAME_MAP.th.regression} (slope=${reg.slope.toFixed(2)}, R²=${reg.r2 !== null ? reg.r2.toFixed(2) : '—'})`,
+            x: reg.x,
+            y: reg.y,
+            line: { color: '#111', width: 2 },
+            hoverinfo: 'skip',
+          });
+        }
+
+        traces.push({
+          type: 'scatter',
+          mode: 'lines',
+          name: lang === 'en' ? NAME_MAP.en.yEquals : NAME_MAP.th.yEquals,
+          x: [0, 100],
+          y: [0, 100],
+          line: { color: '#777', width: 1, dash: 'dash' },
+          hoverinfo: 'skip',
+        });
+
+        return traces;
+      };
+
+      const updateLayout = (party, lang, traces) => {
+        const text = TITLE_TEXT[lang] || TITLE_TEXT.th;
+        const axis = AXIS_TEXT[lang] || AXIS_TEXT.th;
+        const partyName = translatePartyName(resolvePartyAlias(party), lang);
+        const title = party === 'ทั้งหมด' ? text.all : text.party(partyName);
+
+        let maxRange = 60;
+        if (party !== 'ทั้งหมด') {
+          const vals = [];
+          traces.forEach((tr) => {
+            if (tr && tr.mode === 'markers' && Array.isArray(tr.x) && Array.isArray(tr.y)) {
+              vals.push(...tr.x, ...tr.y);
+            }
+          });
+          if (vals.length) maxRange = Math.min(100, Math.max(5, Math.ceil(Math.max(...vals) * 1.1)));
+        }
+
+        const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 720;
+        const plotEl = document.getElementById('plot');
+        const width = plotEl ? plotEl.getBoundingClientRect().width : 520;
+        const legendSpace = isMobile ? 80 : 90;
+
+        return {
+          title: { text: title, x: 0.02 },
+          xaxis: { title: { text: axis.x }, range: [0, maxRange] },
+          yaxis: { title: { text: axis.y }, range: [0, maxRange] },
+          margin: { l: 60, r: 30, t: 50, b: isMobile ? 60 : 90 },
+          legend: { orientation: 'h', y: isMobile ? -0.18 : -0.28 },
+          font: { family: 'Sarabun, sans-serif', size: 12 },
+          height: Math.round(width + legendSpace),
+          autosize: true,
+        };
+      };
+
+      const emitHeight = (layout) => {
+        try {
+          const plotEl = document.getElementById('plot');
+          const height = plotEl ? plotEl.getBoundingClientRect().height : (layout.height || 520);
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'scatter-height', height: Math.ceil(height) }, '*');
+          }
+        } catch (err) {}
+      };
+
+      const render = () => {
+        const party = currentParty || 'ทั้งหมด';
+        const traces = buildTraces(party, currentLang);
+        const layout = updateLayout(party, currentLang, traces);
+        Plotly.react('plot', traces, layout, { displayModeBar: false, responsive: true }).then(() => {
+          emitHeight(layout);
+        });
+      };
+
+      window.addEventListener('resize', () => render());
+
+      window.addEventListener('message', (event) => {
+        const data = event && event.data ? event.data : null;
+        if (!data) return;
+
+        if (data.type === 'set-lang') {
+          currentLang = data.lang === 'en' ? 'en' : 'th';
+          if (data.partyMap && typeof data.partyMap === 'object') partyNameMapFromParent = data.partyMap;
+          if (data.provinceMap && typeof data.provinceMap === 'object') provinceNameMapEn = data.provinceMap;
+          try { localStorage.setItem('lang', currentLang); } catch (err) {}
+          render();
+          return;
+        }
+
+        if (data.type === 'party-select') {
+          if (data.lang) {
+            currentLang = data.lang === 'en' ? 'en' : 'th';
+            try { localStorage.setItem('lang', currentLang); } catch (err) {}
+          }
+          currentParty = data.party || 'ทั้งหมด';
+          render();
+        }
+      });
+
+      const loadPartyMap = async () => {
+        try {
+          const res = await fetch('data/party_assets_2569/party_name_map_2569.json', { cache: 'no-store' });
+          if (!res.ok) return;
+          const json = await res.json();
+          const map = {};
+          const parties = json && Array.isArray(json.parties) ? json.parties : [];
+          parties.forEach((entry) => {
+            if (!entry || !entry.thai_name || !entry.english_name) return;
+            map[entry.thai_name] = entry.english_name;
+          });
+          partyNameMapEn = { ...partyNameMapEn, ...map };
+        } catch (err) {}
+      };
+
+      buildResultsCache();
+      render();
+      loadPartyMap().then(() => render());
+    })();
+  </script>
+</body>
+</html>

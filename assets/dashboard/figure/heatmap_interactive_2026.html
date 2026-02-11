@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Sarabun';
+      src: url('../font/Sarabun/Sarabun-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    html, body, #chart { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+  </style>
+</head>
+<body>
+  <div id="chart"></div>
+  <script>
+    const LANG_TEXT = {
+      th: {
+        x: 'พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
+        y: 'พรรคที่ชนะเขต',
+        cb: 'จำนวนเขต',
+        hover: 'พรรคที่ชนะเขต: %{y}<br>พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด: %{x}<br>จำนวนเขต: %{z}<extra></extra>',
+      },
+      en: {
+        x: 'Top party-list winner',
+        y: 'Constituency winner',
+        cb: 'Constituencies',
+        hover: 'Constituency winner: %{y}<br>Top party-list winner: %{x}<br>Constituencies: %{z}<extra></extra>',
+      },
+    };
+
+    const FALLBACK_EN = {
+      'ประชาชน': "People's Party",
+      'เพื่อไทย': 'Pheu Thai',
+      'ภูมิใจไทย': 'Bhumjaithai',
+      'กล้าธรรม': 'Kla Tham',
+      'ประชาธิปัตย์': 'Democrat',
+      'ไทรวมพลัง': 'Thai Rumphalang Party',
+      'ประชาชาติ': 'Prachachat',
+      'พลังประชารัฐ': 'Palang Pracharath',
+      'ไทยสร้างไทย': 'Thai Sang Thai',
+      'โอกาสใหม่': 'New Opportunity',
+    };
+
+    const toIntText = (n) => String(Number(n || 0));
+    const chooseTextColor = (value, maxValue) => (Number(value || 0) > Number(maxValue || 0) * 0.45 ? 'white' : 'black');
+
+    let partyMapFromParent = {};
+    let baseX = [];
+    let baseY = [];
+    let zMatrix = [];
+    let textMatrix = [];
+    let textColorMatrix = [];
+    let currentLang = 'th';
+
+    const translateParty = (name, lang) => {
+      if (lang !== 'en') return name;
+      return partyMapFromParent[name] || FALLBACK_EN[name] || name;
+    };
+
+    const getInitLang = () => {
+      try {
+        const urlLang = new URLSearchParams(window.location.search).get('lang');
+        const stored = localStorage.getItem('lang');
+        const candidate = urlLang || stored || 'th';
+        return candidate === 'en' ? 'en' : 'th';
+      } catch (err) {
+        return 'th';
+      }
+    };
+
+    const buildHeatmapData = () => {
+      const byDist = ((window.__electionResults2569 || {}).byDist) || {};
+      const cross = {};
+      const constWins = {};
+      const listWins = {};
+
+      Object.keys(byDist).forEach((distId) => {
+        const row = byDist[distId] || {};
+        const cParty = row.winner_const_party || '';
+        const pParty = row.winner_plist_party || '';
+        if (!cParty || !pParty) return;
+        constWins[cParty] = (constWins[cParty] || 0) + 1;
+        listWins[pParty] = (listWins[pParty] || 0) + 1;
+        if (!cross[cParty]) cross[cParty] = {};
+        cross[cParty][pParty] = (cross[cParty][pParty] || 0) + 1;
+      });
+
+      baseY = Object.entries(constWins)
+        .sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0], 'th'))
+        .map(([party]) => party);
+
+      baseX = Object.entries(listWins)
+        .sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0], 'th'))
+        .map(([party]) => party);
+
+      zMatrix = baseY.map((cParty) => (
+        baseX.map((pParty) => Number(((cross[cParty] || {})[pParty] || 0)))
+      ));
+
+      const maxValue = Math.max(0, ...zMatrix.flat());
+      textMatrix = zMatrix.map((row) => row.map((v) => toIntText(v)));
+      textColorMatrix = zMatrix.map((row) => row.map((v) => chooseTextColor(v, maxValue)));
+    };
+
+    const heatTrace = {
+      type: 'heatmap',
+      z: [],
+      x: [],
+      y: [],
+      colorscale: [
+        [0.0, '#fff5f0'],
+        [0.125, '#fee0d2'],
+        [0.25, '#fcbba1'],
+        [0.375, '#fc9272'],
+        [0.5, '#fb6a4a'],
+        [0.625, '#ef3b2c'],
+        [0.75, '#cb181d'],
+        [1.0, '#99000d'],
+      ],
+      zmin: 0,
+      showscale: true,
+      colorbar: { title: { text: 'จำนวนเขต', side: 'right' } },
+      text: [],
+      texttemplate: '%{text}',
+      textfont: { color: [], size: 12 },
+      hovertemplate: '',
+      xgap: 1,
+      ygap: 1,
+    };
+
+    const layout = {
+      margin: { l: 140, r: 30, t: 40, b: 140 },
+      xaxis: { title: 'พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด', tickangle: 45, tickfont: { size: 12 } },
+      yaxis: { title: 'พรรคที่ชนะเขต', tickangle: 0, tickfont: { size: 12 }, autorange: 'reversed' },
+      height: 720,
+      paper_bgcolor: '#ffffff',
+      plot_bgcolor: '#ffffff',
+      font: { family: 'Sarabun, Arial, sans-serif', size: 12 },
+    };
+    const config = { displayModeBar: false, responsive: true };
+
+    const applyLang = (lang) => {
+      currentLang = lang === 'en' ? 'en' : 'th';
+      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
+
+      heatTrace.x = baseX.map((p) => translateParty(p, currentLang));
+      heatTrace.y = baseY.map((p) => translateParty(p, currentLang));
+      heatTrace.z = zMatrix;
+      heatTrace.text = textMatrix;
+      heatTrace.textfont = { color: textColorMatrix, size: 12 };
+      heatTrace.hovertemplate = t.hover;
+      if (heatTrace.colorbar && heatTrace.colorbar.title) heatTrace.colorbar.title.text = t.cb;
+
+      layout.xaxis.title = t.x;
+      layout.yaxis.title = t.y;
+
+      Plotly.react('chart', [heatTrace], layout, config);
+    };
+
+    buildHeatmapData();
+    currentLang = getInitLang();
+    Plotly.newPlot('chart', [heatTrace], layout, config);
+    applyLang(currentLang);
+
+    window.addEventListener('resize', () => Plotly.Plots.resize('chart'));
+    window.addEventListener('message', (event) => {
+      if (!event || !event.data || event.data.type !== 'set-lang') return;
+      if (event.data.partyMap && typeof event.data.partyMap === 'object') {
+        partyMapFromParent = event.data.partyMap;
+      }
+      applyLang(event.data.lang || currentLang || 'th');
+    });
+  </script>
+</body>
+</html>

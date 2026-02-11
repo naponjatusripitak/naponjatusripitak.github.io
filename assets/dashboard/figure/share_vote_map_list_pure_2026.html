@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .leaflet-container { background: #f6f7f9; }
+    .share-scale {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 999;
+      background: rgba(255,255,255,0.95);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+      font-family: Sarabun, sans-serif;
+      width: 96px;
+      border: 1px solid rgba(15,23,42,0.08);
+    }
+    .share-scale-label { font-size: 12px; font-weight: 700; color: #111; margin-bottom: 8px; text-align: center; }
+    .share-scale-bar {
+      width: 14px;
+      height: 130px;
+      border-radius: 999px;
+      background: #eee;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.08);
+      margin: 6px auto;
+    }
+    .share-scale-max, .share-scale-min { display:block; text-align:center; font-size: 11px; color:#444; font-variant-numeric: tabular-nums; }
+    .share-scale-max { font-weight: 600; }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="share-scale">
+  <div class="share-scale-label" id="scale-label">สัดส่วนคะแนน (บัญชีรายชื่อ)</div>
+  <span class="share-scale-max" id="scale-max-label">100%</span>
+  <div class="share-scale-bar" id="scale-bar"></div>
+  <span class="share-scale-min">0%</span>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="share_geojson.js"></script>
+<script src="../data/election_results_2569_by_dist.js"></script>
+<script src="../data/party_assets_2569/party_name_map_2569.js"></script>
+<script>
+  const mode = 'list';
+  const DEFAULT_PARTY = 'ภูมิใจไทย';
+  const LANG_TEXT = {
+    th: {
+      scaleLabel: 'สัดส่วนคะแนน (บัญชีรายชื่อ)',
+      votesLabel: 'คะแนน',
+      noPartyData: 'ไม่มีข้อมูลคะแนนบัญชีรายชื่อของพรรคนี้',
+      partyLabel: 'พรรค',
+      modeLabel: 'บัญชีรายชื่อ'
+    },
+    en: {
+      scaleLabel: 'Vote share (party list)',
+      votesLabel: 'votes',
+      noPartyData: 'No party-list data for this party',
+      partyLabel: 'Party',
+      modeLabel: 'Party list'
+    }
+  };
+
+  let currentParty = DEFAULT_PARTY;
+  let currentLang = (new URLSearchParams(location.search).get('lang') || localStorage.getItem('lang') || localStorage.getItem('dashboardLang') || 'th');
+  if (!['th', 'en'].includes(currentLang)) currentLang = 'th';
+
+  let PARTY_NAME_EN = { ...(window.PARTY_NAME_MAP_2569 || {}) };
+  let PROVINCE_NAME_EN = {};
+  let GEOJSON = null;
+  let shareMax = 100;
+
+  const SHARE = {};
+  const PLIST_PARTY = {};
+  const byDist = (window.__electionResults2569 && window.__electionResults2569.byDist) || {};
+  const COLOR = (window.__electionResults2569 && window.__electionResults2569.colorMapping) || {};
+
+  const t = (key) => (LANG_TEXT[currentLang] || LANG_TEXT.th)[key] || key;
+  const translatePartyName = (name) => currentLang === 'en' ? (PARTY_NAME_EN[name] || name) : name;
+  const translateProvinceName = (name) => currentLang === 'en' ? (PROVINCE_NAME_EN[name] || name) : name;
+  const formatDistrictLabel = (no) => currentLang === 'en' ? `District ${no}` : `เขต ${no}`;
+  const fmtInt = (n) => new Intl.NumberFormat(currentLang === 'en' ? 'en-US' : 'th-TH').format(Number(n || 0));
+
+  function buildData() {
+    Object.entries(byDist).forEach(([distId, dist]) => {
+      const constParties = Array.isArray(dist.const_parties) ? dist.const_parties : [];
+      const listParties = Array.isArray(dist.plist_parties) ? dist.plist_parties : [];
+
+      constParties.forEach((row) => {
+        if (!row || !row.party) return;
+        if (!SHARE[row.party]) SHARE[row.party] = { const: {}, list: {} };
+        SHARE[row.party].const[distId] = Number(row.const_pp || 0);
+      });
+
+      listParties.forEach((row) => {
+        if (!row || !row.party) return;
+        if (!SHARE[row.party]) SHARE[row.party] = { const: {}, list: {} };
+        SHARE[row.party].list[distId] = Number(row.plist_pp || 0);
+      });
+
+      if (!PLIST_PARTY[distId]) PLIST_PARTY[distId] = {};
+      listParties.forEach((row) => {
+        if (!row || !row.party || PLIST_PARTY[distId][row.party]) return;
+        PLIST_PARTY[distId][row.party] = {
+          votes: Number(row.votes || 0),
+          share: Number.isFinite(Number(row.plist_pp)) ? Number(row.plist_pp).toFixed(2) : null,
+        };
+      });
+    });
+  }
+
+  function computeShareMax() {
+    const vals = Object.values((SHARE[currentParty] && SHARE[currentParty][mode]) || {});
+    if (!vals.length) return 100;
+    const m = Math.max(...vals.map((v) => Number(v || 0)));
+    if (!Number.isFinite(m) || m <= 0) return 100;
+    return Math.max(1, Math.ceil(m));
+  }
+
+  function hexToRgb(hex) {
+    if (!hex) return null;
+    let clean = String(hex).replace('#', '').trim();
+    if (clean.length === 3) clean = clean.split('').map((c) => c + c).join('');
+    if (clean.length !== 6) return null;
+    const num = parseInt(clean, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function colorForShare(val) {
+    if (val == null) return '#f0f0f0';
+    const denom = Math.max(1, shareMax);
+    const ratio = Math.max(0, Math.min(1, Number(val || 0) / denom));
+    const baseHex = COLOR[currentParty] || '#2b3a55';
+    const base = hexToRgb(baseHex) || { r: 43, g: 58, b: 85 };
+    const r = Math.round(255 + (base.r - 255) * ratio);
+    const g = Math.round(255 + (base.g - 255) * ratio);
+    const b = Math.round(255 + (base.b - 255) * ratio);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function updateScale() {
+    const bar = document.getElementById('scale-bar');
+    const labelEl = document.getElementById('scale-label');
+    const maxLabel = document.getElementById('scale-max-label');
+    const base = COLOR[currentParty] || '#2b3a55';
+    bar.style.background = `linear-gradient(180deg, ${base}, #ffffff)`;
+    labelEl.textContent = `${translatePartyName(currentParty)} — ${t('scaleLabel')}`;
+    maxLabel.textContent = `${shareMax}%`;
+  }
+
+  function getShareVal(distId) {
+    const partyData = (SHARE[currentParty] && SHARE[currentParty][mode]) ? SHARE[currentParty][mode] : {};
+    return (distId in partyData) ? partyData[distId] : null;
+  }
+
+  function buildPopup(props, shareVal) {
+    const province = translateProvinceName(props['จังหวัด'] || '');
+    const district = props['เขต'] != null ? props['เขต'] : '';
+    const titleTxt = `${province} — ${formatDistrictLabel(district)}`;
+    const shareTxt = shareVal != null ? `${Number(shareVal).toFixed(2)}%` : '—';
+    const plistMap = PLIST_PARTY[props['dist_id']] || {};
+    const c = plistMap[currentParty] || null;
+    const candHtml = c
+      ? `<div style="margin-top:6px; font-size:12.5px;">
+           <div style="color:#666; font-variant-numeric:tabular-nums;">${c.share ? c.share + '% · ' : ''}${fmtInt(c.votes)} ${t('votesLabel')}</div>
+         </div>`
+      : `<div style="margin-top:6px; font-size:12px; color:#777;">${t('noPartyData')}</div>`;
+    return `<div style="font-family:system-ui; font-size:13px; line-height:1.25;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${titleTxt}</div>
+      <div style="color:#666; font-size:12.5px; margin-bottom:6px;">${t('partyLabel')}: ${translatePartyName(currentParty)} · ${t('modeLabel')} ${shareTxt}</div>
+      ${candHtml}
+    </div>`;
+  }
+
+  function styleFeature(feature) {
+    const shareVal = getShareVal(feature.properties.dist_id);
+    return {
+      fillColor: colorForShare(shareVal),
+      fillOpacity: 1.0,
+      color: '#ffffff',
+      weight: 0.4,
+      opacity: 0.8,
+    };
+  }
+
+  let map = null;
+  let geoLayer = null;
+  let layerByDistId = {};
+
+  function applyLang(lang) {
+    currentLang = ['th', 'en'].includes(lang) ? lang : currentLang;
+    updateScale();
+    if (!geoLayer) return;
+    geoLayer.eachLayer((layer) => {
+      const v = getShareVal(layer.feature.properties.dist_id);
+      layer.setPopupContent(buildPopup(layer.feature.properties, v));
+    });
+  }
+
+  function updateParty(party) {
+    currentParty = party || currentParty;
+    shareMax = computeShareMax();
+    if (geoLayer) {
+      geoLayer.setStyle(styleFeature);
+      geoLayer.eachLayer((layer) => {
+        const v = getShareVal(layer.feature.properties.dist_id);
+        layer.setPopupContent(buildPopup(layer.feature.properties, v));
+      });
+    }
+    updateScale();
+  }
+
+  function toPolygonalGeometry(geometry) {
+    if (!geometry || !geometry.type) return null;
+    if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') return geometry;
+    if (geometry.type !== 'GeometryCollection') return null;
+
+    const parts = [];
+    (geometry.geometries || []).forEach((geom) => {
+      const cleaned = toPolygonalGeometry(geom);
+      if (!cleaned) return;
+      if (cleaned.type === 'Polygon') parts.push(cleaned.coordinates);
+      else if (cleaned.type === 'MultiPolygon') parts.push(...cleaned.coordinates);
+    });
+    if (parts.length === 0) return null;
+    if (parts.length === 1) return { type: 'Polygon', coordinates: parts[0] };
+    return { type: 'MultiPolygon', coordinates: parts };
+  }
+
+  function sanitizeGeojsonAreaOnly(fc) {
+    if (!fc || !Array.isArray(fc.features)) return fc;
+    const features = fc.features.map((feature) => {
+      const geometry = toPolygonalGeometry(feature && feature.geometry);
+      if (!geometry) return null;
+      return { ...feature, geometry };
+    }).filter(Boolean);
+    return { ...fc, features };
+  }
+
+  function initMap() {
+    map = L.map('map', {
+      zoomSnap: 0.1,
+      zoomDelta: 0.1,
+      wheelDebounceTime: 20,
+      wheelPxPerZoomLevel: 60,
+      zoomControl: false,
+      attributionControl: false,
+      preferCanvas: true,
+      zoomAnimation: true,
+      fadeAnimation: true,
+      markerZoomAnimation: false,
+      inertia: true,
+    });
+
+    const bounds = L.geoJSON(GEOJSON).getBounds();
+    map.fitBounds(bounds, { padding: [10, 10] });
+    const copyrightControl = L.control({ position: 'bottomleft' });
+    copyrightControl.onAdd = function() {
+      const div = L.DomUtil.create('div');
+      div.style.cssText = 'font:12px/1.2 system-ui; color:#6b7280; background:rgba(255,255,255,0.92); padding:4px 8px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.12);';
+      div.innerHTML = '<a href="https://naponjatusripitak.github.io" target="_blank" rel="noopener" style="color:#6b7280; text-decoration:none;">&copy; Napon Jatusripitak</a>';
+      return div;
+    };
+    copyrightControl.addTo(map);
+
+    const HomeControl = L.Control.extend({
+      options: { position: 'topright' },
+      onAdd() {
+        const btn = L.DomUtil.create('button', 'home-btn');
+        btn.type = 'button';
+        btn.innerHTML = '⌂';
+        btn.style.background = '#fff';
+        btn.style.border = '1px solid rgba(0,0,0,0.15)';
+        btn.style.borderRadius = '8px';
+        btn.style.padding = '6px 10px';
+        btn.style.fontFamily = 'system-ui';
+        btn.style.fontSize = '16px';
+        btn.style.fontWeight = '700';
+        btn.style.cursor = 'pointer';
+        L.DomEvent.disableClickPropagation(btn);
+        L.DomEvent.on(btn, 'click', (e) => {
+          L.DomEvent.preventDefault(e);
+          map.fitBounds(bounds, { padding: [10, 10] });
+        });
+        return btn;
+      }
+    });
+    map.addControl(new HomeControl());
+
+    layerByDistId = {};
+    const canvasRenderer = L.canvas({ padding: 0.5 });
+    geoLayer = L.geoJSON(GEOJSON, {
+      style: styleFeature,
+      renderer: canvasRenderer,
+      onEachFeature(feature, layer) {
+        layerByDistId[feature.properties.dist_id] = layer;
+        const v = getShareVal(feature.properties.dist_id);
+        layer.bindPopup(buildPopup(feature.properties, v), { maxWidth: 360 });
+        layer.on('click', () => {
+          const vv = getShareVal(feature.properties.dist_id);
+          layer.setPopupContent(buildPopup(feature.properties, vv));
+          layer.openPopup();
+        });
+      }
+    }).addTo(map);
+
+    shareMax = computeShareMax();
+    updateScale();
+  }
+
+  window.addEventListener('message', (event) => {
+    const data = event && event.data ? event.data : {};
+    if (data.type === 'set-lang') {
+      if (data.partyMap && typeof data.partyMap === 'object') PARTY_NAME_EN = { ...PARTY_NAME_EN, ...data.partyMap };
+      if (data.provinceMap && typeof data.provinceMap === 'object') PROVINCE_NAME_EN = data.provinceMap;
+      applyLang(data.lang);
+      return;
+    }
+    if (data.type === 'share-set') {
+      updateParty(data.party);
+      return;
+    }
+    if (data.type === 'select-constituency') {
+      const layer = layerByDistId[data.distId];
+      if (!layer) return;
+      const v = getShareVal(layer.feature.properties.dist_id);
+      layer.setPopupContent(buildPopup(layer.feature.properties, v));
+      if (layer.getBounds) map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+      layer.openPopup();
+    }
+  });
+
+  (async () => {
+    buildData();
+    GEOJSON = window.__shareGeojson || null;
+    if (!GEOJSON) {
+      const res = await fetch('share_geojson.json');
+      GEOJSON = await res.json();
+    }
+    GEOJSON = sanitizeGeojsonAreaOnly(GEOJSON);
+    initMap();
+    applyLang(currentLang);
+  })();
+</script>
+</body>
+</html>

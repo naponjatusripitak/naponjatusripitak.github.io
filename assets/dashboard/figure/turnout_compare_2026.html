@@ -26,10 +26,7 @@
         title: 'เปรียบเทียบ Turnout: แบ่งเขต vs บัญชีรายชื่อ (พ.ศ. 2569)',
         x: 'Turnout แบ่งเขต (%)',
         y: 'Turnout บัญชีรายชื่อ (%)',
-        footnote: 'หมายเหตุ: อ้างอิงผลอย่างไม่เป็นทางการของคณะกรรมการการเลือกตั้ง (กกต.) | Source:',
         ref: 'เส้น y=x',
-        up: 'เขต > บัญชีรายชื่อ',
-        down: 'บัญชีรายชื่อ > เขต',
         hover: (d) => `${d.province} เขต ${d.district}<br>แบ่งเขต: ${d.constPct.toFixed(3)}% (${d.constRaw.toLocaleString()})<br>บัญชีรายชื่อ: ${d.listPct.toFixed(3)}% (${d.listRaw.toLocaleString()})<br>Gap: ${d.gap.toFixed(3)} จุด<br><br>ชนะ: ${d.winnerName} (${d.winnerParty}) — ${d.winnerVotes.toLocaleString()} คะแนน, ${d.winnerShare.toFixed(3)}%<br>อันดับ 2: ${d.runnerName} (${d.runnerParty}) — ${d.runnerVotes.toLocaleString()} คะแนน, ${d.runnerShare.toFixed(3)}%`
       },
       en: {
@@ -37,52 +34,84 @@
         title: 'Turnout Comparison: Constituency vs Party-list (2026)',
         x: 'Constituency turnout (%)',
         y: 'Party-list turnout (%)',
-        footnote: 'Note: Based on unofficial results by the Election Commission of Thailand (ECT). Source:',
         ref: 'y=x line',
-        up: 'Constituency > Party-list',
-        down: 'Party-list > Constituency',
         hover: (d) => `${d.province} District ${d.district}<br>Constituency: ${d.constPct.toFixed(3)}% (${d.constRaw.toLocaleString()})<br>Party-list: ${d.listPct.toFixed(3)}% (${d.listRaw.toLocaleString()})<br>Gap: ${d.gap.toFixed(3)} pp<br><br>Winner: ${d.winnerName} (${d.winnerParty}) — ${d.winnerVotes.toLocaleString()} votes, ${d.winnerShare.toFixed(3)}%<br>Runner-up: ${d.runnerName} (${d.runnerParty}) — ${d.runnerVotes.toLocaleString()} votes, ${d.runnerShare.toFixed(3)}%`
       }
     };
+
+    const PARTY_COLORS = {
+      'ประชาชน': '#f97316',
+      'เพื่อไทย': '#dc2626',
+      'ภูมิใจไทย': '#2563eb',
+      'ประชาธิปัตย์': '#1d4ed8',
+      'กล้าธรรม': '#0f766e',
+      'ประชาชาติ': '#7c3aed'
+    };
+
+    const PARTY_FALLBACK_COLORS = [
+      '#a855f7',
+      '#ea580c',
+      '#16a34a',
+      '#e11d48',
+      '#0ea5e9',
+      '#ca8a04',
+      '#4f46e5',
+      '#0891b2'
+    ];
 
     let lang = (() => { try { return localStorage.getItem('lang') || 'th'; } catch (e) { return 'th'; } })();
 
     function build(langCode) {
       const t = I18N[langCode] || I18N.th;
-      const xsUp = [], ysUp = [], txtUp = [];
-      const xsDown = [], ysDown = [], txtDown = [];
+      const pointsByParty = new Map();
       const allX = DATA.map(d => d.constPct);
       const allY = DATA.map(d => d.listPct);
 
       DATA.forEach((d) => {
         const h = t.hover(d);
-        if (d.gap >= 0) { xsUp.push(d.constPct); ysUp.push(d.listPct); txtUp.push(h); }
-        else { xsDown.push(d.constPct); ysDown.push(d.listPct); txtDown.push(h); }
+        const party = d.winnerParty || (langCode === 'th' ? 'ไม่ระบุพรรค' : 'Unknown party');
+        if (!pointsByParty.has(party)) pointsByParty.set(party, { x: [], y: [], text: [] });
+        const bucket = pointsByParty.get(party);
+        bucket.x.push(d.constPct);
+        bucket.y.push(d.listPct);
+        bucket.text.push(h);
       });
 
       const minV = Math.floor(Math.min(...allX, ...allY) - 1);
       const maxV = Math.ceil(Math.max(...allX, ...allY) + 1);
 
-      const traces = [
-        {
-          type: 'scattergl', mode: 'markers', name: t.up,
-          x: xsUp, y: ysUp, text: txtUp,
+      const partyOrder = Array.from(pointsByParty.keys()).sort((a, b) => {
+        const diff = pointsByParty.get(b).x.length - pointsByParty.get(a).x.length;
+        return diff !== 0 ? diff : a.localeCompare(b, 'th');
+      });
+
+      const traces = partyOrder.map((party, idx) => {
+        const p = pointsByParty.get(party);
+        return {
+          type: 'scattergl',
+          mode: 'markers',
+          name: party,
+          x: p.x,
+          y: p.y,
+          text: p.text,
           hovertemplate: '%{text}<extra></extra>',
-          marker: { size: 7, color: '#0c149c', opacity: 0.7 }
-        },
-        {
-          type: 'scattergl', mode: 'markers', name: t.down,
-          x: xsDown, y: ysDown, text: txtDown,
-          hovertemplate: '%{text}<extra></extra>',
-          marker: { size: 7, color: '#da3731', opacity: 0.7 }
-        },
-        {
-          type: 'scatter', mode: 'lines', name: t.ref,
-          x: [minV, maxV], y: [minV, maxV],
-          line: { color:'#334155', width:1.5, dash:'dash' },
-          hoverinfo: 'skip'
-        }
-      ];
+          marker: {
+            size: 7,
+            color: PARTY_COLORS[party] || PARTY_FALLBACK_COLORS[idx % PARTY_FALLBACK_COLORS.length],
+            opacity: 0.72
+          }
+        };
+      });
+
+      traces.push({
+        type: 'scatter',
+        mode: 'lines',
+        name: t.ref,
+        x: [minV, maxV],
+        y: [minV, maxV],
+        line: { color:'#334155', width:1.5, dash:'dash' },
+        hoverinfo: 'skip'
+      });
 
       const layout = {
         margin: { l: 60, r: 20, t: 50, b: 86 },
@@ -91,15 +120,7 @@
         yaxis: { title: t.y, range:[minV,maxV], zeroline:false },
         legend: { orientation:'h', y:-0.2 },
         hovermode: 'closest',
-        autosize: true,
-        annotations: [
-          {
-            xref: 'paper', yref: 'paper', x: 0, y: -0.30,
-            xanchor: 'left', yanchor: 'top', showarrow: false, align: 'left',
-            font: { size: 11, color: '#475569' },
-            text: t.footnote
-          }
-        ]
+        autosize: true
       };
 
       const n = DATA.length;
