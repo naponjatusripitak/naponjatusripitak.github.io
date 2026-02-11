@@ -11,176 +11,266 @@
     .toggle { display:flex; gap:8px; margin:8px 8px 0 8px; }
     .toggle button { border:1px solid #d7dbe2; background:#fff; border-radius:999px; padding:6px 10px; font-weight:600; cursor:pointer; }
     .toggle button.active { border-color:#111827; color:#111827; }
-  
     @media (max-width: 720px) {
-      #chart { height: calc(100% - 52px); }
+      #chart { height: calc(100% - 96px); }
       .toggle { flex-wrap: wrap; }
     }
-</style>
+  </style>
 </head>
 <body>
   <div id="wrap">
     <div class="toggle">
       <button id="btn-const" class="active">แบ่งเขต</button>
       <button id="btn-list">บัญชีรายชื่อ</button>
+      <button id="btn-seat-share">ที่นั่งเขต (%)</button>
     </div>
     <div id="chart"></div>
   </div>
+
   <script>
-    const tracesConst = [{"type": "bar", "name": "\u0e01\u0e49\u0e32\u0e27\u0e44\u0e01\u0e25", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [47.40876406392528, 33.007292156528806, 29.364619386943602, 23.560989729667973, 15.590883488273445], "marker": {"color": "#F96627"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [21.7105247535601, 23.063682786938465, 30.463767075445787, 41.0844372136072, 4.293692082950073], "marker": {"color": "#F12829"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [2.6300943831140966, 12.857567813861134, 11.317065348731036, 19.97175538202764, 20.928860537789483], "marker": {"color": "#0E7DFF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1e\u0e25\u0e31\u0e07\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e23\u0e31\u0e10", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [2.8120217960099447, 11.520105446164102, 17.51309810018839, 10.480900342558606, 16.457287470806296], "marker": {"color": "#667CCA"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e23\u0e27\u0e21\u0e44\u0e17\u0e22\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e0a\u0e32\u0e15\u0e34", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [17.41648826156026, 14.491981283056942, 8.314294944973826, 2.8570837261840785, 18.41872687584306], "marker": {"color": "#3545BF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e18\u0e34\u0e1b\u0e31\u0e15\u0e22\u0e4c", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [8.022106741830312, 5.059370513450547, 3.0271551437173634, 2.0448336059545036, 24.310549544337647], "marker": {"color": "#59B8ED"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}];
-    const tracesList = [{"type": "bar", "name": "\u0e01\u0e49\u0e32\u0e27\u0e44\u0e01\u0e25", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [53.92009205714091, 50.557957058864304, 44.358419327600714, 37.88745795238916, 37.682449400896864], "marker": {"color": "#F96627"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [20.220468228866824, 27.175624839343556, 39.422360158563976, 49.22504559008354, 9.304910563821792], "marker": {"color": "#F12829"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [0.9609946267437987, 2.7803175809543563, 2.5074047113517146, 4.6768340767392, 5.156794276539349], "marker": {"color": "#0E7DFF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1e\u0e25\u0e31\u0e07\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e23\u0e31\u0e10", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [0.747088433536314, 1.66483602580106, 2.0180425581178554, 1.1796530379013774, 2.819215544256703], "marker": {"color": "#667CCA"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e23\u0e27\u0e21\u0e44\u0e17\u0e22\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e0a\u0e32\u0e15\u0e34", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [21.255437343844267, 15.628950850834364, 10.081917090790629, 6.016620357820548, 34.72209425680965], "marker": {"color": "#3545BF"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}, {"type": "bar", "name": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e18\u0e34\u0e1b\u0e31\u0e15\u0e22\u0e4c", "x": ["\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e21\u0e2b\u0e32\u0e19\u0e04\u0e23", "\u0e20\u0e32\u0e04\u0e01\u0e25\u0e32\u0e07", "\u0e20\u0e32\u0e04\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d", "\u0e20\u0e32\u0e04\u0e43\u0e15\u0e49"], "y": [2.8959193098678804, 2.1923136442023585, 1.61185615357511, 1.0143889850661674, 10.314535957675647], "marker": {"color": "#59B8ED"}, "hovertemplate": "%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>"}];
-    const layout = {"barmode": "group", "margin": {"l": 50, "r": 20, "t": 40, "b": 40}, "xaxis": {"title": "", "tickangle": 0, "tickfont": {"size": 12}}, "yaxis": {"title": "สัดส่วนคะแนน (%)", "rangemode": "tozero", "tickfont": {"size": 12}}, "legend": {"orientation": "h", "y": -0.25}, "autosize": true, "title": {"text": "สัดส่วนคะแนนรายภาค (แบ่งเขต)", "x": 0.01, "font": {"size": 16}}};
+    const PARTY_ORDER = ["ก้าวไกล", "เพื่อไทย", "ภูมิใจไทย", "พลังประชารัฐ", "รวมไทยสร้างชาติ", "ประชาธิปัตย์"];
+    const PARTY_COLORS = {
+      "ก้าวไกล": "#fd6512",
+      "เพื่อไทย": "#da3731",
+      "ภูมิใจไทย": "#0c149c",
+      "พลังประชารัฐ": "#1f68dd",
+      "รวมไทยสร้างชาติ": "#020C54",
+      "ประชาธิปัตย์": "#06aff3"
+    };
 
-    
-    const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 720;
-    if (isMobile) {
-      layout.xaxis.tickangle = -45;
-      layout.xaxis.tickfont = {size: 11};
-      layout.yaxis.tickfont = {size: 11};
-      layout.margin.b = 50;
-    }
+    const DATA_EAST = {
+      const: {"ก้าวไกล":{"กรุงเทพมหานคร":44.135826447142286,"ภาคกลาง":30.23045624865021,"ภาคตะวันออก":32.92454086297345,"ภาคเหนือ":27.823325660192072,"ภาคตะวันออกเฉียงเหนือ":21.12778355577713,"ภาคใต้":13.946848019515837},"เพื่อไทย":{"กรุงเทพมหานคร":20.211704977321833,"ภาคกลาง":20.194136154038063,"ภาคตะวันออก":25.467037112651674,"ภาคเหนือ":28.864781150653535,"ภาคตะวันออกเฉียงเหนือ":36.841537937050006,"ภาคใต้":3.8409286406728596},"ภูมิใจไทย":{"กรุงเทพมหานคร":2.448521734846432,"ภาคกลาง":14.398485047336237,"ภาคตะวันออก":5.879190818147119,"ภาคเหนือ":10.723053841297983,"ภาคตะวันออกเฉียงเหนือ":17.909219000638025,"ภาคใต้":18.721943330648084},"พลังประชารัฐ":{"กรุงเทพมหานคร":2.617889506398584,"ภาคกลาง":10.299085448944547,"ภาคตะวันออก":12.158285770080864,"ภาคเหนือ":16.593868469382876,"ภาคตะวันออกเฉียงเหนือ":9.398509843939783,"ภาคใต้":14.721890991068895},"รวมไทยสร้างชาติ":{"กรุงเทพมหานคร":16.214113959908822,"ภาคกลาง":12.727141351298418,"ภาคตะวันออก":15.90086723417098,"ภาคเหนือ":7.8778932170240346,"ภาคตะวันออกเฉียงเหนือ":2.562025078748722,"ภาคใต้":16.476499528943787},"ประชาธิปัตย์":{"กรุงเทพมหานคร":7.468288150698473,"ภาคกลาง":4.498407200368604,"ภาคตะวันออก":5.405114640013492,"ภาคเหนือ":2.8682654550265667,"ภาคตะวันออกเฉียงเหนือ":1.8336581922017092,"ภาคใต้":21.747038262508024}},
+      list: {"ก้าวไกล":{"กรุงเทพมหานคร":49.83985263549688,"ภาคกลาง":44.78277936372027,"ภาคตะวันออก":46.250368824222335,"ภาคเหนือ":39.012613955763456,"ภาคตะวันออกเฉียงเหนือ":33.299343351103886,"ภาคใต้":30.133953889791304},"เพื่อไทย":{"กรุงเทพมหานคร":18.74892525288498,"ภาคกลาง":24.812141715661227,"ภาคตะวันออก":23.930749337625652,"ภาคเหนือ":34.671672145848554,"ภาคตะวันออกเฉียงเหนือ":42.96828185161008,"ภาคใต้":7.437883555390052},"ภูมิใจไทย":{"กรุงเทพมหานคร":0.8919718037784172,"ภาคกลาง":2.765481090249586,"ภาคตะวันออก":1.8285757838505174,"ภาคเหนือ":2.1693669367863193,"ภาคตะวันออกเฉียงเหนือ":4.081667076470852,"ภาคใต้":4.161712779404592},"พลังประชารัฐ":{"กรุงเทพมหานคร":0.692755874989594,"ภาคกลาง":1.406549564371434,"ภาคตะวันออก":1.699723127146444,"ภาคเหนือ":1.7474503739286877,"ภาคตะวันออกเฉียงเหนือ":1.0264290660255404,"ภาคใต้":2.239536427049304},"รวมไทยสร้างชาติ":{"กรุงเทพมหานคร":19.610072907630087,"ภาคกลาง":13.419136557110562,"ภาคตะวันออก":15.21574424766273,"ภาคเหนือ":8.763129501179316,"ภาคตะวันออกเฉียงเหนือ":5.291925489600073,"ภาคใต้":27.76206087935901},"ประชาธิปัตย์":{"กรุงเทพมหานคร":2.663026481447494,"ภาคกลาง":1.8132045255802052,"ภาคตะวันออก":1.9846327642686865,"ภาคเหนือ":1.416769446360734,"ภาคตะวันออกเฉียงเหนือ":0.8683269590523889,"ภาคใต้":8.32432051733272}}
+    };
 
-    
-    function applyResponsiveLayout() {
-      const w = window.innerWidth || document.documentElement.clientWidth;
-      if (w <= 720) {
-        layout.xaxis.tickangle = -45;
-        layout.xaxis.tickfont = {size: 11};
-        layout.yaxis.tickfont = {size: 11};
-        layout.margin.b = 140;
-        layout.legend.y = -0.35;
-      } else {
-        layout.xaxis.tickangle = 0;
-        layout.xaxis.tickfont = {size: 12};
-        layout.yaxis.tickfont = {size: 12};
-        layout.margin.b = 40;
-        layout.legend.y = -0.25;
-      }
-    }
-    function applyHeight() {
-      const wrap = document.getElementById('wrap');
-      const chartEl = document.getElementById('chart');
-      const toggle = document.querySelector('.toggle');
-      if (!wrap || !chartEl) return;
-      const totalH = wrap.getBoundingClientRect().height || window.innerHeight;
-      const offset = toggle ? toggle.getBoundingClientRect().height + 8 : 0;
-      const chartH = Math.max(260, totalH - offset);
-      chartEl.style.height = `${chartH}px`;
-    }
-    applyResponsiveLayout();
-    applyHeight();
+    const SEATS_EAST = {"ก้าวไกล":{"กรุงเทพมหานคร":32,"ภาคกลาง":32,"ภาคตะวันออก":18,"ภาคเหนือ":19,"ภาคตะวันออกเฉียงเหนือ":8,"ภาคใต้":3},"เพื่อไทย":{"กรุงเทพมหานคร":1,"ภาคกลาง":10,"ภาคตะวันออก":4,"ภาคเหนือ":24,"ภาคตะวันออกเฉียงเหนือ":73,"ภาคใต้":0},"ภูมิใจไทย":{"กรุงเทพมหานคร":0,"ภาคกลาง":12,"ภาคตะวันออก":2,"ภาคเหนือ":7,"ภาคตะวันออกเฉียงเหนือ":35,"ภาคใต้":12},"พลังประชารัฐ":{"กรุงเทพมหานคร":0,"ภาคกลาง":5,"ภาคตะวันออก":4,"ภาคเหนือ":16,"ภาคตะวันออกเฉียงเหนือ":7,"ภาคใต้":7},"รวมไทยสร้างชาติ":{"กรุงเทพมหานคร":0,"ภาคกลาง":6,"ภาคตะวันออก":1,"ภาคเหนือ":2,"ภาคตะวันออกเฉียงเหนือ":0,"ภาคใต้":14},"ประชาธิปัตย์":{"กรุงเทพมหานคร":0,"ภาคกลาง":2,"ภาคตะวันออก":0,"ภาคเหนือ":1,"ภาคตะวันออกเฉียงเหนือ":2,"ภาคใต้":17}};
 
+    const REGION_TOTAL_SEATS = {
+      "กรุงเทพมหานคร": 33,
+      "ภาคกลาง": 75,
+      "ภาคตะวันออก": 29,
+      "ภาคเหนือ": 70,
+      "ภาคตะวันออกเฉียงเหนือ": 133,
+      "ภาคใต้": 60
+    };
+
+    const layout = {
+      barmode: 'group',
+      margin: { l: 50, r: 20, t: 40, b: 40 },
+      xaxis: { title: '', tickangle: 0, tickfont: { size: 12 } },
+      yaxis: { title: 'สัดส่วนคะแนน (%)', rangemode: 'tozero', tickfont: { size: 12 } },
+      legend: { orientation: 'h', y: -0.25 },
+      autosize: true,
+      title: { text: 'สัดส่วนคะแนนรายภาค (แบ่งเขต)', x: 0.01, font: { size: 16 } }
+    };
+
+    const chart = document.getElementById('chart');
     const btnConst = document.getElementById('btn-const');
     const btnList = document.getElementById('btn-list');
+    const btnSeatShare = document.getElementById('btn-seat-share');
 
     const LANG_TEXT = {
       th: {
         constBtn: 'แบ่งเขต',
         listBtn: 'บัญชีรายชื่อ',
+        seatShareBtn: 'ที่นั่งเขต (%)',
         titleConst: 'สัดส่วนคะแนนรายภาค (แบ่งเขต)',
         titleList: 'สัดส่วนคะแนนรายภาค (บัญชีรายชื่อ)',
-        xAxis: '',
-        yAxis: 'สัดส่วนคะแนน (%)'
+        titleSeatShare: 'สัดส่วนที่นั่งเขตรายภาค',
+        yAxis: 'สัดส่วนคะแนน (%)',
+        yAxisSeatShare: 'สัดส่วนที่นั่งเขต (%)',
+        seatLabel: 'ที่นั่งเขต'
       },
       en: {
         constBtn: 'Constituency',
         listBtn: 'Party List',
+        seatShareBtn: 'Constituency Seat Share',
         titleConst: 'Regional Vote Share (Constituency)',
         titleList: 'Regional Vote Share (Party List)',
-        xAxis: '',
-        yAxis: 'Vote Share (%)'
+        titleSeatShare: 'Regional Constituency Seat Share',
+        yAxis: 'Vote Share (%)',
+        yAxisSeatShare: 'Constituency Seat Share (%)',
+        seatLabel: 'Constituency seats'
       }
     };
+
     const PARTY_NAME_EN = {
-      'ก้าวไกล': 'Move Forward',
-      'เพื่อไทย': 'Pheu Thai',
-      'ภูมิใจไทย': 'Bhumjaithai',
-      'พลังประชารัฐ': 'Palang Pracharath',
-      'รวมไทยสร้างชาติ': 'United Thai Nation',
-      'ประชาธิปัตย์': 'Democrat'
+      'ก้าวไกล': 'Move Forward Party',
+      'เพื่อไทย': 'Pheu Thai Party',
+      'ภูมิใจไทย': 'Bhumjaithai Party',
+      'พลังประชารัฐ': 'Palang Pracharath Party',
+      'รวมไทยสร้างชาติ': 'United Thai Nation Party',
+      'ประชาธิปัตย์': 'Democrat Party'
     };
+
     const REGION_NAME_EN = {
       'กรุงเทพมหานคร': 'Bangkok',
       'ภาคกลาง': 'Central',
+      'ภาคตะวันออก': 'East',
       'ภาคเหนือ': 'North',
       'ภาคตะวันออกเฉียงเหนือ': 'Northeast',
       'ภาคใต้': 'South'
     };
+
     let currentLang = (localStorage.getItem('lang') || 'th');
 
-    const translateParty = (name, lang) => {
-      if (lang === 'en') return PARTY_NAME_EN[name] || name;
-      return name;
-    };
-    const translateRegion = (name, lang) => {
-      if (lang === 'en') return REGION_NAME_EN[name] || name;
-      return name;
-    };
-    const buildTraces = (baseTraces, lang) => {
-      const copy = JSON.parse(JSON.stringify(baseTraces));
-      return copy.map((trace) => ({
-        ...trace,
-        name: translateParty(trace.name, lang),
-        x: (trace.x || []).map((r) => translateRegion(r, lang))
-      }));
+    const activeMode = () => {
+      if (btnSeatShare.classList.contains('active')) return 'seatShare';
+      return btnConst.classList.contains('active') ? 'const' : 'list';
     };
 
-    const applyLang = (lang) => {
+    const translateParty = (name, lang) => (lang === 'en' ? (PARTY_NAME_EN[name] || name) : name);
+    const translateRegion = (name, lang) => (lang === 'en' ? (REGION_NAME_EN[name] || name) : name);
+
+    function getSortedRegions(datasetForMode) {
+      const fixedOrder = ['กรุงเทพมหานคร', 'ภาคกลาง', 'ภาคใต้', 'ภาคตะวันออกเฉียงเหนือ', 'ภาคตะวันออก', 'ภาคเหนือ'];
+      return fixedOrder.filter((r) => PARTY_ORDER.some((p) => Object.prototype.hasOwnProperty.call(datasetForMode[p] || {}, r)));
+    }
+
+    function buildTraces(lang) {
+      const mode = activeMode();
+      const ds = (mode === 'seatShare')
+        ? Object.fromEntries(PARTY_ORDER.map((party) => {
+          const seatMap = SEATS_EAST[party] || {};
+          const shareMap = {};
+          Object.keys(REGION_TOTAL_SEATS).forEach((region) => {
+            const denom = Number(REGION_TOTAL_SEATS[region] || 0);
+            const seats = Number(seatMap[region] || 0);
+            shareMap[region] = denom > 0 ? (seats / denom) * 100 : 0;
+          });
+          return [party, shareMap];
+        }))
+        : (DATA_EAST[mode] || {});
+
+      const sortedRegions = getSortedRegions(ds);
+      const t = LANG_TEXT[lang] || LANG_TEXT.th;
+
+      const rankedByRegion = sortedRegions.map((region) => {
+        return PARTY_ORDER
+          .map((party) => {
+            const partyData = ds[party] || {};
+            const partySeats = SEATS_EAST[party] || {};
+            return {
+              party,
+              value: Number(partyData[region] || 0),
+              seats: Number(partySeats[region] || 0)
+            };
+          })
+          .sort((a, b) => b.value - a.value);
+      });
+
+      const rankTraces = PARTY_ORDER.map((_, rankIdx) => ({
+        type: 'bar',
+        name: `Rank ${rankIdx + 1}`,
+        x: sortedRegions.map((r) => translateRegion(r, lang)),
+        y: rankedByRegion.map((rows) => rows[rankIdx].value),
+        customdata: rankedByRegion.map((rows) => [translateParty(rows[rankIdx].party, lang), rows[rankIdx].seats]),
+        marker: { color: rankedByRegion.map((rows) => PARTY_COLORS[rows[rankIdx].party] || '#9ca3af') },
+        showlegend: false,
+        hovertemplate: `%{x}<br>%{customdata[0]}: %{y:.1f}%<br>${t.seatLabel}: %{customdata[1]}<extra></extra>`
+      }));
+
+      const legendTraces = PARTY_ORDER.map((party) => ({
+        type: 'scatter',
+        mode: 'markers',
+        name: translateParty(party, lang),
+        x: [null],
+        y: [null],
+        marker: { color: PARTY_COLORS[party] || '#9ca3af', size: 10 },
+        hoverinfo: 'skip',
+        showlegend: true
+      }));
+
+      return [...rankTraces, ...legendTraces];
+    }
+
+    function applyResponsiveLayout() {
+      const w = window.innerWidth || document.documentElement.clientWidth;
+      if (w <= 720) {
+        layout.xaxis.tickangle = -45;
+        layout.xaxis.tickfont = { size: 11 };
+        layout.yaxis.tickfont = { size: 11 };
+        layout.margin.b = 140;
+        layout.legend.y = -0.35;
+      } else {
+        layout.xaxis.tickangle = 0;
+        layout.xaxis.tickfont = { size: 12 };
+        layout.yaxis.tickfont = { size: 12 };
+        layout.margin.b = 40;
+        layout.legend.y = -0.25;
+      }
+    }
+
+    function applyHeight() {
+      const wrap = document.getElementById('wrap');
+      const chartEl = document.getElementById('chart');
+      if (!wrap || !chartEl) return;
+      const totalH = wrap.getBoundingClientRect().height || window.innerHeight;
+      const toggles = document.querySelectorAll('.toggle');
+      let offset = 8;
+      toggles.forEach((el) => { offset += el.getBoundingClientRect().height; });
+      const chartH = Math.max(260, totalH - offset);
+      chartEl.style.height = chartH + 'px';
+    }
+
+    function render() {
+      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
+      const mode = activeMode();
+      layout.yaxis.title = mode === 'seatShare' ? t.yAxisSeatShare : t.yAxis;
+      layout.title.text = mode === 'const' ? t.titleConst : (mode === 'list' ? t.titleList : t.titleSeatShare);
+      Plotly.react(chart, buildTraces(currentLang), layout, { displayModeBar: false, responsive: true });
+    }
+
+    function applyLang(lang) {
       currentLang = lang;
       try { localStorage.setItem('lang', lang); } catch (err) {}
       const t = LANG_TEXT[lang] || LANG_TEXT.th;
       btnConst.textContent = t.constBtn;
       btnList.textContent = t.listBtn;
-      layout.xaxis.title = t.xAxis;
-      layout.yaxis.title = t.yAxis;
-      const isConstActive = btnConst.classList.contains('active');
-      layout.title.text = isConstActive ? t.titleConst : t.titleList;
-      const nextTraces = isConstActive ? buildTraces(tracesConst, lang) : buildTraces(tracesList, lang);
-      Plotly.react(chart, nextTraces, layout, {displayModeBar:false, responsive:true});
-    };
+      btnSeatShare.textContent = t.seatShareBtn;
+      render();
+    }
 
-    const chart = document.getElementById('chart');
-    Plotly.newPlot(chart, tracesConst, layout, {displayModeBar:false, responsive:true});
+    applyResponsiveLayout();
+    applyHeight();
+    Plotly.newPlot(chart, buildTraces(currentLang), layout, { displayModeBar: false, responsive: true });
     setTimeout(() => Plotly.Plots.resize(chart), 50);
+
     const handleResize = () => {
       applyResponsiveLayout();
       applyHeight();
       Plotly.Plots.resize(chart);
     };
     window.addEventListener('resize', handleResize);
-    if (window.ResizeObserver) {
-      const ro = new ResizeObserver(() => handleResize());
-      ro.observe(document.getElementById('wrap'));
-    }
-
-    window.addEventListener('message', (event) => {
-      if (event && event.data && event.data.type === 'region-resize') {
-        handleResize();
-      }
-    });
-    applyLang(currentLang);
+    if (window.ResizeObserver) new ResizeObserver(() => handleResize()).observe(document.getElementById('wrap'));
 
     btnConst.addEventListener('click', () => {
       btnConst.classList.add('active');
       btnList.classList.remove('active');
-      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
-      layout.title.text = t.titleConst;
-      Plotly.react(chart, buildTraces(tracesConst, currentLang), layout, {displayModeBar:false, responsive:true});
+      btnSeatShare.classList.remove('active');
+      render();
     });
+
     btnList.addEventListener('click', () => {
       btnList.classList.add('active');
       btnConst.classList.remove('active');
-      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
-      layout.title.text = t.titleList;
-      Plotly.react(chart, buildTraces(tracesList, currentLang), layout, {displayModeBar:false, responsive:true});
-    });
-  
-    window.addEventListener('message', (event) => {
-      if (event && event.data && event.data.type === 'set-lang') {
-        applyLang(event.data.lang || 'th');
-      }
+      btnSeatShare.classList.remove('active');
+      render();
     });
 
-</script>
+    btnSeatShare.addEventListener('click', () => {
+      btnSeatShare.classList.add('active');
+      btnConst.classList.remove('active');
+      btnList.classList.remove('active');
+      render();
+    });
+
+    window.addEventListener('message', (event) => {
+      if (event && event.data && event.data.type === 'region-resize') handleResize();
+      if (event && event.data && event.data.type === 'set-lang') applyLang(event.data.lang || 'th');
+    });
+
+    applyLang(currentLang);
+  </script>
 </body>
 </html>

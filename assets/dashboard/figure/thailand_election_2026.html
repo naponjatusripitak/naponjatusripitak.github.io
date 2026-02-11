@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Thailand Election Map 2026 (B.E. 2569)</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <style>
+    html, body { width:100%; height:100%; margin:0; padding:0; }
+    #map { width:100%; height:100%; background:#f6f7f9; }
+
+    /* Internal controls are hidden; dashboard.html provides the UI. */
+    #ctrl-body, #ctrl-collapse, #ctrl-wrap { display:none !important; }
+
+    /* Legend bottom-right. */
+    #party-legend{
+      position: fixed; right: 12px; bottom: 12px; z-index: 9999;
+      background: rgba(255,255,255,0.92); padding: 10px 12px;
+      border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      width: 240px; max-height: 420px;
+      font-family: system-ui;
+      overflow: hidden;
+    }
+    #legend-head{ display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+    #legend-title{ font-weight:700; font-size:13px; }
+    #legend-mode{ font-size:12px; color:#666; margin-top:2px; }
+    #legend-chevron{ font-size:14px; color:#666; }
+    #legend-body{
+      margin-top:8px; max-height:360px;
+      overflow:auto; padding-right:4px;
+    }
+    #party-legend.collapsed #legend-body { display:none; }
+
+    .legend-item { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:4px 0; }
+    .legend-left { display:flex; align-items:center; gap:8px; min-width:0; }
+    .legend-swatch { width:12px; height:12px; border-radius:2px; border:1px solid rgba(0,0,0,0.05); flex:0 0 auto; }
+    .legend-name { font-size:12.5px; color:#333; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+    .legend-count { font-size:12.5px; color:#444; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+    @media (max-width: 480px) {
+      #party-legend{ width: auto; max-width: calc(100vw - 24px); }
+    }
+
+    #load-error {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 9999;
+      max-width: min(520px, calc(100vw - 24px));
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(17,24,39,0.92);
+      color: #fff;
+      font-family: system-ui;
+      font-size: 12.5px;
+      line-height: 1.25;
+      display: none;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div id="party-legend">
+    <div id="legend-head">
+      <div>
+        <div id="legend-title">พรรคการเมือง</div>
+        <div id="legend-mode"></div>
+      </div>
+      <div id="legend-chevron">▾</div>
+    </div>
+    <div id="legend-body"></div>
+  </div>
+
+  <div id="load-error"></div>
+
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <script src="../data/turnout_2569_by_dist.js"></script>
+  <script src="../data/Election Boundaries/2569/geojson/2569_constituencies_simplified.js"></script>
+  <script>
+    (function() {
+      var uiLang = (window.__mapLang === "en") ? "en" : "th";
+      window.__provinceNameEn = window.__provinceNameEn || {};
+      window.__partyNameEn = window.__partyNameEn || {};
+
+      function isEn() { return uiLang === "en"; }
+      function i18n(thText, enText) { return isEn() ? enText : thText; }
+      function provinceLabel(name) {
+        if (!name) return "";
+        return isEn() ? (window.__provinceNameEn[name] || name) : name;
+      }
+      function partyLabel(name) {
+        if (!name) return "";
+        return isEn() ? (window.__partyNameEn[name] || name) : name;
+      }
+
+      function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+      function rampColor(t, c0, c1) {
+        var x = clamp01(t);
+        var r = Math.round(c0[0] + (c1[0] - c0[0]) * x);
+        var g = Math.round(c0[1] + (c1[1] - c0[1]) * x);
+        var b = Math.round(c0[2] + (c1[2] - c0[2]) * x);
+        return "rgb(" + r + "," + g + "," + b + ")";
+      }
+      function divColor(t) {
+        return rampColor(t, [237, 248, 255], [8, 81, 156]);
+      }
+      function hhiColor(t) {
+        return rampColor(t, [254, 224, 210], [153, 0, 13]);
+      }
+      function enpColor(t) {
+        return rampColor(t, [231, 246, 239], [0, 109, 109]);
+      }
+      function escapeHtml(s) {
+        if (s == null) return "";
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      var map = L.map("map", { zoomControl: false, attributionControl: false }).setView([13.5, 100.6], 7.6);
+      var homeBounds = null;
+      var copyrightControl = L.control({ position: "bottomleft" });
+      copyrightControl.onAdd = function() {
+        var div = L.DomUtil.create("div");
+        div.style.cssText = "font:12px/1.2 system-ui; color:#6b7280; background:rgba(255,255,255,0.92); padding:4px 8px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.12);";
+        div.innerHTML = "&copy; Napon Jatusripitak";
+        return div;
+      };
+      copyrightControl.addTo(map);
+      try { homeBounds = map.getBounds(); } catch (e) {}
+      var HomeControl = L.Control.extend({
+        options: { position: "topright" },
+        onAdd: function() {
+          var btn = L.DomUtil.create("button", "home-btn");
+          btn.type = "button";
+          btn.innerHTML = "⌂";
+          btn.style.background = "#fff";
+          btn.style.border = "1px solid rgba(0,0,0,0.15)";
+          btn.style.borderRadius = "8px";
+          btn.style.padding = "6px 10px";
+          btn.style.fontFamily = "system-ui";
+          btn.style.fontSize = "16px";
+          btn.style.fontWeight = "700";
+          btn.style.cursor = "pointer";
+          L.DomEvent.disableClickPropagation(btn);
+          L.DomEvent.on(btn, "click", function(e) {
+            L.DomEvent.preventDefault(e);
+            if (homeBounds) map.fitBounds(homeBounds, { padding: [10, 10] });
+          });
+          return btn;
+        }
+      });
+      map.addControl(new HomeControl());
+
+      var errEl = document.getElementById('load-error');
+      function showError(msg) {
+        if (!errEl) return;
+        errEl.textContent = msg || 'Unknown error';
+        errEl.style.display = 'block';
+      }
+
+      // Base modes: "const" or "list" (winner map)
+      // Overlay modes: null | "div" | "mov" | "hhi" | "enp" | "turnout" | "turnout_list"
+      var baseMode = "const";
+      var overlayMode = null;
+      window.__winnerPartyFilter = "";
+
+      // Prefer full 2569 boundaries so rendering matches the 2023 map detail.
+      var GEOJSON_URL = "../data/Election Boundaries/2569/geojson/2569_constituencies.geojson";
+      var GEOJSON_SIMPLIFIED_URL = "../data/Election Boundaries/2569/geojson/2569_constituencies_simplified.geojson";
+      var RESULTS_URL = "../data/election_results_2569_by_dist.json";
+      var results = null;
+
+      var divergenceByDist = {};
+      var divergenceDetailsByDist = {};
+      var hhiNormByDist = {};
+      var hhiRawByDist = {};
+      var hhiNByDist = {};
+      var movByDist = {};
+      var enpByDist = {};
+      var turnoutByDist = (window.__turnoutByDist && typeof window.__turnoutByDist === "object") ? window.__turnoutByDist : {};
+      var turnoutListByDist = (window.__turnoutListByDist && typeof window.__turnoutListByDist === "object") ? window.__turnoutListByDist : {};
+      var turnoutMetaByDist = (window.__turnoutMetaByDist && typeof window.__turnoutMetaByDist === "object") ? window.__turnoutMetaByDist : {};
+
+      var MOV_BINS = [0, 2, 5, 10, 20, 100];
+      var MOV_COLORS = ["#fff5eb", "#fdd0a2", "#fdae6b", "#fd8d3c", "#e6550d"];
+
+      var ENP_BINS = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 99.0];
+      var ENP_LABELS = ["1-2", "2-3", "3-4", "4-5", "5-6", "6+"];
+      var ENP_COLORS = ["#edf8fb", "#ccece6", "#99d8c9", "#66c2a4", "#2ca25f", "#006d2c"];
+      var TURNOUT_BINS = [0.0, 0.60, 0.65, 0.70, 0.75, 0.80, 1.00];
+      var TURNOUT_COLORS = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#d7301f"];
+
+      function movBinIndex(v) {
+        for (var i = 0; i < MOV_BINS.length - 1; i++) {
+          if (v >= MOV_BINS[i] && v < MOV_BINS[i + 1]) return i;
+        }
+        return MOV_BINS.length - 2;
+      }
+      function enpBinIndex(v) {
+        if (!isFinite(v) || v <= 0) return 0;
+        for (var i = 0; i < ENP_BINS.length - 1; i++) {
+          if (v >= ENP_BINS[i] && v < ENP_BINS[i + 1]) return i;
+        }
+        return ENP_BINS.length - 2;
+      }
+      function turnoutBinIndex(v) {
+        var x = Number(v);
+        if (!isFinite(x) || x < 0) x = 0;
+        for (var i = 0; i < TURNOUT_BINS.length - 1; i++) {
+          if (x >= TURNOUT_BINS[i] && x < TURNOUT_BINS[i + 1]) return i;
+        }
+        return TURNOUT_BINS.length - 2;
+      }
+
+      function currentMode() { return overlayMode || baseMode; }
+
+      function computeMetrics() {
+        if (!results || !results.byDist) return;
+        var byDist = results.byDist;
+        Object.keys(byDist).forEach(function(distId) {
+          var d = byDist[distId] || {};
+
+          // HHI (candidate vote concentration)
+          var cands = Array.isArray(d.const_candidates) ? d.const_candidates : [];
+          var tot = Number(d.const_total_votes || 0) || 0;
+          var shares = [];
+          for (var i = 0; i < cands.length; i++) {
+            var v = Number(cands[i].votes || 0) || 0;
+            if (tot > 0 && v > 0) shares.push(v / tot);
+          }
+          var hhiRaw = 0;
+          for (var j = 0; j < shares.length; j++) hhiRaw += shares[j] * shares[j];
+          var N = shares.length || 0;
+          var hhiNorm = 0;
+          if (N > 1) hhiNorm = (hhiRaw - (1.0 / N)) / (1.0 - (1.0 / N));
+          hhiRawByDist[distId] = hhiRaw;
+          hhiNByDist[distId] = N;
+          hhiNormByDist[distId] = clamp01(hhiNorm);
+
+          // MOV (top1 - top2 vote share in pp)
+          var top1 = cands[0] ? Number(cands[0].share_pp || 0) : 0;
+          var top2 = cands[1] ? Number(cands[1].share_pp || 0) : 0;
+          movByDist[distId] = Math.max(0, top1 - top2);
+
+          // ENP from constituency party vote shares
+          var constParties = Array.isArray(d.const_parties) ? d.const_parties : [];
+          var sumsq = 0;
+          for (var k = 0; k < constParties.length; k++) {
+            var p = (Number(constParties[k].const_pp || 0) || 0) / 100.0;
+            if (p > 0) sumsq += p * p;
+          }
+          enpByDist[distId] = sumsq > 0 ? (1.0 / sumsq) : 0;
+
+          // TVD between party-list and constituency party shares
+          var plistParties = Array.isArray(d.plist_parties) ? d.plist_parties : [];
+          var cMap = {};
+          var pMap = {};
+          for (var a = 0; a < constParties.length; a++) cMap[constParties[a].party] = (Number(constParties[a].const_pp || 0) || 0) / 100.0;
+          for (var b = 0; b < plistParties.length; b++) pMap[plistParties[b].party] = (Number(plistParties[b].plist_pp || 0) || 0) / 100.0;
+          var all = {};
+          Object.keys(cMap).forEach(function(pn) { all[pn] = true; });
+          Object.keys(pMap).forEach(function(pn) { all[pn] = true; });
+          var tv = 0;
+          Object.keys(all).forEach(function(pn) { tv += Math.abs((pMap[pn] || 0) - (cMap[pn] || 0)); });
+          tv = 0.5 * tv;
+          divergenceByDist[distId] = clamp01(tv);
+
+          var candidateByParty = {};
+          for (var cp = 0; cp < cands.length; cp++) {
+            var candParty = cands[cp] && cands[cp].party;
+            if (candParty && !candidateByParty[candParty]) candidateByParty[candParty] = cands[cp].candidate || "";
+          }
+          var rows = [];
+          Object.keys(all).forEach(function(pn) {
+            var c = (cMap[pn] || 0) * 100.0;
+            var l = (pMap[pn] || 0) * 100.0;
+            rows.push({ party: pn, candidate: candidateByParty[pn] || "", const_pp: c, plist_pp: l, diff_pp: l - c });
+          });
+          rows.sort(function(x, y) { return Math.abs(y.diff_pp) - Math.abs(x.diff_pp); });
+          divergenceDetailsByDist[distId] = { province: d.province || "", district: d.district, rows: rows.slice(0, 4) };
+        });
+
+        window.CONFIG = window.CONFIG || {};
+        window.CONFIG.colorMapping = results.colorMapping || {};
+      }
+
+      function hoverStyle() {
+        return {
+          stroke: true,
+          color: "#ffffff",
+          weight: 1.6,
+          opacity: 1.0,
+          fillOpacity: 1.0,
+          lineCap: "round",
+          lineJoin: "round"
+        };
+      }
+
+      function styleWinner(distId, mode) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        var party = null;
+        if (d) party = (mode === "list") ? d.winner_plist_party : d.winner_const_party;
+        var col = (results && results.colorMapping && party && results.colorMapping[party]) ? results.colorMapping[party] : "#D9D9D9";
+        var dim = false;
+        if (window.__winnerPartyFilter && party) dim = window.__winnerPartyFilter !== party;
+        return {
+          stroke: true,
+          color: "#ffffff",
+          weight: 0.5,
+          opacity: 0.95,
+          fillColor: col,
+          fillOpacity: dim ? 0.18 : 1.0
+        };
+      }
+
+      function styleMov(distId) {
+        var v = Number(movByDist[distId] || 0) || 0;
+        var idx = movBinIndex(v);
+        var col = MOV_COLORS[idx] || MOV_COLORS[MOV_COLORS.length - 1];
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+      }
+      function styleHHI(distId) {
+        var v = clamp01(Number(hhiNormByDist[distId] || 0));
+        var t = Math.pow(clamp01(v), 0.70);
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: hhiColor(t), fillOpacity: 1.0 };
+      }
+      function styleDiv(distId) {
+        var v = clamp01(Number(divergenceByDist[distId] || 0));
+        var t = Math.pow(clamp01(v), 0.70);
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: divColor(t), fillOpacity: 1.0 };
+      }
+      function styleENP(distId) {
+        var v = Number(enpByDist[distId] || 0) || 0;
+        var idx = enpBinIndex(v);
+        var t = Math.min(5, Math.max(0, idx)) / 5.0;
+        var col = enpColor(t);
+        var dim = false;
+        if (window.__winnerPartyFilter) {
+          var d = results && results.byDist ? results.byDist[distId] : null;
+          var winner = d ? d.winner_const_party : null;
+          if (winner) dim = winner !== window.__winnerPartyFilter;
+        }
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: dim ? 0.18 : 1.0 };
+      }
+      function styleTurnout(distId) {
+        var v = (turnoutByDist[distId] != null) ? Number(turnoutByDist[distId]) : 0;
+        var idx = turnoutBinIndex(v);
+        var col = TURNOUT_COLORS[idx] || TURNOUT_COLORS[0];
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+      }
+      function styleTurnoutList(distId) {
+        var v = (turnoutListByDist[distId] != null) ? Number(turnoutListByDist[distId]) : 0;
+        var idx = turnoutBinIndex(v);
+        var col = TURNOUT_COLORS[idx] || TURNOUT_COLORS[0];
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+      }
+
+      function baseStyleFor(distId) {
+        var mode = currentMode();
+        var s;
+        if (mode === "mov") s = styleMov(distId);
+        else if (mode === "hhi") s = styleHHI(distId);
+        else if (mode === "div") s = styleDiv(distId);
+        else if (mode === "enp") s = styleENP(distId);
+        else if (mode === "turnout") s = styleTurnout(distId);
+        else if (mode === "turnout_list") s = styleTurnoutList(distId);
+        else s = styleWinner(distId, mode);
+        return Object.assign({}, s, {
+          stroke: true,
+          color: "#ffffff",
+          weight: 0.5,
+          opacity: 0.95,
+          lineCap: "round",
+          lineJoin: "round"
+        });
+      }
+
+      function popupWinner(distId, mode) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+        if (mode === "list") {
+          var topP = (d.plist_parties || []).slice(0, 6);
+          var listTotalVotes = Number(d.plist_total_votes || 0);
+          if (!listTotalVotes) {
+            listTotalVotes = topP.reduce(function(acc, row) { return acc + Number((row && row.votes) || 0); }, 0);
+          }
+          var lp1 = topP[0] ? Number(topP[0].plist_pp || 0) : 0;
+          var lp2 = topP[1] ? Number(topP[1].plist_pp || 0) : 0;
+          var lv1 = topP[0] ? Number(topP[0].votes || 0) : 0;
+          var lv2 = topP[1] ? Number(topP[1].votes || 0) : 0;
+          var leadPp = Math.max(0, lp1 - lp2);
+          var leadVotes = Math.max(0, lv1 - lv2);
+          var lines = "";
+          for (var i = 0; i < topP.length; i++) {
+            var rr = topP[i];
+            var share = Number(rr.plist_pp || 0);
+            var votes = Number(rr.votes || 0);
+            var col = (results && results.colorMapping && rr.party && results.colorMapping[rr.party]) ? results.colorMapping[rr.party] : "#D9D9D9";
+            lines += '<div style="margin:6px 0;">' +
+              '<div style="display:flex; justify-content:space-between; gap:10px; font-size:12.5px; ' + (i === 0 ? "font-weight:700;" : "font-weight:400;") + '">' +
+              '<div style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+                escapeHtml(partyLabel(rr.party)) + (i === 0 ? " <span style='font-size:11px; color:#111; background:#f2f2f2; padding:2px 6px; border-radius:999px;'>" + i18n("นำ", "Leader") + "</span>" : "") +
+              "</div>" +
+              '<div style="color:#444; font-variant-numeric:tabular-nums;">' + share.toFixed(1) + "% · " + votes.toLocaleString() + "</div>" +
+              "</div>" +
+              '<div style="background:#f2f2f2; border-radius:8px; overflow:hidden; height:10px; width:100%; margin-top:4px;">' +
+                '<div style="height:10px; width:' + share + '%; background:' + col + ';"></div>' +
+              "</div>" +
+            "</div>";
+          }
+          return '<div style="font-family:system-ui; font-size:13px; line-height:1.25; min-width:320px;">' +
+            '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + title + "</div>" +
+            '<div style="color:#666; font-size:12.5px; margin-bottom:8px;">' +
+              i18n("รวมคะแนน:", "Total votes:") + ' <span style="font-variant-numeric:tabular-nums;">' + listTotalVotes.toLocaleString() + "</span>" +
+              ' · ' + i18n("ส่วนต่าง:", "Margin:") + ' <span style="font-variant-numeric:tabular-nums;">' + leadPp.toFixed(1) + "</span>pp" +
+              ' (<span style="font-variant-numeric:tabular-nums;">' + leadVotes.toLocaleString() + "</span>)" +
+            "</div>" +
+            lines +
+          "</div>";
+        }
+        var cands = (d.const_candidates || []).slice(0, 6);
+        var top1 = cands[0] || null;
+        var top2 = cands[1] || null;
+        var p1 = top1 ? Number(top1.share_pp || 0) : 0;
+        var p2 = top2 ? Number(top2.share_pp || 0) : 0;
+        var marginPp = Math.max(0, p1 - p2);
+        var v1 = top1 ? Number(top1.votes || 0) : 0;
+        var v2 = top2 ? Number(top2.votes || 0) : 0;
+        var marginVotes = Math.max(0, v1 - v2);
+        var totalVotes = Number(d.const_total_votes || 0);
+        if (!totalVotes) {
+          totalVotes = cands.reduce(function(acc, row) { return acc + Number((row && row.votes) || 0); }, 0);
+        }
+        var lines2 = "";
+        for (var j = 0; j < cands.length; j++) {
+          var c = cands[j];
+          var share2 = Number(c.share_pp || 0);
+          var votes2 = Number(c.votes || 0);
+          var col2 = (results && results.colorMapping && c.party && results.colorMapping[c.party]) ? results.colorMapping[c.party] : "#D9D9D9";
+          lines2 += '<div style="margin:6px 0;">' +
+            '<div style="display:flex; justify-content:space-between; gap:10px; font-size:12.5px; ' + (j === 0 ? "font-weight:700;" : "font-weight:400;") + '">' +
+              '<div style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+                escapeHtml(c.candidate || "—") + ' <span style="color:#666; font-weight:400;">(' + escapeHtml(partyLabel(c.party || "")) + ")</span>" + (j === 0 ? " <span style='font-size:11px; color:#111; background:#f2f2f2; padding:2px 6px; border-radius:999px;'>" + i18n("ชนะ", "Winner") + "</span>" : "") +
+              "</div>" +
+              '<div style="color:#444; font-variant-numeric:tabular-nums;">' + share2.toFixed(1) + "% · " + votes2.toLocaleString() + "</div>" +
+            "</div>" +
+            '<div style="background:#f2f2f2; border-radius:8px; overflow:hidden; height:10px; width:100%; margin-top:4px;">' +
+              '<div style="height:10px; width:' + share2 + '%; background:' + col2 + ';"></div>' +
+            "</div>" +
+          "</div>";
+        }
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.25; min-width:320px;">' +
+          '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="color:#666; font-size:12.5px; margin-bottom:8px;">' +
+            i18n("รวมคะแนน:", "Total votes:") + ' <span style="font-variant-numeric:tabular-nums;">' + totalVotes.toLocaleString() + "</span>" +
+            ' · ' + i18n("ชนะ:", "Margin:") + ' <span style="font-variant-numeric:tabular-nums;">' + marginPp.toFixed(1) + "</span>pp" +
+            ' (<span style="font-variant-numeric:tabular-nums;">' + marginVotes.toLocaleString() + "</span>)" +
+          "</div>" +
+          lines2 +
+        "</div>";
+      }
+
+      function popupMov(distId) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var cands = d.const_candidates || [];
+        var top1 = cands[0] || null;
+        var top2 = cands[1] || null;
+        var p1 = top1 ? Number(top1.share_pp || 0) : 0;
+        var p2 = top2 ? Number(top2.share_pp || 0) : 0;
+        var margin = Math.max(0, p1 - p2);
+        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+          '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="color:#666; font-size:12.5px; margin-bottom:10px;">' + i18n("ส่วนต่างคะแนนผู้ชนะ:", "Winner margin:") + ' <b style="color:#222;">' + margin.toFixed(1) + ' pp</b></div>' +
+          '<div style="margin:8px 0; padding:8px; border:1px solid rgba(0,0,0,0.08); border-radius:10px;">' +
+            '<div style="font-size:12px; color:#777;">' + i18n("อันดับ 1", "1st place") + "</div>" +
+            '<div style="font-size:13px; font-weight:700; margin-top:2px;">' + escapeHtml(top1 ? top1.candidate : "—") + ' <span style="font-weight:400; color:#666;">(' + escapeHtml(partyLabel(top1 ? top1.party : "")) + ")</span></div>" +
+            '<div style="font-size:12px; color:#555; margin-top:2px;">' + i18n("คะแนนแบ่งเขต:", "Constituency vote share:") + " " + p1.toFixed(1) + "%</div>" +
+          "</div>" +
+          '<div style="margin:8px 0 0 0; padding:8px; border:1px solid rgba(0,0,0,0.08); border-radius:10px;">' +
+            '<div style="font-size:12px; color:#777;">' + i18n("อันดับ 2", "2nd place") + "</div>" +
+            '<div style="font-size:13px; font-weight:700; margin-top:2px;">' + escapeHtml(top2 ? top2.candidate : "—") + ' <span style="font-weight:400; color:#666;">(' + escapeHtml(partyLabel(top2 ? top2.party : "")) + ")</span></div>" +
+            '<div style="font-size:12px; color:#555; margin-top:2px;">' + i18n("คะแนนแบ่งเขต:", "Constituency vote share:") + " " + p2.toFixed(1) + "%</div>" +
+          "</div>" +
+        "</div>";
+      }
+
+      function popupHHI(distId) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+        var hNorm = clamp01(Number(hhiNormByDist[distId] || 0));
+        var h = hNorm * 100.0;
+        var hhiRaw = Number(hhiRawByDist[distId] || 0);
+        var n = Number(hhiNByDist[distId] || 0);
+        var barCol = hhiColor(Math.pow(hNorm, 0.70));
+        var cands = (d.const_candidates || []).slice(0, 6);
+        var lines = "";
+        for (var i = 0; i < cands.length; i++) {
+          var cc = cands[i] || {};
+          var badge = (i === 0) ? (" <span style='font-size:11px; color:#111; background:#f2f2f2; padding:2px 6px; border-radius:999px;'>" + i18n("นำ", "Leader") + "</span>") : "";
+          lines += '<div style="margin:8px 0; padding-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.06);">' +
+            '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+              '<div style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:12.8px; font-weight:700;">' + escapeHtml(cc.candidate || "") + ' <span style="color:#666; font-weight:400;">(' + escapeHtml(partyLabel(cc.party || "")) + ")</span>" + badge + "</div>" +
+              '<div style="white-space:nowrap; font-variant-numeric:tabular-nums; font-weight:800; font-size:12.8px; color:#111;">' + Number(cc.share_pp || 0).toFixed(1) + "%</div>" +
+            "</div>" +
+            '<div style="margin-top:4px; font-size:12px; color:#666; font-variant-numeric:tabular-nums;">' + Number(cc.votes || 0).toLocaleString() + " " + i18n("คะแนน", "votes") + "</div>" +
+          "</div>";
+        }
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.25; min-width:340px;">' +
+          '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="margin:8px 0 10px 0;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">' +
+              '<div style="color:#666; font-size:12.5px; line-height:1.15;">' + i18n("ดัชนีกระจุกตัวของคะแนน (HHI)", "Vote concentration index (HHI)") + "</div>" +
+              '<div style="font-size:12.5px; color:#444; font-variant-numeric:tabular-nums; font-weight:800; white-space:nowrap;">' + h.toFixed(1) + "%</div>" +
+            "</div>" +
+            '<div style="background:#f2f2f2; border-radius:10px; overflow:hidden; height:12px; width:100%; margin-top:6px; border:1px solid rgba(0,0,0,0.06);"><div style="height:12px; width:' + h + '%; background:' + barCol + ';"></div></div>' +
+            '<div style="display:flex; justify-content:space-between; font-size:11.5px; color:#999; margin-top:4px;"><span>' + i18n("กระจายตัว", "More dispersed") + "</span><span>" + i18n("กระจุกตัว", "More concentrated") + "</span></div>" +
+            '<div style="font-size:11.5px; color:#888; margin-top:6px; font-variant-numeric:tabular-nums; line-height:1.25;">' +
+              "HHI = Σ s² · HHI(norm) = (HHI − 1/N)/(1 − 1/N) · N=" + n +
+              "<br>HHI(raw)=" + hhiRaw.toFixed(3) +
+            "</div>" +
+          "</div>" +
+          '<div style="font-size:14px; font-weight:800; margin:6px 0 2px 0;">' + i18n("ผู้สมัครที่ได้คะแนนสูงสุด", "Top candidates by vote share") + "</div>" +
+          '<div style="font-size:12px; color:#777; margin-bottom:8px;">' + i18n("ถ้าคะแนนกระจุกตัว รายชื่อบนจะทิ้งห่างชัด", "If votes are concentrated, top ranks separate more clearly") + "</div>" +
+          lines +
+        "</div>";
+      }
+
+      function popupDiv(distId) {
+        var payload = divergenceDetailsByDist[distId] || null;
+        var v = divergenceByDist[distId] || 0;
+        if (!payload) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var title = escapeHtml(provinceLabel(payload.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(payload.district);
+        var pct = clamp01(v) * 100.0;
+        var rows = (payload.rows || []).slice(0, 3);
+        var lines = "";
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          var c = Number(r.const_pp || 0).toFixed(1);
+          var l = Number(r.plist_pp || 0).toFixed(1);
+          var d = Number(r.diff_pp || 0).toFixed(1);
+          var sign = (Number(d) >= 0) ? "+" : "";
+          var left = escapeHtml(r.candidate || "");
+          var party = escapeHtml(partyLabel(r.party || ""));
+          lines += '<div style="margin:8px 0; padding-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.06);">' +
+            '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+              '<div style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:12.8px; font-weight:700;">' + (left ? left : party) + ' <span style="color:#666; font-weight:400;">(' + party + ")</span></div>" +
+              '<div style="white-space:nowrap; font-variant-numeric:tabular-nums; font-weight:800; font-size:12.8px; color:#111;">' + sign + d + "pp</div>" +
+            "</div>" +
+            '<div style="margin-top:4px; font-size:12px; color:#666; font-variant-numeric:tabular-nums;">' + i18n("แบ่งเขต ", "Constituency ") + c + "% · " + i18n("บัญชีรายชื่อ ", "Party-list ") + l + "%</div>" +
+          "</div>";
+        }
+        var barCol = divColor(Math.pow(clamp01(v), 0.70));
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.25; min-width:340px;">' +
+          '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="margin:8px 0 10px 0;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;"><div style="color:#666; font-size:12.5px; line-height:1.15;">' + i18n("ดัชนีความต่างของบัตรเลือกตั้ง", "Ballot splitting (total variation)") + '</div><div style="font-size:12.5px; color:#444; font-variant-numeric:tabular-nums; font-weight:800; white-space:nowrap;">' + pct.toFixed(1) + '%</div></div>' +
+            '<div style="background:#f2f2f2; border-radius:10px; overflow:hidden; height:12px; width:100%; margin-top:6px; border:1px solid rgba(0,0,0,0.06);"><div style="height:12px; width:' + pct + '%; background:' + barCol + ';"></div></div>' +
+            '<div style="display:flex; justify-content:space-between; font-size:11.5px; color:#999; margin-top:4px;"><span>0%</span><span>100%</span></div>' +
+          '</div>' +
+          '<div style="font-size:14px; font-weight:800; margin:6px 0 2px 0;">' + i18n("ผู้สมัคร–พรรค ที่สัดส่วนคะแนนต่างกันมากที่สุด", "Candidate-party pairs with largest differences") + "</div>" +
+          '<div style="font-size:12px; color:#777; margin-bottom:8px;">' + i18n("Δpp = บัญชีรายชื่อ − แบ่งเขต", "Δpp = party-list − constituency") + "</div>" +
+          lines +
+        "</div>";
+      }
+
+      function popupENP(distId) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+        var v = (enpByDist[distId] != null) ? Number(enpByDist[distId]) : 0;
+        var payload = divergenceDetailsByDist[distId] || null;
+        var rows = payload && payload.rows ? payload.rows.slice().sort(function(a, b) { return (b.const_pp || 0) - (a.const_pp || 0); }).slice(0, 3) : [];
+        var lines = "";
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i] || {};
+          var p = Number(r.const_pp || 0).toFixed(1);
+          lines += '<div style="display:flex; justify-content:space-between; gap:10px; font-size:12.5px; margin:4px 0;">' +
+            '<div style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + (r.candidate ? escapeHtml(r.candidate) + ' <span style="color:#777;">(' + escapeHtml(partyLabel(r.party || "")) + ')</span>' : escapeHtml(partyLabel(r.party || ""))) + "</div>" +
+            '<div style="font-variant-numeric:tabular-nums; color:#444; font-weight:700; white-space:nowrap;">' + p + "%</div>" +
+          "</div>";
+        }
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+          '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="color:#666; font-size:12.5px; margin-bottom:8px;">' + i18n("จำนวนพรรคที่มีผลจริง (ENP):", "Effective # of parties (ENP):") +
+            ' <b style="color:#222; font-variant-numeric:tabular-nums;">' + (isFinite(v) ? v.toFixed(2) : "—") + "</b></div>" +
+          '<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.06);">' +
+            '<div style="font-size:12px; color:#777; margin-bottom:4px;">' + i18n("ผู้สมัครคะแนนนำ (แบ่งเขต)", "Top candidates (constituency)") + "</div>" +
+            (lines || ('<div style="font-size:12px; color:#777;">' + i18n("ไม่มีข้อมูล", "No details available") + "</div>")) +
+          "</div>" +
+        "</div>";
+      }
+      function popupTurnout(distId) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        var meta = turnoutMetaByDist && turnoutMetaByDist[distId] ? turnoutMetaByDist[distId] : null;
+        var v = (turnoutByDist && turnoutByDist[distId] != null) ? Number(turnoutByDist[distId]) : null;
+        var province = (d && d.province) || (meta && meta.province) || (distId ? String(distId).split("_").slice(0, -1).join("_") : "");
+        var district = (d && d.district) || (meta && meta.district) || (distId ? String(distId).split("_").slice(-1)[0] : "");
+        var title = escapeHtml(provinceLabel(province)) + " — " + i18n("เขต ", "District ") + escapeHtml(district);
+        var turnoutPct = (v != null && isFinite(v)) ? (v * 100.0) : null;
+        var turnoutListPct = (turnoutListByDist && turnoutListByDist[distId] != null) ? (Number(turnoutListByDist[distId]) * 100.0) : null;
+        var eligible = meta && meta.eligible != null ? Number(meta.eligible) : null;
+        var voted = meta && meta.voted != null ? Number(meta.voted) : null;
+        var votedList = meta && meta.voted_list != null ? Number(meta.voted_list) : null;
+        var invalid = meta && meta.invalid != null ? Number(meta.invalid) : null;
+        var novote = meta && meta.no_vote != null ? Number(meta.no_vote) : null;
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+          '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="color:#666; font-size:12.5px; margin-bottom:10px;">' +
+            i18n("อัตราการใช้สิทธิ:", "Turnout:") +
+            ' <b style="color:#222; font-variant-numeric:tabular-nums;">' + (turnoutPct == null ? "—" : turnoutPct.toFixed(1) + "%") + "</b>" +
+          "</div>" +
+          '<div style="display:grid; grid-template-columns: 1fr auto; gap:6px 10px; font-size:12.5px; color:#444;">' +
+            "<div>" + i18n("ผู้มีสิทธิเลือกตั้ง", "Eligible voters") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (eligible == null ? "—" : eligible.toLocaleString()) + "</div>" +
+            "<div>" + i18n("ผู้ใช้สิทธิเลือกตั้ง", "Votes cast") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (voted == null ? "—" : voted.toLocaleString()) + "</div>" +
+            "<div>" + i18n("อัตราใช้สิทธิ (บัญชีรายชื่อ)", "Party-list turnout") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (turnoutListPct == null ? "—" : turnoutListPct.toFixed(1) + "%") + (votedList == null ? "" : " · " + votedList.toLocaleString()) + "</div>" +
+            "<div>" + i18n("บัตรเสีย", "Invalid ballots") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (invalid == null ? "—" : invalid.toLocaleString()) + "</div>" +
+            "<div>" + i18n("ไม่เลือกผู้สมัครผู้ใด", "No-candidate ballots") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (novote == null ? "—" : novote.toLocaleString()) + "</div>" +
+          "</div>" +
+        "</div>";
+      }
+      function popupTurnoutList(distId) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        var meta = turnoutMetaByDist && turnoutMetaByDist[distId] ? turnoutMetaByDist[distId] : null;
+        var v = (turnoutListByDist && turnoutListByDist[distId] != null) ? Number(turnoutListByDist[distId]) : null;
+        var province = (d && d.province) || (meta && meta.province) || (distId ? String(distId).split("_").slice(0, -1).join("_") : "");
+        var district = (d && d.district) || (meta && meta.district) || (distId ? String(distId).split("_").slice(-1)[0] : "");
+        var title = escapeHtml(provinceLabel(province)) + " — " + i18n("เขต ", "District ") + escapeHtml(district);
+        var turnoutPct = (v != null && isFinite(v)) ? (v * 100.0) : null;
+        var turnoutConstPct = (turnoutByDist && turnoutByDist[distId] != null) ? (Number(turnoutByDist[distId]) * 100.0) : null;
+        var eligible = meta && meta.eligible != null ? Number(meta.eligible) : null;
+        var voted = meta && meta.voted_list != null ? Number(meta.voted_list) : null;
+        var votedConst = meta && meta.voted != null ? Number(meta.voted) : null;
+        var invalid = meta && meta.invalid_list != null ? Number(meta.invalid_list) : null;
+        var novote = meta && meta.no_vote_list != null ? Number(meta.no_vote_list) : null;
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+          '<div style="font-size:14px; font-weight:800; margin-bottom:4px;">' + title + "</div>" +
+          '<div style="color:#666; font-size:12.5px; margin-bottom:10px;">' +
+            i18n("อัตราการใช้สิทธิ (บัญชีรายชื่อ):", "Party-list turnout:") +
+            ' <b style="color:#222; font-variant-numeric:tabular-nums;">' + (turnoutPct == null ? "—" : turnoutPct.toFixed(1) + "%") + "</b>" +
+          "</div>" +
+          '<div style="display:grid; grid-template-columns: 1fr auto; gap:6px 10px; font-size:12.5px; color:#444;">' +
+            "<div>" + i18n("ผู้มีสิทธิเลือกตั้ง", "Eligible voters") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (eligible == null ? "—" : eligible.toLocaleString()) + "</div>" +
+            "<div>" + i18n("ผู้ใช้สิทธิเลือกตั้ง (บัญชีรายชื่อ)", "Votes cast (party-list)") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (voted == null ? "—" : voted.toLocaleString()) + "</div>" +
+            "<div>" + i18n("อัตราใช้สิทธิ (แบ่งเขต)", "Constituency turnout") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (turnoutConstPct == null ? "—" : turnoutConstPct.toFixed(1) + "%") + (votedConst == null ? "" : " · " + votedConst.toLocaleString()) + "</div>" +
+            "<div>" + i18n("บัตรเสีย (บัญชีรายชื่อ)", "Invalid ballots (party-list)") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (invalid == null ? "—" : invalid.toLocaleString()) + "</div>" +
+            "<div>" + i18n("ไม่เลือกพรรคการเมืองใด", "No-party ballots") + '</div><div style="font-variant-numeric:tabular-nums; font-weight:700;">' + (novote == null ? "—" : novote.toLocaleString()) + "</div>" +
+          "</div>" +
+        "</div>";
+      }
+
+      function popupFor(distId) {
+        var mode = currentMode();
+        if (mode === "mov") return popupMov(distId);
+        if (mode === "hhi") return popupHHI(distId);
+        if (mode === "div") return popupDiv(distId);
+        if (mode === "enp") return popupENP(distId);
+        if (mode === "turnout") return popupTurnout(distId);
+        if (mode === "turnout_list") return popupTurnoutList(distId);
+        return popupWinner(distId, mode);
+      }
+
+      var layerByDistId = {};
+      var geoLayer = null;
+      var openPopupDistId = null;
+
+      function applyStylesAndPopups() {
+        if (!geoLayer) return;
+        geoLayer.eachLayer(function(l) {
+          var distId = l.feature && l.feature.properties ? l.feature.properties.dist_id : null;
+          if (!distId) return;
+          var popupHtml = popupFor(distId);
+          l.setStyle(baseStyleFor(distId));
+          if (openPopupDistId && openPopupDistId === distId) {
+            // Live-update content for the popup currently on screen.
+            if (l.getPopup()) l.setPopupContent(popupHtml);
+            else l.bindPopup(popupHtml, { maxWidth: 560 });
+          } else {
+            l.bindPopup(popupHtml, { maxWidth: 560 });
+          }
+        });
+        if (openPopupDistId && layerByDistId[openPopupDistId]) {
+          try { layerByDistId[openPopupDistId].openPopup(); } catch (e) {}
+        }
+        buildLegend();
+      }
+
+      function buildLegend() {
+        var wrap = document.getElementById("party-legend");
+        var title = document.getElementById("legend-title");
+        var modeEl = document.getElementById("legend-mode");
+        var body = document.getElementById("legend-body");
+        if (!wrap || !title || !modeEl || !body) return;
+        if (!results || !results.byDist) {
+          title.textContent = i18n("กำลังโหลด…", "Loading…");
+          modeEl.textContent = "";
+          body.innerHTML = "";
+          return;
+        }
+
+        var mode = currentMode();
+        if (!overlayMode) {
+          title.textContent = i18n("พรรคการเมือง", "Party");
+          modeEl.textContent = (baseMode === "list") ? i18n("บัญชีรายชื่อ", "Party-list") : i18n("แบ่งเขต", "Constituency");
+          var wins = {};
+          Object.keys(results.byDist).forEach(function(did) {
+            var dd = results.byDist[did];
+            var p = (baseMode === "list") ? dd.winner_plist_party : dd.winner_const_party;
+            if (!p) return;
+            wins[p] = (wins[p] || 0) + 1;
+          });
+          var items = [];
+          Object.keys(wins).forEach(function(p) { items.push([p, wins[p]]); });
+          items.sort(function(a, b) { return b[1] - a[1]; });
+          var html = "";
+          for (var i = 0; i < items.length; i++) {
+            var p = items[i][0];
+            var c = items[i][1];
+            var col = (results.colorMapping && results.colorMapping[p]) ? results.colorMapping[p] : "#D9D9D9";
+            html += '<div class="legend-item">' +
+              '<div class="legend-left">' +
+                '<span class="legend-swatch" style="background:' + col + '"></span>' +
+                '<span class="legend-name" title="' + escapeHtml(partyLabel(p)) + '">' + escapeHtml(partyLabel(p)) + "</span>" +
+              "</div>" +
+              '<span class="legend-count">' + c.toLocaleString() + "</span>" +
+            "</div>";
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "mov") {
+          title.textContent = i18n("ส่วนต่างคะแนนผู้ชนะ (pp)", "Margin of victory (pp)");
+          modeEl.textContent = i18n("ยิ่งต่ำ = แข่งขันสูง", "Lower = more competitive");
+          var counts = [0, 0, 0, 0, 0];
+          Object.keys(movByDist).forEach(function(did) { counts[movBinIndex(movByDist[did])] += 1; });
+          var labels = ["0-2", "2-5", "5-10", "10-20", "20+"];
+          var html = "";
+          for (var i = 0; i < labels.length; i++) {
+            html += '<div class="legend-item">' +
+              '<div class="legend-left"><span class="legend-swatch" style="background:' + MOV_COLORS[i] + '"></span>' +
+              '<span class="legend-name">' + labels[i] + " pp</span></div>" +
+              '<span class="legend-count">' + counts[i].toLocaleString() + "</span>" +
+            "</div>";
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "enp") {
+          title.textContent = i18n("จำนวนพรรคที่มีผลจริง (ENP)", "Effective # of Parties (ENP)");
+          modeEl.textContent = i18n("ค่าสูง = แข่งขันหลายพรรค", "Higher = more fragmented competition");
+          var labels = ["1–2", "2–3", "3–4", "4–5", "5–6", "6+"];
+          var counts = [0, 0, 0, 0, 0, 0];
+          var winCounts = [0, 0, 0, 0, 0, 0];
+          var winnerPartyFilter = window.__winnerPartyFilter || "";
+          Object.keys(enpByDist).forEach(function(did) {
+            var idx = Math.min(5, Math.max(0, enpBinIndex(enpByDist[did])));
+            counts[idx] += 1;
+            if (winnerPartyFilter) {
+              var d = results && results.byDist ? results.byDist[did] : null;
+              var winner = d ? d.winner_const_party : null;
+              if (winner && winner === winnerPartyFilter) winCounts[idx] += 1;
+            }
+          });
+          var html = '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">' + i18n("ช่วงค่า ENP", "ENP bins") + "</div>";
+          for (var i = 0; i < labels.length; i++) {
+            var col = enpColor(i / 5.0);
+            var right = counts[i].toLocaleString() + " " + i18n("เขต", "constituencies");
+            if (winnerPartyFilter) {
+              right += " · " + (winCounts[i] || 0).toLocaleString() + " " + i18n("เขตที่ชนะ", "won");
+            }
+            html += '<div class="legend-item">' +
+              '<div class="legend-left"><span class="legend-swatch" style="background:' + col + '"></span>' +
+              '<span class="legend-name">' + labels[i] + "</span></div>" +
+              '<span class="legend-count">' + right + "</span>" +
+            "</div>";
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "turnout") {
+          title.textContent = i18n("อัตราการใช้สิทธิ (%)", "Turnout (%)");
+          modeEl.textContent = i18n("ผู้ใช้สิทธิ / ผู้มีสิทธิ", "Votes cast / eligible voters");
+          var labels = ["<60%", "60-65%", "65-70%", "70-75%", "75-80%", "80%+"];
+          var counts = [0, 0, 0, 0, 0, 0];
+          Object.keys(turnoutByDist || {}).forEach(function(did) {
+            var idx = turnoutBinIndex(turnoutByDist[did]);
+            counts[idx] = (counts[idx] || 0) + 1;
+          });
+          var html = '<div style="font-size:12.5px; color:#444; margin-bottom:6px; font-weight:800;">' + (isEn() ? "Turnout bins" : "ช่วงอัตราการใช้สิทธิ") + "</div>" +
+            '<div style="font-size:12px; color:#666; margin:-2px 0 10px 0; line-height:1.35;">' + (isEn() ? "Turnout = votes cast / eligible voters" : "Turnout = ผู้ใช้สิทธิ / ผู้มีสิทธิ") + "</div>";
+          for (var i = 0; i < labels.length; i++) {
+            var col = TURNOUT_COLORS[i] || TURNOUT_COLORS[0];
+            html += '<div class="legend-item">' +
+              '<div class="legend-left"><span class="legend-swatch" style="background:' + col + '"></span><span class="legend-name">' + labels[i] + "</span></div>" +
+              '<span class="legend-count">' + (counts[i] || 0).toLocaleString() + " " + i18n("เขต", "constituencies") + "</span>" +
+            "</div>";
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "turnout_list") {
+          title.textContent = i18n("อัตราการใช้สิทธิ (บัญชีรายชื่อ) (%)", "Party-list turnout (%)");
+          modeEl.textContent = i18n("ผู้ใช้สิทธิ (บัญชีรายชื่อ) / ผู้มีสิทธิ", "Party-list votes cast / eligible voters");
+          var labels = ["<60%", "60-65%", "65-70%", "70-75%", "75-80%", "80%+"];
+          var counts = [0, 0, 0, 0, 0, 0];
+          Object.keys(turnoutListByDist || {}).forEach(function(did) {
+            var idx = turnoutBinIndex(turnoutListByDist[did]);
+            counts[idx] = (counts[idx] || 0) + 1;
+          });
+          var html = '<div style="font-size:12.5px; color:#444; margin-bottom:6px; font-weight:800;">' + (isEn() ? "Turnout bins" : "ช่วงอัตราการใช้สิทธิ") + "</div>" +
+            '<div style="font-size:12px; color:#666; margin:-2px 0 10px 0; line-height:1.35;">' + (isEn() ? "Party-list turnout = votes cast / eligible voters" : "Turnout (บัญชีรายชื่อ) = ผู้ใช้สิทธิ / ผู้มีสิทธิ") + "</div>";
+          for (var i = 0; i < labels.length; i++) {
+            var col = TURNOUT_COLORS[i] || TURNOUT_COLORS[0];
+            html += '<div class="legend-item">' +
+              '<div class="legend-left"><span class="legend-swatch" style="background:' + col + '"></span><span class="legend-name">' + labels[i] + "</span></div>" +
+              '<span class="legend-count">' + (counts[i] || 0).toLocaleString() + " " + i18n("เขต", "constituencies") + "</span>" +
+            "</div>";
+          }
+          body.innerHTML = html;
+          return;
+        }
+
+        if (mode === "hhi") {
+          title.textContent = i18n("คะแนนกระจุกตัวแค่ไหน (HHI)", "Vote Concentration (HHI)");
+          modeEl.textContent = i18n("สูง = กระจุกตัว", "Higher = votes are more concentrated");
+          var grad2 = "linear-gradient(90deg, rgb(254,224,210), rgb(153,0,13))";
+          body.innerHTML =
+            '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">HHI(norm) (0–100%)</div>' +
+            '<div style="font-size:12px; color:#666; margin:-2px 0 10px 0; line-height:1.35;">' + i18n("HHI = Σ s² (s=สัดส่วนคะแนนแบ่งเขต) · HHI(norm) = (HHI − 1/N)/(1 − 1/N)", "HHI = Σ s² (s=constituency vote share) · HHI(norm) = (HHI − 1/N)/(1 − 1/N)") + "</div>" +
+            '<div style="height:12px; border-radius:8px; background:' + grad2 + '; border:1px solid rgba(0,0,0,0.08);"></div>' +
+            '<div style="display:flex; justify-content:space-between; font-size:12px; color:#666; margin-top:6px;"><span>' + i18n("กระจายตัว", "More dispersed") + "</span><span>" + i18n("กระจุกตัว", "More concentrated") + "</span></div>" +
+            '<div style="font-size:12px; color:#666; margin-top:10px; line-height:1.35;">' + i18n("ยิ่งเข้ม = คะแนนยิ่งกระจุกตัว", "Darker = more vote concentration") + "</div>";
+          return;
+        }
+
+        if (mode === "div") {
+          title.textContent = i18n("เทียบ แบ่งเขต vs บัญชีรายชื่อ", "Ballot Splitting");
+          modeEl.textContent = i18n("ยิ่งสูง = ต่างมาก", "Constituency vs party-list mismatch");
+          var grad = "linear-gradient(90deg, rgb(237,248,255), rgb(8,81,156))";
+          body.innerHTML =
+            '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">Total variation distance (0–100%)</div>' +
+            '<div style="font-size:12px; color:#666; margin:-2px 0 10px 0; line-height:1.35;">' + i18n("TV = ½ Σ |pᵢ − cᵢ| (p=บัญชีรายชื่อ, c=แบ่งเขต)", "TV = ½ Σ |pᵢ − cᵢ| (p=party-list, c=constituency)") + "</div>" +
+            '<div style="height:12px; border-radius:8px; background:' + grad + '; border:1px solid rgba(0,0,0,0.08);"></div>' +
+            '<div style="display:flex; justify-content:space-between; font-size:12px; color:#666; margin-top:6px;"><span>0%</span><span>100%</span></div>' +
+            '<div style="font-size:12px; color:#666; margin-top:10px; line-height:1.35;">' + i18n("ยิ่งสูง = รูปแบบคะแนนต่างกันมาก", "Higher = more different voting patterns") + "</div>";
+          return;
+        }
+
+        // Fallback
+        title.textContent = i18n("แผนที่", "Map");
+        modeEl.textContent = "";
+        body.innerHTML = "";
+      }
+
+      function wireLegendCollapse() {
+        var wrap = document.getElementById("party-legend");
+        var head = document.getElementById("legend-head");
+        var chev = document.getElementById("legend-chevron");
+        if (!wrap || !head || !chev) return;
+        head.addEventListener("click", function() {
+          var collapsed = wrap.classList.toggle("collapsed");
+          chev.textContent = collapsed ? "▸" : "▾";
+        });
+      }
+
+      function setOverlay(overlay) {
+        overlayMode = overlay || null;
+        applyStylesAndPopups();
+      }
+      function setMapMode(mode) {
+        baseMode = (mode === "list") ? "list" : "const";
+        overlayMode = null;
+        window.__winnerPartyFilter = "";
+        applyStylesAndPopups();
+      }
+      window.setOverlayMode = setOverlay;
+      window.setMapMode = setMapMode;
+
+      function selectDist(distId) {
+        var layer = layerByDistId[distId];
+        if (!layer) return;
+        try {
+          map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+        } catch (e) {}
+        layer.openPopup();
+      }
+
+      window.addEventListener("message", function(event) {
+        if (!event || !event.data) return;
+        var d = event.data;
+
+        if (d.type === "set-lang") {
+          uiLang = d.lang === "en" ? "en" : "th";
+          window.__mapLang = uiLang;
+          if (d.provinceMap && typeof d.provinceMap === "object") window.__provinceNameEn = d.provinceMap;
+          if (d.partyMap && typeof d.partyMap === "object") window.__partyNameEn = d.partyMap;
+          // Rebuild both legend and popups so open/next popups follow the selected language.
+          applyStylesAndPopups();
+          return;
+        }
+        if (d.type === "set-overlay") { setOverlay(d.overlay || null); return; }
+        if (d.type === "set-winner-party") {
+          window.__winnerPartyFilter = (d.party || "");
+          applyStylesAndPopups();
+          return;
+        }
+        if (d.type === "set-mode") { setMapMode(d.mode); return; }
+        if (d.type === "select-constituency") {
+          if (d.mode) setMapMode(d.mode);
+          if (d.distId) selectDist(d.distId);
+          return;
+        }
+      });
+
+      function loadAll() {
+        var geoPromise = null;
+        var resPromise = null;
+        var hasSimplifiedPreload = !!(window.__geojson2569Simplified && window.__geojson2569Simplified.features);
+        var usePreloadOnly = window.location && window.location.protocol === "file:" && hasSimplifiedPreload;
+
+        if (usePreloadOnly) {
+          geoPromise = Promise.resolve(window.__geojson2569Simplified);
+        } else {
+          geoPromise = fetch(GEOJSON_URL, { cache: "no-store" })
+            .then(function(r) { if (!r.ok) throw new Error("geojson " + r.status); return r.json(); })
+            .catch(function() {
+              if (hasSimplifiedPreload) return window.__geojson2569Simplified;
+              return fetch(GEOJSON_SIMPLIFIED_URL, { cache: "no-store" })
+                .then(function(r) { if (!r.ok) throw new Error("geojson " + r.status); return r.json(); });
+            });
+        }
+
+        if (window.__electionResults2569 && window.__electionResults2569.byDist) {
+          resPromise = Promise.resolve(window.__electionResults2569);
+        } else {
+          resPromise = fetch(RESULTS_URL, { cache: "no-store" })
+            .then(function(r) { if (!r.ok) throw new Error("results " + r.status); return r.json(); });
+        }
+
+        return Promise.all([geoPromise, resPromise]).then(function(parts) {
+          var geo = parts[0];
+          results = parts[1];
+          computeMetrics();
+
+          geoLayer = L.geoJSON(geo, {
+            pointToLayer: function(_feature, latlng) {
+              // Suppress point geometries embedded in GeometryCollection so the map stays polygon-only like 2023.
+              return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0, interactive: false });
+            },
+            style: function(feature) {
+              var distId = feature && feature.properties ? feature.properties.dist_id : null;
+              return distId ? baseStyleFor(distId) : { fillColor: "#D9D9D9", fillOpacity: 1.0, stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95 };
+            },
+            onEachFeature: function(feature, layer) {
+              var distId = feature && feature.properties ? feature.properties.dist_id : null;
+              if (!distId) return;
+              layerByDistId[distId] = layer;
+              layer.bindPopup(popupFor(distId), { maxWidth: 560 });
+              layer.on("popupopen", function() { openPopupDistId = distId; });
+              layer.on("popupclose", function() { if (openPopupDistId === distId) openPopupDistId = null; });
+              layer.on("mouseover", function() {
+                layer.setStyle(Object.assign({}, baseStyleFor(distId), hoverStyle()));
+              });
+              layer.on("mouseout", function() {
+                layer.setStyle(baseStyleFor(distId));
+              });
+            }
+          }).addTo(map);
+
+          try {
+            homeBounds = geoLayer.getBounds();
+            map.fitBounds(homeBounds, { padding: [10, 10] });
+          } catch (e) {}
+          wireLegendCollapse();
+          applyStylesAndPopups();
+        });
+      }
+
+      buildLegend();
+      loadAll().catch(function(err) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to load 2569 map data", err);
+        showError("Map failed to load.\\n\\n" + String(err && err.message ? err.message : err));
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <style>
+    html,body { margin:0; padding:0; width:100%; height:100%; }
+    #wrap { width:100%; height:100%; display:flex; flex-direction:column; }
+    #chart { width:100%; flex:1 1 auto; }
+    .toggle { display:flex; gap:8px; margin:8px 8px 0 8px; }
+    .toggle button { border:1px solid #d7dbe2; background:#fff; border-radius:999px; padding:6px 10px; font-weight:600; cursor:pointer; }
+    .toggle button.active { border-color:#111827; color:#111827; }
+    @media (max-width: 720px) {
+      #chart { height: calc(100% - 96px); }
+      .toggle { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+    <div id="wrap">
+    <div class="toggle">
+      <button id="btn-const" class="active">แบ่งเขต</button>
+      <button id="btn-list">บัญชีรายชื่อ</button>
+      <button id="btn-seat-share">ที่นั่งเขต (%)</button>
+    </div>
+    <div id="chart"></div>
+  </div>
+
+  <script>
+    const PARTY_ORDER = ["ประชาชน", "ภูมิใจไทย", "เพื่อไทย", "กล้าธรรม", "ประชาธิปัตย์", "ไทรวมพลัง"];
+    const PARTY_COLORS = {
+      "ประชาชน": "#fd6512",
+      "ภูมิใจไทย": "#0c149c",
+      "เพื่อไทย": "#da3731",
+      "กล้าธรรม": "#55CF6A",
+      "ประชาธิปัตย์": "#06aff3",
+      "ไทรวมพลัง": "#6E2AA5"
+    };
+
+    const DATA_BY_SCHEME = {"classic":{"const":{"ประชาชน":{"กรุงเทพมหานคร":46.770921420747904,"ภาคกลาง":30.914070481417887,"ภาคเหนือ":26.40733693053387,"ภาคตะวันออกเฉียงเหนือ":17.61706724605401,"ภาคใต้":12.74576553158305},"ภูมิใจไทย":{"กรุงเทพมหานคร":15.827083641234152,"ภาคกลาง":35.37480590710795,"ภาคเหนือ":23.70972254125504,"ภาคตะวันออกเฉียงเหนือ":33.972824022726385,"ภาคใต้":35.71019495710944},"เพื่อไทย":{"กรุงเทพมหานคร":14.747717644670788,"ภาคกลาง":12.603843002691729,"ภาคเหนือ":22.262750562416375,"ภาคตะวันออกเฉียงเหนือ":29.5784926724393,"ภาคใต้":1.8348011437483756},"กล้าธรรม":{"กรุงเทพมหานคร":0.661806186019136,"ภาคกลาง":10.44126644156261,"ภาคเหนือ":19.862159947016224,"ภาคตะวันออกเฉียงเหนือ":9.37358295136555,"ภาคใต้":17.88121653236288},"ประชาธิปัตย์":{"กรุงเทพมหานคร":11.917363680037989,"ภาคกลาง":4.525043904743333,"ภาคเหนือ":2.888313090514849,"ภาคตะวันออกเฉียงเหนือ":1.0580798387263997,"ภาคใต้":21.198481933974524},"ไทรวมพลัง":{"กรุงเทพมหานคร":0.0,"ภาคกลาง":0.0,"ภาคเหนือ":0.0,"ภาคตะวันออกเฉียงเหนือ":2.351485211107689,"ภาคใต้":2.2636443982323886}},"list":{"ประชาชน":{"กรุงเทพมหานคร":47.3817402731456,"ภาคกลาง":37.13102603854553,"ภาคเหนือ":32.46888202151949,"ภาคตะวันออกเฉียงเหนือ":24.37350958429662,"ภาคใต้":19.686774649673477},"ภูมิใจไทย":{"กรุงเทพมหานคร":18.501226654176044,"ภาคกลาง":22.060977599112157,"ภาคเหนือ":15.40726023342347,"ภาคตะวันออกเฉียงเหนือ":20.44693312062226,"ภาคใต้":12.575341424554479},"เพื่อไทย":{"กรุงเทพมหานคร":10.40816429793023,"ภาคกลาง":10.897133160539338,"ภาคเหนือ":19.3533755796241,"ภาคตะวันออกเฉียงเหนือ":27.585347166871067,"ภาคใต้":1.946907918951195},"กล้าธรรม":{"กรุงเทพมหานคร":0.23737962958947204,"ภาคกลาง":1.146202159065566,"ภาคเหนือ":4.746892936146982,"ภาคตะวันออกเฉียงเหนือ":1.5160034386663765,"ภาคใต้":1.7076494549558352},"ประชาธิปัตย์":{"กรุงเทพมหานคร":10.509433744049247,"ภาคกลาง":7.583557093787105,"ภาคเหนือ":5.8436434683641405,"ภาคตะวันออกเฉียงเหนือ":2.3784346262076546,"ภาคใต้":43.90054085135861},"ไทรวมพลัง":{"กรุงเทพมหานคร":0.03943075150458496,"ภาคกลาง":0.060376201261809696,"ภาคเหนือ":0.07036681673133184,"ภาคตะวันออกเฉียงเหนือ":1.3712078569745711,"ภาคใต้":0.14689280006344976}}},"eastSplit":{"const":{"ประชาชน":{"กรุงเทพมหานคร":46.770921420747904,"ภาคกลาง":30.482642389967186,"ภาคตะวันออก":32.08229844179024,"ภาคเหนือ":26.40733693053387,"ภาคตะวันออกเฉียงเหนือ":17.61706724605401,"ภาคใต้":12.74576553158305},"ภูมิใจไทย":{"กรุงเทพมหานคร":15.827083641234152,"ภาคกลาง":36.9722548190588,"ภาคตะวันออก":31.049207919428866,"ภาคเหนือ":23.70972254125504,"ภาคตะวันออกเฉียงเหนือ":33.972824022726385,"ภาคใต้":35.71019495710944},"เพื่อไทย":{"กรุงเทพมหานคร":14.747717644670788,"ภาคกลาง":13.156172265789676,"ภาคตะวันออก":11.108236895279475,"ภาคเหนือ":22.262750562416375,"ภาคตะวันออกเฉียงเหนือ":29.5784926724393,"ภาคใต้":1.8348011437483756},"กล้าธรรม":{"กรุงเทพมหานคร":0.661806186019136,"ภาคกลาง":10.95497671517569,"ภาคตะวันออก":9.050233458180925,"ภาคเหนือ":19.862159947016224,"ภาคตะวันออกเฉียงเหนือ":9.37358295136555,"ภาคใต้":17.88121653236288},"ประชาธิปัตย์":{"กรุงเทพมหานคร":11.917363680037989,"ภาคกลาง":3.724893930167715,"ภาคตะวันออก":6.691702940893003,"ภาคเหนือ":2.888313090514849,"ภาคตะวันออกเฉียงเหนือ":1.0580798387263997,"ภาคใต้":21.198481933974524},"ไทรวมพลัง":{"กรุงเทพมหานคร":0.0,"ภาคกลาง":0.0,"ภาคตะวันออก":0.0,"ภาคเหนือ":0.0,"ภาคตะวันออกเฉียงเหนือ":2.351485211107689,"ภาคใต้":2.2636443982323886}},"list":{"ประชาชน":{"กรุงเทพมหานคร":47.3817402731456,"ภาคกลาง":37.305074833823085,"ภาคตะวันออก":36.66185434045474,"ภาคเหนือ":32.46888202151949,"ภาคตะวันออกเฉียงเหนือ":24.37350958429662,"ภาคใต้":19.686774649673477},"ภูมิใจไทย":{"กรุงเทพมหานคร":18.501226654176044,"ภาคกลาง":22.53363088545319,"ภาคตะวันออก":20.78687774333798,"ภาคเหนือ":15.40726023342347,"ภาคตะวันออกเฉียงเหนือ":20.44693312062226,"ภาคใต้":12.575341424554479},"เพื่อไทย":{"กรุงเทพมหานคร":10.40816429793023,"ภาคกลาง":11.497866443878143,"ภาคตะวันออก":9.277776622079841,"ภาคเหนือ":19.3533755796241,"ภาคตะวันออกเฉียงเหนือ":27.585347166871067,"ภาคใต้":1.946907918951195},"กล้าธรรม":{"กรุงเทพมหานคร":0.23737962958947204,"ภาคกลาง":1.122843041668358,"ภาคตะวันออก":1.209169769715629,"ภาคเหนือ":4.746892936146982,"ภาคตะวันออกเฉียงเหนือ":1.5160034386663765,"ภาคใต้":1.7076494549558352},"ประชาธิปัตย์":{"กรุงเทพมหานคร":10.509433744049247,"ภาคกลาง":7.337759984466952,"ภาคตะวันออก":8.246135923945829,"ภาคเหนือ":5.8436434683641405,"ภาคตะวันออกเฉียงเหนือ":2.3784346262076546,"ภาคใต้":43.90054085135861},"ไทรวมพลัง":{"กรุงเทพมหานคร":0.03943075150458496,"ภาคกลาง":0.05727657082654676,"ภาคตะวันออก":0.06873166774146575,"ภาคเหนือ":0.07036681673133184,"ภาคตะวันออกเฉียงเหนือ":1.3712078569745711,"ภาคใต้":0.14689280006344976}}}};
+
+    const SEATS_BY_SCHEME = {"classic":{"ประชาชน":{"กรุงเทพมหานคร":33,"ภาคกลาง":32,"ภาคเหนือ":14,"ภาคตะวันออกเฉียงเหนือ":6,"ภาคใต้":2},"ภูมิใจไทย":{"กรุงเทพมหานคร":0,"ภาคกลาง":53,"ภาคเหนือ":26,"ภาคตะวันออกเฉียงเหนือ":64,"ภาคใต้":31},"เพื่อไทย":{"กรุงเทพมหานคร":0,"ภาคกลาง":6,"ภาคเหนือ":9,"ภาคตะวันออกเฉียงเหนือ":43,"ภาคใต้":0},"กล้าธรรม":{"กรุงเทพมหานคร":0,"ภาคกลาง":11,"ภาคเหนือ":20,"ภาคตะวันออกเฉียงเหนือ":13,"ภาคใต้":12},"ประชาธิปัตย์":{"กรุงเทพมหานคร":0,"ภาคกลาง":1,"ภาคเหนือ":0,"ภาคตะวันออกเฉียงเหนือ":0,"ภาคใต้":9},"ไทรวมพลัง":{"กรุงเทพมหานคร":0,"ภาคกลาง":0,"ภาคเหนือ":0,"ภาคตะวันออกเฉียงเหนือ":4,"ภาคใต้":1}},"eastSplit":{"ประชาชน":{"กรุงเทพมหานคร":33,"ภาคกลาง":24,"ภาคตะวันออก":8,"ภาคเหนือ":14,"ภาคตะวันออกเฉียงเหนือ":6,"ภาคใต้":2},"ภูมิใจไทย":{"กรุงเทพมหานคร":0,"ภาคกลาง":40,"ภาคตะวันออก":13,"ภาคเหนือ":26,"ภาคตะวันออกเฉียงเหนือ":64,"ภาคใต้":31},"เพื่อไทย":{"กรุงเทพมหานคร":0,"ภาคกลาง":5,"ภาคตะวันออก":1,"ภาคเหนือ":9,"ภาคตะวันออกเฉียงเหนือ":43,"ภาคใต้":0},"กล้าธรรม":{"กรุงเทพมหานคร":0,"ภาคกลาง":7,"ภาคตะวันออก":4,"ภาคเหนือ":20,"ภาคตะวันออกเฉียงเหนือ":13,"ภาคใต้":12},"ประชาธิปัตย์":{"กรุงเทพมหานคร":0,"ภาคกลาง":0,"ภาคตะวันออก":1,"ภาคเหนือ":0,"ภาคตะวันออกเฉียงเหนือ":0,"ภาคใต้":9},"ไทรวมพลัง":{"กรุงเทพมหานคร":0,"ภาคกลาง":0,"ภาคตะวันออก":0,"ภาคเหนือ":0,"ภาคตะวันออกเฉียงเหนือ":4,"ภาคใต้":1}}};
+    const REGION_TOTAL_SEATS = {
+      classic: { "กรุงเทพมหานคร": 33, "ภาคกลาง": 105, "ภาคเหนือ": 70, "ภาคตะวันออกเฉียงเหนือ": 133, "ภาคใต้": 59 },
+      eastSplit: { "กรุงเทพมหานคร": 33, "ภาคกลาง": 76, "ภาคตะวันออก": 29, "ภาคเหนือ": 70, "ภาคตะวันออกเฉียงเหนือ": 133, "ภาคใต้": 59 }
+    };
+
+    const layout = {
+      barmode: 'group',
+      margin: { l: 50, r: 20, t: 40, b: 40 },
+      xaxis: { title: '', tickangle: 0, tickfont: { size: 12 } },
+      yaxis: { title: 'สัดส่วนคะแนน (%)', rangemode: 'tozero', tickfont: { size: 12 } },
+      legend: { orientation: 'h', y: -0.25 },
+      autosize: true,
+      title: { text: 'สัดส่วนคะแนนรายภาค (แบ่งเขต)', x: 0.01, font: { size: 16 } }
+    };
+
+    const chart = document.getElementById('chart');
+    const btnConst = document.getElementById('btn-const');
+    const btnList = document.getElementById('btn-list');
+    const btnSeatShare = document.getElementById('btn-seat-share');
+
+    const LANG_TEXT = {
+      th: {
+        constBtn: 'แบ่งเขต',
+        listBtn: 'บัญชีรายชื่อ',
+        seatShareBtn: 'ที่นั่งเขต (%)',
+        titleConst: 'สัดส่วนคะแนนรายภาค (แบ่งเขต)',
+        titleList: 'สัดส่วนคะแนนรายภาค (บัญชีรายชื่อ)',
+        titleSeatShare: 'สัดส่วนที่นั่งเขตรายภาค',
+        yAxis: 'สัดส่วนคะแนน (%)',
+        yAxisSeatShare: 'สัดส่วนที่นั่งเขต (%)',
+        seatLabel: 'ที่นั่งเขต'
+      },
+      en: {
+        constBtn: 'Constituency',
+        listBtn: 'Party List',
+        seatShareBtn: 'Constituency Seat Share',
+        titleConst: 'Regional Vote Share (Constituency)',
+        titleList: 'Regional Vote Share (Party List)',
+        titleSeatShare: 'Regional Constituency Seat Share',
+        yAxis: 'Vote Share (%)',
+        yAxisSeatShare: 'Constituency Seat Share (%)',
+        seatLabel: 'Constituency seats'
+      }
+    };
+
+    const PARTY_NAME_EN = {
+      'เพื่อไทย': 'Pheu Thai Party',
+      'ประชาธิปัตย์': 'Democrat Party',
+      'กล้าธรรม': 'Klatham Party',
+      'ภูมิใจไทย': 'Bhumjaithai Party',
+      'ประชาชน': 'People\'s Party',
+      'ไทรวมพลัง': 'Thai Ruam Phalang Party'
+    };
+
+    const REGION_NAME_EN = {
+      'กรุงเทพมหานคร': 'Bangkok',
+      'ภาคกลาง': 'Central',
+      'ภาคตะวันออก': 'East',
+      'ภาคเหนือ': 'North',
+      'ภาคตะวันออกเฉียงเหนือ': 'Northeast',
+      'ภาคใต้': 'South'
+    };
+
+    let currentLang = (localStorage.getItem('lang') || 'th');
+
+    const activeMode = () => {
+      if (btnSeatShare.classList.contains('active')) return 'seatShare';
+      return btnConst.classList.contains('active') ? 'const' : 'list';
+    };
+    const activeScheme = () => 'eastSplit';
+
+    const translateParty = (name, lang) => (lang === 'en' ? (PARTY_NAME_EN[name] || name) : name);
+    const translateRegion = (name, lang) => (lang === 'en' ? (REGION_NAME_EN[name] || name) : name);
+
+    function getSortedRegions(datasetForMode) {
+      const fixedOrder = ['กรุงเทพมหานคร', 'ภาคกลาง', 'ภาคใต้', 'ภาคตะวันออกเฉียงเหนือ', 'ภาคตะวันออก', 'ภาคเหนือ'];
+      return fixedOrder.filter((r) => PARTY_ORDER.some((p) => Object.prototype.hasOwnProperty.call(datasetForMode[p] || {}, r)));
+    }
+
+    function buildTraces(lang) {
+      const scheme = activeScheme();
+      const mode = activeMode();
+      const seatDs = (SEATS_BY_SCHEME[scheme]) || {};
+      const totals = REGION_TOTAL_SEATS[scheme] || {};
+      const ds = (mode === 'seatShare')
+        ? Object.fromEntries(PARTY_ORDER.map((party) => {
+          const seatMap = seatDs[party] || {};
+          const shareMap = {};
+          Object.keys(totals).forEach((region) => {
+            const denom = Number(totals[region] || 0);
+            const seats = Number(seatMap[region] || 0);
+            shareMap[region] = denom > 0 ? (seats / denom) * 100 : 0;
+          });
+          return [party, shareMap];
+        }))
+        : ((DATA_BY_SCHEME[scheme] && DATA_BY_SCHEME[scheme][mode]) || {});
+      const sortedRegions = getSortedRegions(ds);
+      const t = LANG_TEXT[lang] || LANG_TEXT.th;
+
+      // Per region, rank parties by value so bars are ordered high -> low within each group.
+      const rankedByRegion = sortedRegions.map((region) => {
+        return PARTY_ORDER
+          .map((party) => {
+            const partyData = ds[party] || {};
+            const partySeats = seatDs[party] || {};
+            return {
+              party,
+              value: Number(partyData[region] || 0),
+              seats: Number(partySeats[region] || 0)
+            };
+          })
+          .sort((a, b) => b.value - a.value);
+      });
+
+      const rankTraces = PARTY_ORDER.map((_, rankIdx) => ({
+        type: 'bar',
+        name: `Rank ${rankIdx + 1}`,
+        x: sortedRegions.map((r) => translateRegion(r, lang)),
+        y: rankedByRegion.map((rows) => rows[rankIdx].value),
+        customdata: rankedByRegion.map((rows) => [translateParty(rows[rankIdx].party, lang), rows[rankIdx].seats]),
+        marker: { color: rankedByRegion.map((rows) => PARTY_COLORS[rows[rankIdx].party] || '#9ca3af') },
+        showlegend: false,
+        hovertemplate: `%{x}<br>%{customdata[0]}: %{y:.1f}%<br>${t.seatLabel}: %{customdata[1]}<extra></extra>`
+      }));
+
+      // Keep party color legend visible.
+      const legendTraces = PARTY_ORDER.map((party) => ({
+        type: 'scatter',
+        mode: 'markers',
+        name: translateParty(party, lang),
+        x: [null],
+        y: [null],
+        marker: { color: PARTY_COLORS[party] || '#9ca3af', size: 10 },
+        hoverinfo: 'skip',
+        showlegend: true
+      }));
+
+      return [...rankTraces, ...legendTraces];
+    }
+
+    function applyResponsiveLayout() {
+      const w = window.innerWidth || document.documentElement.clientWidth;
+      if (w <= 720) {
+        layout.xaxis.tickangle = -45;
+        layout.xaxis.tickfont = { size: 11 };
+        layout.yaxis.tickfont = { size: 11 };
+        layout.margin.b = 140;
+        layout.legend.y = -0.35;
+      } else {
+        layout.xaxis.tickangle = 0;
+        layout.xaxis.tickfont = { size: 12 };
+        layout.yaxis.tickfont = { size: 12 };
+        layout.margin.b = 40;
+        layout.legend.y = -0.25;
+      }
+    }
+
+    function applyHeight() {
+      const wrap = document.getElementById('wrap');
+      const chartEl = document.getElementById('chart');
+      if (!wrap || !chartEl) return;
+      const totalH = wrap.getBoundingClientRect().height || window.innerHeight;
+      const toggles = document.querySelectorAll('.toggle');
+      let offset = 8;
+      toggles.forEach((el) => { offset += el.getBoundingClientRect().height; });
+      const chartH = Math.max(260, totalH - offset);
+      chartEl.style.height = chartH + 'px';
+    }
+
+    function render() {
+      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
+      const mode = activeMode();
+      layout.yaxis.title = mode === 'seatShare' ? t.yAxisSeatShare : t.yAxis;
+      layout.title.text = mode === 'const' ? t.titleConst : (mode === 'list' ? t.titleList : t.titleSeatShare);
+      Plotly.react(chart, buildTraces(currentLang), layout, { displayModeBar: false, responsive: true });
+    }
+
+    function applyLang(lang) {
+      currentLang = lang;
+      try { localStorage.setItem('lang', lang); } catch (err) {}
+      const t = LANG_TEXT[lang] || LANG_TEXT.th;
+      btnConst.textContent = t.constBtn;
+      btnList.textContent = t.listBtn;
+      btnSeatShare.textContent = t.seatShareBtn;
+      render();
+    }
+
+    applyResponsiveLayout();
+    applyHeight();
+    Plotly.newPlot(chart, buildTraces(currentLang), layout, { displayModeBar: false, responsive: true });
+    setTimeout(() => Plotly.Plots.resize(chart), 50);
+
+    const handleResize = () => {
+      applyResponsiveLayout();
+      applyHeight();
+      Plotly.Plots.resize(chart);
+    };
+    window.addEventListener('resize', handleResize);
+    if (window.ResizeObserver) new ResizeObserver(() => handleResize()).observe(document.getElementById('wrap'));
+
+    btnConst.addEventListener('click', () => {
+      btnConst.classList.add('active');
+      btnList.classList.remove('active');
+      btnSeatShare.classList.remove('active');
+      render();
+    });
+
+    btnList.addEventListener('click', () => {
+      btnList.classList.add('active');
+      btnConst.classList.remove('active');
+      btnSeatShare.classList.remove('active');
+      render();
+    });
+
+    btnSeatShare.addEventListener('click', () => {
+      btnSeatShare.classList.add('active');
+      btnConst.classList.remove('active');
+      btnList.classList.remove('active');
+      render();
+    });
+
+    window.addEventListener('message', (event) => {
+      if (event && event.data && event.data.type === 'region-resize') handleResize();
+      if (event && event.data && event.data.type === 'set-lang') applyLang(event.data.lang || 'th');
+    });
+
+    applyLang(currentLang);
+  </script>
+</body>
+</html>

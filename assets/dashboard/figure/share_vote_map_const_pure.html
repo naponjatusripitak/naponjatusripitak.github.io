@@ -244,10 +244,17 @@
   };
 
 
-  const map = L.map('map', { zoomSnap: 0.1, zoomDelta: 0.1, wheelDebounceTime: 20, wheelPxPerZoomLevel: 60, zoomControl: false, preferCanvas: true, zoomAnimation: true, fadeAnimation: true, markerZoomAnimation: false, inertia: true });
+  const map = L.map('map', { zoomSnap: 0.1, zoomDelta: 0.1, wheelDebounceTime: 20, wheelPxPerZoomLevel: 60, zoomControl: false, attributionControl: false, preferCanvas: true, zoomAnimation: true, fadeAnimation: true, markerZoomAnimation: false, inertia: true });
   const bounds = L.geoJSON(GEOJSON).getBounds();
   map.fitBounds(bounds, { padding: [10, 10] });
-  map.attributionControl.setPrefix("<a href=\"https://naponjatusripitak.github.io\" target=\"_blank\" rel=\"noopener\">© Napon Jatusripitak</a>");
+  const copyrightControl = L.control({ position: "bottomleft" });
+  copyrightControl.onAdd = function() {
+    const div = L.DomUtil.create("div");
+    div.style.cssText = "font:12px/1.2 system-ui; color:#6b7280; background:rgba(255,255,255,0.92); padding:4px 8px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.12);";
+    div.innerHTML = "<a href=\"https://naponjatusripitak.github.io\" target=\"_blank\" rel=\"noopener\" style=\"color:#6b7280; text-decoration:none;\">&copy; Napon Jatusripitak</a>";
+    return div;
+  };
+  copyrightControl.addTo(map);
 
   const homeBounds = bounds;
   const HomeControl = L.Control.extend({
