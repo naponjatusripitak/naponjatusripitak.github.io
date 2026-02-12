@@ -56,14 +56,18 @@
       votesLabel: 'คะแนน',
       noCandidate: 'ไม่มีข้อมูลผู้สมัคร',
       partyLabel: 'พรรค',
-      modeLabel: 'แบ่งเขต'
+      modeLabel: 'แบ่งเขต',
+      panMap: 'เลื่อนแผนที่',
+      lockPan: 'ล็อกเลื่อนแผนที่'
     },
     en: {
       scaleLabel: 'Vote share (constituency)',
       votesLabel: 'votes',
       noCandidate: 'No candidate data',
       partyLabel: 'Party',
-      modeLabel: 'Constituency'
+      modeLabel: 'Constituency',
+      panMap: 'Pan map',
+      lockPan: 'Lock map pan'
     }
   };
 
@@ -195,10 +199,59 @@
   let map = null;
   let geoLayer = null;
   let layerByDistId = {};
+  const isTouchDevice = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  let touchPanEnabled = false;
+  let touchPanBtn = null;
+
+  function syncTouchPanState() {
+    if (!isTouchDevice || !map || !map.dragging) return;
+    if (touchPanEnabled) map.dragging.enable();
+    else map.dragging.disable();
+    if (touchPanBtn) {
+      touchPanBtn.textContent = touchPanEnabled ? t('lockPan') : t('panMap');
+      touchPanBtn.style.background = touchPanEnabled ? '#0f172a' : '#fff';
+      touchPanBtn.style.color = touchPanEnabled ? '#fff' : '#0f172a';
+      touchPanBtn.setAttribute('aria-pressed', touchPanEnabled ? 'true' : 'false');
+    }
+  }
+
+  function addTouchPanControl() {
+    if (!isTouchDevice || !map) return;
+    const TouchPanControl = L.Control.extend({
+      options: { position: 'topleft' },
+      onAdd() {
+        const btn = L.DomUtil.create('button', 'touch-pan-btn');
+        btn.type = 'button';
+        btn.style.background = '#fff';
+        btn.style.border = '1px solid rgba(0,0,0,0.15)';
+        btn.style.borderRadius = '999px';
+        btn.style.padding = '6px 10px';
+        btn.style.fontFamily = 'system-ui';
+        btn.style.fontSize = '12px';
+        btn.style.fontWeight = '700';
+        btn.style.cursor = 'pointer';
+        btn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.12)';
+        btn.style.minWidth = '86px';
+        L.DomEvent.disableClickPropagation(btn);
+        L.DomEvent.disableScrollPropagation(btn);
+        L.DomEvent.on(btn, 'click', (e) => {
+          L.DomEvent.preventDefault(e);
+          touchPanEnabled = !touchPanEnabled;
+          syncTouchPanState();
+        });
+        touchPanBtn = btn;
+        syncTouchPanState();
+        return btn;
+      }
+    });
+    map.addControl(new TouchPanControl());
+    syncTouchPanState();
+  }
 
   function applyLang(lang) {
     currentLang = ['th', 'en'].includes(lang) ? lang : currentLang;
     updateScale();
+    syncTouchPanState();
     if (!geoLayer) return;
     geoLayer.eachLayer((layer) => {
       const v = getShareVal(layer.feature.properties.dist_id);
@@ -295,6 +348,7 @@
       }
     });
     map.addControl(new HomeControl());
+    addTouchPanControl();
 
     layerByDistId = {};
     const canvasRenderer = L.canvas({ padding: 0.5 });

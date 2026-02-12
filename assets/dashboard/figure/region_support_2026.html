@@ -18,7 +18,7 @@
   </style>
 </head>
 <body>
-    <div id="wrap">
+  <div id="wrap">
     <div class="toggle">
       <button id="btn-const" class="active">แบ่งเขต</button>
       <button id="btn-list">บัญชีรายชื่อ</button>
@@ -48,12 +48,11 @@
 
     const layout = {
       barmode: 'group',
-      margin: { l: 50, r: 20, t: 40, b: 40 },
+      margin: { l: 50, r: 20, t: 16, b: 40 },
       xaxis: { title: '', tickangle: 0, tickfont: { size: 12 } },
       yaxis: { title: 'สัดส่วนคะแนน (%)', rangemode: 'tozero', tickfont: { size: 12 } },
       legend: { orientation: 'h', y: -0.25 },
-      autosize: true,
-      title: { text: 'สัดส่วนคะแนนรายภาค (แบ่งเขต)', x: 0.01, font: { size: 16 } }
+      autosize: true
     };
 
     const chart = document.getElementById('chart');
@@ -103,6 +102,22 @@
       'ภาคตะวันออกเฉียงเหนือ': 'Northeast',
       'ภาคใต้': 'South'
     };
+    const REGION_NAME_SHORT_TH = {
+      'กรุงเทพมหานคร': 'กทม.',
+      'ภาคกลาง': 'กลาง',
+      'ภาคตะวันออก': 'ตะวันออก',
+      'ภาคเหนือ': 'เหนือ',
+      'ภาคตะวันออกเฉียงเหนือ': 'อีสาน',
+      'ภาคใต้': 'ใต้'
+    };
+    const REGION_NAME_SHORT_EN = {
+      'กรุงเทพมหานคร': 'BKK',
+      'ภาคกลาง': 'Central',
+      'ภาคตะวันออก': 'East',
+      'ภาคเหนือ': 'North',
+      'ภาคตะวันออกเฉียงเหนือ': 'NE',
+      'ภาคใต้': 'South'
+    };
 
     let currentLang = (localStorage.getItem('lang') || 'th');
 
@@ -114,6 +129,12 @@
 
     const translateParty = (name, lang) => (lang === 'en' ? (PARTY_NAME_EN[name] || name) : name);
     const translateRegion = (name, lang) => (lang === 'en' ? (REGION_NAME_EN[name] || name) : name);
+    const regionTickLabel = (name, lang, mobile) => {
+      if (!mobile) return translateRegion(name, lang);
+      return lang === 'en'
+        ? (REGION_NAME_SHORT_EN[name] || translateRegion(name, lang))
+        : (REGION_NAME_SHORT_TH[name] || name);
+    };
 
     function getSortedRegions(datasetForMode) {
       const fixedOrder = ['กรุงเทพมหานคร', 'ภาคกลาง', 'ภาคใต้', 'ภาคตะวันออกเฉียงเหนือ', 'ภาคตะวันออก', 'ภาคเหนือ'];
@@ -139,6 +160,8 @@
         : ((DATA_BY_SCHEME[scheme] && DATA_BY_SCHEME[scheme][mode]) || {});
       const sortedRegions = getSortedRegions(ds);
       const t = LANG_TEXT[lang] || LANG_TEXT.th;
+      const isMobile = (window.innerWidth || document.documentElement.clientWidth || 9999) <= 720;
+      const xLabels = sortedRegions.map((r) => regionTickLabel(r, lang, isMobile));
 
       // Per region, rank parties by value so bars are ordered high -> low within each group.
       const rankedByRegion = sortedRegions.map((region) => {
@@ -158,7 +181,7 @@
       const rankTraces = PARTY_ORDER.map((_, rankIdx) => ({
         type: 'bar',
         name: `Rank ${rankIdx + 1}`,
-        x: sortedRegions.map((r) => translateRegion(r, lang)),
+        x: xLabels,
         y: rankedByRegion.map((rows) => rows[rankIdx].value),
         customdata: rankedByRegion.map((rows) => [translateParty(rows[rankIdx].party, lang), rows[rankIdx].seats]),
         marker: { color: rankedByRegion.map((rows) => PARTY_COLORS[rows[rankIdx].party] || '#9ca3af') },
@@ -187,8 +210,8 @@
         layout.xaxis.tickangle = -45;
         layout.xaxis.tickfont = { size: 11 };
         layout.yaxis.tickfont = { size: 11 };
-        layout.margin.b = 140;
-        layout.legend.y = -0.35;
+        layout.margin.b = 108;
+        layout.legend.y = -0.22;
       } else {
         layout.xaxis.tickangle = 0;
         layout.xaxis.tickfont = { size: 12 };
@@ -214,7 +237,6 @@
       const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
       const mode = activeMode();
       layout.yaxis.title = mode === 'seatShare' ? t.yAxisSeatShare : t.yAxis;
-      layout.title.text = mode === 'const' ? t.titleConst : (mode === 'list' ? t.titleList : t.titleSeatShare);
       Plotly.react(chart, buildTraces(currentLang), layout, { displayModeBar: false, responsive: true });
     }
 
