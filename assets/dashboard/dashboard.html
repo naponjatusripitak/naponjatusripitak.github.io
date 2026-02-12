@@ -1582,6 +1582,22 @@
         </div>
       </div>
     </section>
+    <section id="referendum-section">
+      <h2 class="section-title" data-i18n="referendumTitle">Referendum Map: เห็นชอบ vs ไม่เห็นชอบ vs ไม่แสดงความคิดเห็น</h2>
+      <div class="grid-1">
+        <div class="card">
+          <iframe class="iframe-mid" src="figure/referendum_map_2026.html?v=ref26" scrolling="no" id="referendum-map-frame"></iframe>
+        </div>
+      </div>
+    </section>
+    <section id="referendum-correlation-section">
+      <h2 class="section-title" data-i18n="referendumCorrelationTitle">Correlation: Party-list Support vs Referendum</h2>
+      <div class="grid-1">
+        <div class="card">
+          <iframe class="iframe-mid" src="figure/referendum_partylist_correlation_2026.html?v=refcorr26" scrolling="no" id="referendum-correlation-frame"></iframe>
+        </div>
+      </div>
+    </section>
   </main>
   <footer class="footer">
     © 2026 <a href="https://naponjatusripitak.github.io" target="_blank" rel="noopener">Napon Jatusripitak</a>. <span data-i18n="rights">All rights reserved.</span>
@@ -1830,6 +1846,8 @@
       topConstHeading: 'เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)',
       topListHeading: 'บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)',
       heatmapTitle: 'Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
+      referendumTitle: 'Referendum Map: เห็นชอบ vs ไม่เห็นชอบ vs ไม่แสดงความคิดเห็น',
+      referendumCorrelationTitle: 'Correlation: Party-list Support vs Referendum',
       hhiTip: 'ดูความกระจุกตัวของคะแนนผู้สมัคร (ยิ่งสูง = ยิ่งกระจุกตัว)',
       tvTip: 'ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)',
       movTip: 'ดูส่วนต่างคะแนนผู้ชนะเหนืออันดับสอง',
@@ -1895,6 +1913,8 @@
       topConstHeading: 'Constituency (Top vote share)',
       topListHeading: 'Party-list (Top vote share)',
       heatmapTitle: 'Heatmap: Constituency winner vs Top party-list winner',
+      referendumTitle: 'Referendum Map: Yes vs No vs No preference',
+      referendumCorrelationTitle: 'Correlation: Party-list Support vs Referendum',
       hhiTip: 'See how concentrated candidate votes are (higher = more concentrated)',
       tvTip: 'See how different constituency and party list results are (higher = more different)',
       movTip: 'See winner margin over runner-up',
@@ -2501,6 +2521,8 @@
       document.getElementById('plotly-frame'),
       document.getElementById('density-frame'),
       document.getElementById('heatmap-frame'),
+      document.getElementById('referendum-map-frame'),
+      document.getElementById('referendum-correlation-frame'),
       document.getElementById('map-iframe'),
       document.getElementById('share-map-const'),
       document.getElementById('share-map-list'),
@@ -2995,6 +3017,8 @@
   const plotFrame = document.getElementById('plotly-frame');
   const densityFrame = document.getElementById('density-frame');
   const heatmapFrame = document.getElementById('heatmap-frame');
+  const referendumFrame = document.getElementById('referendum-map-frame');
+  const referendumCorrelationFrame = document.getElementById('referendum-correlation-frame');
   const provinceSupportFrame = document.getElementById('province-support-frame');
   const shareMapConst = document.getElementById('share-map-const');
   const shareMapList = document.getElementById('share-map-list');
@@ -3320,6 +3344,28 @@
       }, '*');
     });
   }
+  if (referendumFrame) {
+    referendumFrame.addEventListener('load', () => {
+      if (!referendumFrame.contentWindow) return;
+      referendumFrame.contentWindow.postMessage({
+        type: 'set-lang',
+        lang: currentLang,
+        provinceMap: PROVINCE_NAME_EN,
+        partyMap: getPartyNameMap(),
+      }, '*');
+    });
+  }
+  if (referendumCorrelationFrame) {
+    referendumCorrelationFrame.addEventListener('load', () => {
+      if (!referendumCorrelationFrame.contentWindow) return;
+      referendumCorrelationFrame.contentWindow.postMessage({
+        type: 'set-lang',
+        lang: currentLang,
+        provinceMap: PROVINCE_NAME_EN,
+        partyMap: getPartyNameMap(),
+      }, '*');
+    });
+  }
   const sendRegionResize = () => {
     const regionFrame = document.getElementById('region-support-frame');
     if (regionFrame && regionFrame.contentWindow) {
@@ -3523,6 +3569,28 @@
 	      : 'figure/heatmap_interactive.html?v=hm5';
 	    if (heatmapFrame.getAttribute('src') !== heatmapSrc) heatmapFrame.setAttribute('src', heatmapSrc);
 	  };
+    const setReferendumIframeYear = (year) => {
+      const sec = document.getElementById('referendum-section');
+      const frame = document.getElementById('referendum-map-frame');
+      if (!sec || !frame) return;
+      const show = year === '2569';
+      sec.style.display = show ? '' : 'none';
+      if (show) {
+        const src = 'figure/referendum_map_2026.html?v=ref26';
+        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+      }
+    };
+    const setReferendumCorrelationIframeYear = (year) => {
+      const sec = document.getElementById('referendum-correlation-section');
+      const frame = document.getElementById('referendum-correlation-frame');
+      if (!sec || !frame) return;
+      const show = year === '2569';
+      sec.style.display = show ? '' : 'none';
+      if (show) {
+        const src = 'figure/referendum_partylist_correlation_2026.html?v=refcorr26';
+        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+      }
+    };
 	  const setShareVoteIframesYear = (year) => {
 	    const shareConstFrame = document.getElementById('share-map-const');
 	    const shareListFrame = document.getElementById('share-map-list');
@@ -3564,6 +3632,8 @@
 	    setMapIframeYear(currentMapYear);
 	    setSupportIframesYear(currentMapYear);
 	    setHeatmapIframeYear(currentMapYear);
+	    setReferendumIframeYear(currentMapYear);
+	    setReferendumCorrelationIframeYear(currentMapYear);
 	    setShareVoteIframesYear(currentMapYear);
 	    setDensityIframeYear(currentMapYear);
       setTurnoutCompareIframeYear(currentMapYear);

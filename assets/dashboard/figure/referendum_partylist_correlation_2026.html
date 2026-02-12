@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Referendum vs Party-list Correlation</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #f6f7f9; }
+    body { font-family: Kanit, system-ui, sans-serif; color: #0f172a; }
+    .wrap { padding: 12px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    label { font-size: 12px; font-weight: 700; color: #334155; }
+    select {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 6px 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      min-width: 180px;
+    }
+    .stat {
+      margin-left: auto;
+      font-size: 12px;
+      color: #475569;
+      font-variant-numeric: tabular-nums;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.08);
+      margin-bottom: 10px;
+    }
+    #scatter { height: 520px; }
+    #rank { height: 420px; }
+    .note { font-size: 12px; color: #64748b; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="controls">
+      <label for="party-select" id="label-party">พรรค (บัญชีรายชื่อ)</label>
+      <select id="party-select"></select>
+
+      <label for="metric-select" id="label-metric">ตัวชี้วัดประชามติ</label>
+      <select id="metric-select">
+        <option value="percent_yes">เห็นชอบ (%)</option>
+        <option value="percent_no">ไม่เห็นชอบ (%)</option>
+        <option value="percent_abstained">ไม่แสดงความคิดเห็น (%)</option>
+      </select>
+
+      <div class="stat" id="stat-line">r = -, R² = -, n = -</div>
+    </div>
+
+    <div class="card">
+      <div id="scatter"></div>
+      <div class="note" id="scatter-note">แกน X: สัดส่วนคะแนนบัญชีรายชื่อของพรรคในแต่ละเขต (%) | แกน Y: ตัวชี้วัดประชามติ (%)</div>
+    </div>
+
+    <div class="card">
+      <div id="rank"></div>
+      <div class="note" id="rank-note">จัดอันดับความสัมพันธ์ของพรรคทั้งหมดกับตัวชี้วัดประชามติที่เลือก (Pearson r)</div>
+    </div>
+  </div>
+
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <script src="../data/referendum_results_2569_by_dist.js"></script>
+  <script>
+    const I18N = {
+      th: {
+        labelParty: 'พรรค (บัญชีรายชื่อ)',
+        labelMetric: 'ตัวชี้วัดประชามติ',
+        metricYes: 'เห็นชอบ (%)',
+        metricNo: 'ไม่เห็นชอบ (%)',
+        metricAbs: 'ไม่แสดงความคิดเห็น (%)',
+        scatterTitle: 'ความสัมพันธ์: สัดส่วนคะแนนบัญชีรายชื่อพรรค กับ ผลประชามติ',
+        xTitle: 'สัดส่วนคะแนนบัญชีรายชื่อพรรค (%)',
+        yTitle: 'ผลประชามติ (%)',
+        lineName: 'เส้นถดถอยเชิงเส้น',
+        pointName: 'เขตเลือกตั้ง',
+        rankTitle: 'อันดับค่าสหสัมพันธ์ของพรรค (Pearson r)',
+        rankX: 'Pearson r',
+        stat: 'r = {r}, R² = {r2}, n = {n}',
+        scatterNote: 'แกน X: สัดส่วนคะแนนบัญชีรายชื่อของพรรคในแต่ละเขต (%) | แกน Y: ตัวชี้วัดประชามติ (%)',
+        rankNote: 'ค่า Pearson r แสดงความสัมพันธ์ระหว่างสัดส่วนคะแนนบัญชีรายชื่อของแต่ละพรรคกับสัดส่วนผู้ลงคะแนนในตัวเลือกประชามติที่กำหนด (ค่าบวก = สัมพันธ์ทางเดียวกัน, ค่าลบ = สวนทางกัน)'
+      },
+      en: {
+        labelParty: 'Party (party-list)',
+        labelMetric: 'Referendum metric',
+        metricYes: 'Yes (%)',
+        metricNo: 'No (%)',
+        metricAbs: 'No preference (%)',
+        scatterTitle: 'Correlation: Party-list vote share vs Referendum result',
+        xTitle: 'Party-list vote share (%)',
+        yTitle: 'Referendum result (%)',
+        lineName: 'Linear fit',
+        pointName: 'Constituencies',
+        rankTitle: 'Party correlations ranking (Pearson r)',
+        rankX: 'Pearson r',
+        stat: 'r = {r}, R² = {r2}, n = {n}',
+        scatterNote: 'X-axis: party-list vote share by constituency (%) | Y-axis: selected referendum metric (%)',
+        rankNote: 'Pearson r shows the relationship between each party’s party-list vote share and the share voting for the selected referendum option (positive = move in the same direction, negative = move in opposite directions).'
+      }
+    };
+
+    const PARTY_COLORS = (window.__electionResults2569 && window.__electionResults2569.colorMapping) || {};
+    const byDist = (window.__electionResults2569 && window.__electionResults2569.byDist) || {};
+    const referendum = (window.__referendumResults2569ByDist && window.__referendumResults2569ByDist.byDist) || {};
+
+    let lang = (new URLSearchParams(location.search).get('lang') || localStorage.getItem('lang') || localStorage.getItem('dashboardLang') || 'th');
+    if (!['th', 'en'].includes(lang)) lang = 'th';
+
+    let partyMap = {};
+    const t = (k) => (I18N[lang] && I18N[lang][k]) ? I18N[lang][k] : k;
+    const fmt = (x, d=3) => Number.isFinite(x) ? x.toFixed(d) : '-';
+    const partyLabel = (p) => (lang === 'en' ? (partyMap[p] || p) : p);
+
+    function setText() {
+      document.getElementById('label-party').textContent = t('labelParty');
+      document.getElementById('label-metric').textContent = t('labelMetric');
+      const ms = document.getElementById('metric-select');
+      ms.querySelector('option[value="percent_yes"]').textContent = t('metricYes');
+      ms.querySelector('option[value="percent_no"]').textContent = t('metricNo');
+      ms.querySelector('option[value="percent_abstained"]').textContent = t('metricAbs');
+      document.getElementById('scatter-note').textContent = t('scatterNote');
+      document.getElementById('rank-note').textContent = t('rankNote');
+    }
+
+    function pearson(x, y) {
+      const n = x.length;
+      if (n < 2) return NaN;
+      let sx = 0, sy = 0;
+      for (let i = 0; i < n; i++) { sx += x[i]; sy += y[i]; }
+      const mx = sx / n, my = sy / n;
+      let num = 0, dx = 0, dy = 0;
+      for (let i = 0; i < n; i++) {
+        const a = x[i] - mx;
+        const b = y[i] - my;
+        num += a * b;
+        dx += a * a;
+        dy += b * b;
+      }
+      const den = Math.sqrt(dx * dy);
+      return den > 0 ? num / den : NaN;
+    }
+
+    function linearFit(x, y) {
+      const n = x.length;
+      if (n < 2) return null;
+      let sx = 0, sy = 0, sxy = 0, sxx = 0;
+      for (let i = 0; i < n; i++) {
+        sx += x[i];
+        sy += y[i];
+        sxy += x[i] * y[i];
+        sxx += x[i] * x[i];
+      }
+      const denom = (n * sxx - sx * sx);
+      if (Math.abs(denom) < 1e-12) return null;
+      const slope = (n * sxy - sx * sy) / denom;
+      const intercept = (sy - slope * sx) / n;
+      return { slope, intercept };
+    }
+
+    function collectPartyShares() {
+      const partyDistShare = {};
+      const partyTotalVotes = {};
+
+      Object.entries(byDist).forEach(([distId, dist]) => {
+        const plist = Array.isArray(dist.plist_parties) ? dist.plist_parties : [];
+        plist.forEach((row) => {
+          if (!row || !row.party) return;
+          const party = row.party;
+          const share = Number(row.plist_pp || 0);
+          const votes = Number(row.plist || 0);
+          if (!partyDistShare[party]) partyDistShare[party] = {};
+          partyDistShare[party][distId] = share;
+          partyTotalVotes[party] = (partyTotalVotes[party] || 0) + votes;
+        });
+      });
+
+      const parties = Object.keys(partyDistShare).sort((a, b) => (partyTotalVotes[b] || 0) - (partyTotalVotes[a] || 0));
+      return { partyDistShare, parties };
+    }
+
+    const { partyDistShare, parties } = collectPartyShares();
+    const partySelect = document.getElementById('party-select');
+    const metricSelect = document.getElementById('metric-select');
+    const statLine = document.getElementById('stat-line');
+    const frameId = 'referendum-correlation-frame';
+
+    function postHeight() {
+      const h = Math.max(
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0
+      );
+      if (window.parent) {
+        window.parent.postMessage({ type: 'iframe-height', id: frameId, height: h }, '*');
+      }
+    }
+
+    function populateParties() {
+      partySelect.innerHTML = '';
+      parties.forEach((p) => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = partyLabel(p);
+        partySelect.appendChild(opt);
+      });
+      if (parties.includes('ภูมิใจไทย')) partySelect.value = 'ภูมิใจไทย';
+    }
+
+    function pairedSeriesFor(party, metric) {
+      const x = [];
+      const y = [];
+      const label = [];
+      const shares = partyDistShare[party] || {};
+
+      Object.keys(shares).forEach((distId) => {
+        const r = referendum[distId];
+        if (!r) return;
+        const xv = Number(shares[distId]);
+        const yv = Number(r[metric]);
+        if (!Number.isFinite(xv) || !Number.isFinite(yv)) return;
+        x.push(xv);
+        y.push(yv);
+        label.push(distId);
+      });
+
+      return { x, y, label };
+    }
+
+    function computeRanking(metric) {
+      const rows = [];
+      parties.forEach((p) => {
+        const s = pairedSeriesFor(p, metric);
+        if (s.x.length < 10) return;
+        const r = pearson(s.x, s.y);
+        if (!Number.isFinite(r)) return;
+        rows.push({ party: p, r, n: s.x.length });
+      });
+      rows.sort((a, b) => a.r - b.r);
+      return rows;
+    }
+
+    function render() {
+      const party = partySelect.value || parties[0];
+      const metric = metricSelect.value;
+      const metricLabel = metricSelect.options[metricSelect.selectedIndex].textContent;
+
+      const s = pairedSeriesFor(party, metric);
+      const r = pearson(s.x, s.y);
+      const fit = linearFit(s.x, s.y);
+      const r2 = Number.isFinite(r) ? r * r : NaN;
+
+      statLine.textContent = t('stat')
+        .replace('{r}', fmt(r, 3))
+        .replace('{r2}', fmt(r2, 3))
+        .replace('{n}', String(s.x.length));
+
+      const partyColor = PARTY_COLORS[party] || '#2563eb';
+      const traces = [
+        {
+          type: 'scattergl',
+          mode: 'markers',
+          x: s.x,
+          y: s.y,
+          text: s.label,
+          name: t('pointName'),
+          marker: {
+            color: partyColor,
+            opacity: 0.65,
+            size: 8,
+            line: { width: 0 }
+          },
+          hovertemplate: '%{text}<br>x=%{x:.2f}%<br>y=%{y:.2f}%<extra></extra>'
+        }
+      ];
+
+      if (fit && s.x.length > 1) {
+        const xmin = Math.min(...s.x);
+        const xmax = Math.max(...s.x);
+        const xs = [xmin, xmax];
+        const ys = xs.map((xx) => fit.slope * xx + fit.intercept);
+        traces.push({
+          type: 'scatter',
+          mode: 'lines',
+          x: xs,
+          y: ys,
+          name: t('lineName'),
+          line: { color: '#111827', width: 2 }
+        });
+      }
+
+      Plotly.newPlot('scatter', traces, {
+        margin: { l: 60, r: 20, t: 20, b: 56 },
+        xaxis: { title: t('xTitle'), zeroline: false },
+        yaxis: { title: t('yTitle'), zeroline: false },
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#ffffff',
+        legend: { orientation: 'h', x: 0, y: 1.12 },
+      }, { displayModeBar: false, responsive: true }).then(() => {
+        postHeight();
+      });
+
+      const rankRows = computeRanking(metric);
+      const high = rankRows.slice(-12);
+      const low = rankRows.slice(0, 12);
+      const merged = new Map();
+      low.concat(high).forEach((row) => {
+        merged.set(row.party, row);
+      });
+      const shown = Array.from(merged.values()).sort((a, b) => b.r - a.r);
+
+      Plotly.newPlot('rank', [{
+        type: 'bar',
+        orientation: 'h',
+        y: shown.map((d) => partyLabel(d.party)),
+        x: shown.map((d) => d.r),
+        marker: {
+          color: shown.map((d) => d.r >= 0 ? '#0f8a5f' : '#c0392b'),
+          line: { color: '#ffffff', width: 0.5 }
+        },
+        customdata: shown.map((d) => d.n),
+        hovertemplate: '%{y}<br>r=%{x:.3f}<br>n=%{customdata}<extra></extra>'
+      }], {
+        margin: { l: 180, r: 20, t: 20, b: 50 },
+        xaxis: { title: t('rankX'), range: [-1, 1], zeroline: true, zerolinecolor: '#94a3b8' },
+        yaxis: { autorange: 'reversed' },
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#ffffff'
+      }, { displayModeBar: false, responsive: true }).then(() => {
+        postHeight();
+      });
+    }
+
+    partySelect.addEventListener('change', render);
+    metricSelect.addEventListener('change', render);
+    window.addEventListener('resize', () => {
+      const scatterEl = document.getElementById('scatter');
+      const rankEl = document.getElementById('rank');
+      if (scatterEl) Plotly.Plots.resize(scatterEl);
+      if (rankEl) Plotly.Plots.resize(rankEl);
+      postHeight();
+    });
+
+    window.addEventListener('message', (event) => {
+      const data = (event && event.data) ? event.data : {};
+      if (data.type === 'set-lang') {
+        if (data.partyMap && typeof data.partyMap === 'object') partyMap = data.partyMap;
+        lang = (data.lang === 'en') ? 'en' : 'th';
+        setText();
+        populateParties();
+        render();
+      }
+    });
+
+    setText();
+    populateParties();
+    render();
+    setTimeout(postHeight, 50);
+    setTimeout(postHeight, 300);
+  </script>
+</body>
+</html>

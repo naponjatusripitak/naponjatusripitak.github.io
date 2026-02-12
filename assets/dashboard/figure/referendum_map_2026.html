@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .leaflet-container { background: #f6f7f9; }
+
+    .ref-controls {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+      padding: 8px;
+      font-family: Sarabun, system-ui, sans-serif;
+    }
+    .ref-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .ref-btn {
+      border: 1px solid #cfd6e3;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ref-btn.active {
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .ref-legend {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 999;
+      background: rgba(255,255,255,0.95);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+      font-family: Sarabun, system-ui, sans-serif;
+      width: 128px;
+      border: 1px solid rgba(15,23,42,0.08);
+    }
+    .ref-legend-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .ref-scale {
+      display: block;
+    }
+    .ref-scale-bar {
+      width: 14px;
+      height: 130px;
+      border-radius: 999px;
+      background: #eee;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.08);
+      margin: 6px auto;
+    }
+    .ref-scale-max, .ref-scale-min {
+      display: block;
+      text-align: center;
+      font-size: 11px;
+      color: #444;
+      font-variant-numeric: tabular-nums;
+    }
+    .ref-scale-max { font-weight: 600; }
+
+    .ref-majority-legend {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .ref-majority-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .ref-majority-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .ref-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid rgba(0,0,0,0.08);
+      flex: 0 0 auto;
+    }
+    .ref-majority-name {
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ref-majority-count {
+      color: #555;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="ref-controls" id="ref-controls">
+  <div class="ref-row" id="mode-row">
+    <button type="button" class="ref-btn active" data-mode="majority" id="mode-majority">เสียงข้างมาก</button>
+    <button type="button" class="ref-btn" data-mode="share" id="mode-share">สัดส่วนคะแนน</button>
+  </div>
+  <div class="ref-row" id="metric-row" style="display:none;">
+    <button type="button" class="ref-btn active" data-metric="percent_yes" id="btn-yes">เห็นชอบ</button>
+    <button type="button" class="ref-btn" data-metric="percent_no" id="btn-no">ไม่เห็นชอบ</button>
+    <button type="button" class="ref-btn" data-metric="percent_abstained" id="btn-abstained">ไม่แสดงความคิดเห็น</button>
+  </div>
+</div>
+
+<div class="ref-legend">
+  <div class="ref-legend-label" id="legend-label">เสียงข้างมาก</div>
+
+  <div class="ref-scale" id="legend-scale">
+    <span class="ref-scale-max" id="scale-max-label">100%</span>
+    <div class="ref-scale-bar" id="scale-bar"></div>
+    <span class="ref-scale-min">0%</span>
+  </div>
+
+  <div class="ref-majority-legend" id="legend-majority"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="share_geojson.js"></script>
+<script src="../data/referendum_results_2569_by_dist.js"></script>
+<script>
+  const LANG_TEXT = {
+    th: {
+      modeMajority: 'เสียงข้างมาก',
+      modeShare: 'สัดส่วนคะแนน',
+      yes: 'เห็นชอบ',
+      no: 'ไม่เห็นชอบ',
+      abstained: 'ไม่แสดงความคิดเห็น',
+      sectionLabel: 'ประชามติ',
+      totalVotes: 'คะแนนรวม',
+      dominant: 'มากที่สุด',
+      noData: 'ไม่มีข้อมูล'
+    },
+    en: {
+      modeMajority: 'Majority winner',
+      modeShare: 'Vote share',
+      yes: 'Yes',
+      no: 'No',
+      abstained: 'No preference',
+      sectionLabel: 'Referendum',
+      totalVotes: 'Total votes',
+      dominant: 'Top result',
+      noData: 'No data'
+    }
+  };
+
+  const METRICS = {
+    percent_yes: { key: 'yes', base: '#0f8a5f' },
+    percent_no: { key: 'no', base: '#c0392b' },
+    percent_abstained: { key: 'abstained', base: '#4b5563' }
+  };
+
+  const MAJORITY_COLORS = {
+    yes: '#0f8a5f',
+    no: '#c0392b',
+    abstained: '#4b5563'
+  };
+
+  let currentMode = 'majority';
+  let currentMetric = 'percent_yes';
+  let currentLang = (new URLSearchParams(location.search).get('lang') || localStorage.getItem('lang') || localStorage.getItem('dashboardLang') || 'th');
+  if (!['th', 'en'].includes(currentLang)) currentLang = 'th';
+
+  let PROVINCE_NAME_EN = {};
+  let GEOJSON = null;
+  const REF = (window.__referendumResults2569ByDist && window.__referendumResults2569ByDist.byDist) || {};
+
+  const t = (key) => (LANG_TEXT[currentLang] || LANG_TEXT.th)[key] || key;
+  const translateProvinceName = (name) => currentLang === 'en' ? (PROVINCE_NAME_EN[name] || name) : name;
+  const formatDistrictLabel = (no) => currentLang === 'en' ? `District ${no}` : `เขต ${no}`;
+  const fmtInt = (n) => new Intl.NumberFormat(currentLang === 'en' ? 'en-US' : 'th-TH').format(Number(n || 0));
+
+  function computeMetricMax(metric) {
+    const vals = Object.values(REF).map((row) => Number(row[metric] || 0)).filter((x) => Number.isFinite(x));
+    if (!vals.length) return 100;
+    return Math.max(1, Math.ceil(Math.max(...vals)));
+  }
+
+  function hexToRgb(hex) {
+    if (!hex) return null;
+    let clean = String(hex).replace('#', '').trim();
+    if (clean.length === 3) clean = clean.split('').map((c) => c + c).join('');
+    if (clean.length !== 6) return null;
+    const num = parseInt(clean, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function colorForShare(metric, val, maxVal) {
+    if (val == null) return '#f0f0f0';
+    const denom = Math.max(1, maxVal || 1);
+    const ratio = Math.max(0, Math.min(1, Number(val || 0) / denom));
+    const baseHex = METRICS[metric].base;
+    const base = hexToRgb(baseHex) || { r: 43, g: 58, b: 85 };
+    const r = Math.round(255 + (base.r - 255) * ratio);
+    const g = Math.round(255 + (base.g - 255) * ratio);
+    const b = Math.round(255 + (base.b - 255) * ratio);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function getWinner(row) {
+    if (!row) return null;
+    if (row.winner === 'yes' || row.winner === 'no' || row.winner === 'abstained') return row.winner;
+    const y = Number(row.percent_yes || 0);
+    const n = Number(row.percent_no || 0);
+    const a = Number(row.percent_abstained || 0);
+    if (y >= n && y >= a) return 'yes';
+    if (n >= a) return 'no';
+    return 'abstained';
+  }
+
+  function metricLabel(metric) {
+    const key = METRICS[metric] ? METRICS[metric].key : 'yes';
+    return t(key);
+  }
+
+  function updateTextLabels() {
+    const modeMajority = document.getElementById('mode-majority');
+    const modeShare = document.getElementById('mode-share');
+    const yes = document.getElementById('btn-yes');
+    const no = document.getElementById('btn-no');
+    const abstained = document.getElementById('btn-abstained');
+    if (modeMajority) modeMajority.textContent = t('modeMajority');
+    if (modeShare) modeShare.textContent = t('modeShare');
+    if (yes) yes.textContent = t('yes');
+    if (no) no.textContent = t('no');
+    if (abstained) abstained.textContent = t('abstained');
+  }
+
+  function updateButtonsActive() {
+    document.querySelectorAll('[data-mode]').forEach((btn) => {
+      const mode = btn.dataset.mode;
+      const isActive = mode === currentMode;
+      btn.classList.toggle('active', isActive);
+      btn.style.background = isActive ? '#1f2937' : '#fff';
+      btn.style.color = isActive ? '#fff' : '#0f172a';
+    });
+
+    document.querySelectorAll('[data-metric]').forEach((btn) => {
+      const metric = btn.dataset.metric;
+      const isActive = metric === currentMetric;
+      btn.classList.toggle('active', isActive);
+      const activeColor = METRICS[currentMetric].base;
+      btn.style.background = isActive ? activeColor : '#fff';
+      btn.style.color = isActive ? '#fff' : '#0f172a';
+    });
+
+    const metricRow = document.getElementById('metric-row');
+    if (metricRow) metricRow.style.display = currentMode === 'share' ? 'flex' : 'none';
+  }
+
+  function renderMajorityLegend() {
+    const el = document.getElementById('legend-majority');
+    if (!el) return;
+    const counts = { yes: 0, no: 0, abstained: 0 };
+    Object.values(REF).forEach((row) => {
+      const w = getWinner(row);
+      if (w && counts[w] != null) counts[w] += 1;
+    });
+
+    el.innerHTML = ['yes', 'no', 'abstained'].map((k) => `
+      <div class="ref-majority-item">
+        <div class="ref-majority-left">
+          <span class="ref-swatch" style="background:${MAJORITY_COLORS[k]}"></span>
+          <span class="ref-majority-name">${t(k)}</span>
+        </div>
+        <span class="ref-majority-count">${fmtInt(counts[k] || 0)}</span>
+      </div>
+    `).join('');
+  }
+
+  function updateLegend(maxVal) {
+    const legendLabel = document.getElementById('legend-label');
+    const scaleWrap = document.getElementById('legend-scale');
+    const majorityWrap = document.getElementById('legend-majority');
+    const bar = document.getElementById('scale-bar');
+    const maxLabel = document.getElementById('scale-max-label');
+
+    if (currentMode === 'share') {
+      if (legendLabel) legendLabel.textContent = `${t('sectionLabel')} — ${metricLabel(currentMetric)}`;
+      if (scaleWrap) scaleWrap.style.display = 'block';
+      if (majorityWrap) majorityWrap.style.display = 'none';
+      if (bar) bar.style.background = `linear-gradient(180deg, ${METRICS[currentMetric].base}, #ffffff)`;
+      if (maxLabel) maxLabel.textContent = `${maxVal}%`;
+    } else {
+      if (legendLabel) legendLabel.textContent = `${t('sectionLabel')} — ${t('modeMajority')}`;
+      if (scaleWrap) scaleWrap.style.display = 'none';
+      if (majorityWrap) majorityWrap.style.display = 'flex';
+      renderMajorityLegend();
+    }
+  }
+
+  function getDistValue(distId, metric) {
+    const row = REF[distId];
+    if (!row) return null;
+    const value = Number(row[metric]);
+    return Number.isFinite(value) ? value : null;
+  }
+
+  function dominantLabel(row) {
+    const w = getWinner(row);
+    return w ? t(w) : '—';
+  }
+
+  function buildPopup(props) {
+    const distId = props.dist_id;
+    const row = REF[distId] || null;
+    const province = translateProvinceName(props['จังหวัด'] || '');
+    const district = props['เขต'] != null ? props['เขต'] : '';
+    if (!row) {
+      return `<div style="font-family:system-ui; font-size:13px; line-height:1.25;">
+        <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${province} — ${formatDistrictLabel(district)}</div>
+        <div style="color:#666; font-size:12.5px;">${t('noData')}</div>
+      </div>`;
+    }
+
+    const currentValue = Number(row[currentMetric] || 0).toFixed(2);
+    const total = Number(row.yes || 0) + Number(row.no || 0) + Number(row.abstained || 0);
+    const modeLine = currentMode === 'share'
+      ? `${t('sectionLabel')} · ${metricLabel(currentMetric)} ${currentValue}%`
+      : `${t('sectionLabel')} · ${t('modeMajority')} (${dominantLabel(row)})`;
+
+    return `<div style="font-family:system-ui; font-size:13px; line-height:1.25;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:4px;">${province} — ${formatDistrictLabel(district)}</div>
+      <div style="color:#555; font-size:12.5px; margin-bottom:6px;">${modeLine}</div>
+      <div style="display:grid; grid-template-columns:auto auto; gap:2px 10px; font-size:12.5px;">
+        <div>${t('yes')}</div><div style="text-align:right; font-variant-numeric:tabular-nums;">${Number(row.percent_yes || 0).toFixed(2)}% · ${fmtInt(row.yes)}</div>
+        <div>${t('no')}</div><div style="text-align:right; font-variant-numeric:tabular-nums;">${Number(row.percent_no || 0).toFixed(2)}% · ${fmtInt(row.no)}</div>
+        <div>${t('abstained')}</div><div style="text-align:right; font-variant-numeric:tabular-nums;">${Number(row.percent_abstained || 0).toFixed(2)}% · ${fmtInt(row.abstained)}</div>
+      </div>
+      <div style="margin-top:7px; color:#666; font-size:12px;">${t('totalVotes')}: ${fmtInt(total)} · ${t('dominant')}: ${dominantLabel(row)}</div>
+    </div>`;
+  }
+
+  function toPolygonalGeometry(geometry) {
+    if (!geometry || !geometry.type) return null;
+    if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') return geometry;
+    if (geometry.type !== 'GeometryCollection') return null;
+
+    const parts = [];
+    (geometry.geometries || []).forEach((geom) => {
+      const cleaned = toPolygonalGeometry(geom);
+      if (!cleaned) return;
+      if (cleaned.type === 'Polygon') parts.push(cleaned.coordinates);
+      else if (cleaned.type === 'MultiPolygon') parts.push(...cleaned.coordinates);
+    });
+    if (parts.length === 0) return null;
+    if (parts.length === 1) return { type: 'Polygon', coordinates: parts[0] };
+    return { type: 'MultiPolygon', coordinates: parts };
+  }
+
+  function sanitizeGeojsonAreaOnly(fc) {
+    if (!fc || !Array.isArray(fc.features)) return fc;
+    const features = fc.features.map((feature) => {
+      const geometry = toPolygonalGeometry(feature && feature.geometry);
+      if (!geometry) return null;
+      return { ...feature, geometry };
+    }).filter(Boolean);
+    return { ...fc, features };
+  }
+
+  let map = null;
+  let geoLayer = null;
+  let layerByDistId = {};
+  let metricMax = computeMetricMax(currentMetric);
+
+  function styleFeature(feature) {
+    const distId = feature.properties.dist_id;
+    const row = REF[distId] || null;
+    let fillColor = '#f0f0f0';
+
+    if (row) {
+      if (currentMode === 'majority') {
+        const winner = getWinner(row);
+        fillColor = MAJORITY_COLORS[winner] || '#f0f0f0';
+      } else {
+        const val = getDistValue(distId, currentMetric);
+        fillColor = colorForShare(currentMetric, val, metricMax);
+      }
+    }
+
+    return {
+      fillColor,
+      fillOpacity: 1.0,
+      color: '#ffffff',
+      weight: 0.4,
+      opacity: 0.8,
+    };
+  }
+
+  function repaint() {
+    metricMax = computeMetricMax(currentMetric);
+    if (geoLayer) {
+      geoLayer.setStyle(styleFeature);
+      geoLayer.eachLayer((layer) => {
+        layer.setPopupContent(buildPopup(layer.feature.properties));
+      });
+    }
+    updateButtonsActive();
+    updateLegend(metricMax);
+  }
+
+  function initMap() {
+    map = L.map('map', {
+      zoomSnap: 0.1,
+      zoomDelta: 0.1,
+      wheelDebounceTime: 20,
+      wheelPxPerZoomLevel: 60,
+      zoomControl: false,
+      attributionControl: false,
+      preferCanvas: true,
+      zoomAnimation: true,
+      fadeAnimation: true,
+      markerZoomAnimation: false,
+      inertia: true,
+    });
+
+    const bounds = L.geoJSON(GEOJSON).getBounds();
+    map.fitBounds(bounds, { padding: [10, 10] });
+
+    const copyrightControl = L.control({ position: 'bottomleft' });
+    copyrightControl.onAdd = function() {
+      const div = L.DomUtil.create('div');
+      div.style.cssText = 'font:12px/1.2 system-ui; color:#6b7280; background:rgba(255,255,255,0.92); padding:4px 8px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.12);';
+      div.innerHTML = '<a href="https://naponjatusripitak.github.io" target="_blank" rel="noopener" style="color:#6b7280; text-decoration:none;">&copy; Napon Jatusripitak</a>';
+      return div;
+    };
+    copyrightControl.addTo(map);
+
+    const HomeControl = L.Control.extend({
+      options: { position: 'topright' },
+      onAdd() {
+        const btn = L.DomUtil.create('button', 'home-btn');
+        btn.type = 'button';
+        btn.innerHTML = '⌂';
+        btn.style.background = '#fff';
+        btn.style.border = '1px solid rgba(0,0,0,0.15)';
+        btn.style.borderRadius = '8px';
+        btn.style.padding = '6px 10px';
+        btn.style.fontFamily = 'system-ui';
+        btn.style.fontSize = '16px';
+        btn.style.fontWeight = '700';
+        btn.style.cursor = 'pointer';
+        L.DomEvent.disableClickPropagation(btn);
+        L.DomEvent.on(btn, 'click', (e) => {
+          L.DomEvent.preventDefault(e);
+          map.fitBounds(bounds, { padding: [10, 10] });
+        });
+        return btn;
+      }
+    });
+    map.addControl(new HomeControl());
+
+    layerByDistId = {};
+    const canvasRenderer = L.canvas({ padding: 0.5 });
+    geoLayer = L.geoJSON(GEOJSON, {
+      style: styleFeature,
+      renderer: canvasRenderer,
+      onEachFeature(feature, layer) {
+        layerByDistId[feature.properties.dist_id] = layer;
+        layer.bindPopup(buildPopup(feature.properties), { maxWidth: 380 });
+        layer.on('click', () => {
+          layer.setPopupContent(buildPopup(feature.properties));
+          layer.openPopup();
+        });
+      }
+    }).addTo(map);
+
+    repaint();
+  }
+
+  function applyLang(lang) {
+    currentLang = ['th', 'en'].includes(lang) ? lang : currentLang;
+    updateTextLabels();
+    repaint();
+  }
+
+  window.addEventListener('message', (event) => {
+    const data = event && event.data ? event.data : {};
+    if (data.type === 'set-lang') {
+      if (data.provinceMap && typeof data.provinceMap === 'object') PROVINCE_NAME_EN = data.provinceMap;
+      applyLang(data.lang);
+      return;
+    }
+    if (data.type === 'select-constituency') {
+      const layer = layerByDistId[data.distId];
+      if (!layer) return;
+      layer.setPopupContent(buildPopup(layer.feature.properties));
+      if (layer.getBounds) map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+      layer.openPopup();
+    }
+  });
+
+  document.querySelectorAll('[data-mode]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      if (mode !== 'majority' && mode !== 'share') return;
+      currentMode = mode;
+      repaint();
+    });
+  });
+
+  document.querySelectorAll('[data-metric]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const metric = btn.dataset.metric;
+      if (!METRICS[metric]) return;
+      currentMetric = metric;
+      if (currentMode !== 'share') currentMode = 'share';
+      repaint();
+    });
+  });
+
+  (async () => {
+    GEOJSON = window.__shareGeojson || null;
+    if (!GEOJSON) {
+      const res = await fetch('share_geojson.json');
+      GEOJSON = await res.json();
+    }
+    GEOJSON = sanitizeGeojsonAreaOnly(GEOJSON);
+    initMap();
+    applyLang(currentLang);
+  })();
+</script>
+</body>
+</html>
