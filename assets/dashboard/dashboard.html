@@ -346,6 +346,219 @@
       flex-direction: column;
       gap: 10px;
     }
+    .turnout-gap-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    #turnout-compare-section > .grid-1 + .grid-1 {
+      margin-top: 24px;
+    }
+    .turnout-gap-columns {
+      display: grid;
+      grid-template-columns: minmax(145px, 1fr) minmax(240px, 1.3fr) minmax(145px, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 0 10px 4px;
+      margin-bottom: 2px;
+      color: #64748b;
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+    .turnout-gap-columns .center {
+      text-align: center;
+    }
+    .turnout-gap-columns .right {
+      text-align: right;
+    }
+    .turnout-gap-totals-row {
+      display: grid;
+      grid-template-columns: minmax(145px, 1fr) minmax(240px, 1.3fr) minmax(145px, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 0 10px 8px;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.2;
+      border-bottom: 1px solid #dbe3ef;
+    }
+    .turnout-gap-totals-row .center {
+      text-align: center;
+    }
+    .turnout-gap-totals-row .right {
+      text-align: right;
+    }
+    .turnout-gap-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .turnout-gap-row {
+      display: grid;
+      grid-template-columns: minmax(145px, 1fr) minmax(240px, 1.3fr) minmax(145px, 1fr);
+      grid-template-areas: "left center right";
+      gap: 10px;
+      align-items: center;
+      padding: 9px 8px;
+      border: 0;
+      border-bottom: 1px solid #e6eaf1;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .turnout-gap-row:hover {
+      background: #f8fafc;
+    }
+    .turnout-gap-side {
+      border-radius: 8px;
+      border: 0;
+      padding: 4px 6px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1px;
+      line-height: 1.25;
+    }
+    .turnout-gap-side.left {
+      grid-area: left;
+      background: transparent;
+      text-align: left;
+    }
+    .turnout-gap-side.right {
+      grid-area: right;
+      background: transparent;
+      text-align: right;
+    }
+    .turnout-gap-side .label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .turnout-gap-side .rate {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .turnout-gap-side .votes {
+      font-size: 0.76rem;
+      color: #334155;
+    }
+    .turnout-gap-center {
+      grid-area: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-align: center;
+    }
+    .turnout-gap-name {
+      font-weight: 800;
+      color: #0f172a;
+      font-size: 0.95rem;
+      line-height: 1.25;
+    }
+    .turnout-gap-diff {
+      font-weight: 800;
+      font-size: 0.88rem;
+      line-height: 1.2;
+    }
+    .turnout-gap-diff.left { color: #1d4ed8; }
+    .turnout-gap-diff.right { color: #c2410c; }
+    .turnout-gap-diff-votes {
+      font-size: 0.75rem;
+      color: #64748b;
+      line-height: 1.2;
+    }
+    .turnout-gap-track {
+      position: relative;
+      width: min(100%, 320px);
+      height: 8px;
+      border-radius: 999px;
+      background: transparent;
+      overflow: hidden;
+    }
+    .turnout-gap-midline {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: #64748b;
+      opacity: 0.8;
+      z-index: 2;
+    }
+    .turnout-gap-bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+    .turnout-gap-bar.left {
+      background: #2563eb;
+      border-radius: 999px 0 0 999px;
+    }
+    .turnout-gap-bar.right {
+      background: #f97316;
+      border-radius: 0 999px 999px 0;
+    }
+    @media (max-width: 900px) {
+      .turnout-gap-columns {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding: 0 4px 2px;
+        margin-bottom: 1px;
+        font-size: 0.76rem;
+      }
+      .turnout-gap-totals-row {
+        grid-template-columns: 1fr 1fr;
+        padding: 0 4px 6px;
+        font-size: 0.72rem;
+      }
+      .turnout-gap-totals-row .center {
+        display: none;
+      }
+      .turnout-gap-totals-row .right {
+        text-align: right;
+      }
+      .turnout-gap-row {
+        grid-template-columns: minmax(92px, 1fr) minmax(150px, 1.2fr) minmax(92px, 1fr);
+        grid-template-areas: "left center right";
+        gap: 6px;
+        padding: 6px 8px;
+      }
+      .turnout-gap-side {
+        padding: 2px 4px;
+      }
+      .turnout-gap-side .rate {
+        font-size: 0.9rem;
+      }
+      .turnout-gap-side .votes {
+        font-size: 0.72rem;
+      }
+      .turnout-gap-center {
+        gap: 2px;
+      }
+      .turnout-gap-name {
+        font-size: 0.9rem;
+      }
+      .turnout-gap-diff {
+        font-size: 0.84rem;
+      }
+      .turnout-gap-diff-votes {
+        font-size: 0.72rem;
+      }
+      .turnout-gap-track {
+        width: min(100%, 260px);
+        height: 10px;
+      }
+    }
     .top-list-item {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -950,6 +1163,24 @@
           <iframe class="iframe-mid" src="figure/turnout_compare_2026.html?v=tc26" scrolling="no" id="turnout-compare-frame"></iframe>
         </div>
       </div>
+      <div class="grid-1">
+        <div class="card">
+          <div class="turnout-gap-head">
+            <h3 data-i18n="turnoutGapChartHeading">20 อันดับเขตที่มีส่วนต่างผู้ใช้สิทธิแบบแบ่งเขตและบัญชีรายชื่อสูงสุด</h3>
+          </div>
+          <div class="turnout-gap-columns">
+            <div data-i18n="turnoutGapColConst">แบ่งเขต</div>
+            <div class="center" data-i18n="turnoutGapColCenter">เขต</div>
+            <div class="right" data-i18n="turnoutGapColList">บัญชีรายชื่อ</div>
+          </div>
+          <div class="turnout-gap-totals-row">
+            <div id="turnout-gap-const-total"></div>
+            <div class="center"></div>
+            <div id="turnout-gap-list-total" class="right"></div>
+          </div>
+          <div id="turnout-gap-chart" class="turnout-gap-chart"></div>
+        </div>
+      </div>
     </section>
 
     <section class="region-section">
@@ -1376,6 +1607,7 @@
   <script src="data/election_results_2569_by_dist.js"></script>
   <script src="data/summary_rows_2569.js"></script>
   <script src="data/map_dist_index_2569.js"></script>
+  <script src="data/turnout_2569_by_dist.js"></script>
   <script src="data/party_colors_2569.js"></script>
   <script src="data/party_assets_2569/party_name_map_2569.js"></script>
   <script src="data/party_assets_2569/party_logo_url_map_2569.js"></script>
@@ -1584,6 +1816,16 @@
       selectPartyPlaceholder: 'เลือกพรรค…',
       topProvinces: 'Top Provinces (Vote Share)',
       turnoutCompare: 'เปรียบเทียบการใช้สิทธิ: แบ่งเขต vs บัญชีรายชื่อ',
+      turnoutGapChartHeading: '20 อันดับเขตที่มีส่วนต่างผู้ใช้สิทธิแบบแบ่งเขตและบัญชีรายชื่อสูงสุด',
+      turnoutGapLegendConst: 'แบ่งเขตสูงกว่า (ซ้าย)',
+      turnoutGapLegendList: 'บัญชีรายชื่อสูงกว่า (ขวา)',
+      turnoutGapTurnout: 'อัตราใช้สิทธิ',
+      turnoutGapVotesCast: 'ผู้ใช้สิทธิ',
+      turnoutGapConstTotal: 'รวมส่วนเกินฝั่งแบ่งเขต',
+      turnoutGapListTotal: 'รวมส่วนเกินฝั่งบัญชีรายชื่อ',
+      turnoutGapColConst: 'แบ่งเขต',
+      turnoutGapColCenter: 'เขต',
+      turnoutGapColList: 'บัญชีรายชื่อ',
       topConstituencies: 'Top 10 Constituencies',
       topConstHeading: 'เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)',
       topListHeading: 'บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)',
@@ -1600,6 +1842,9 @@
       noData: 'ไม่มีข้อมูล',
       from: 'จาก',
       modalTitle: 'รายละเอียดพรรค',
+      turnoutGapVotesFrom: 'ผู้ใช้สิทธิ (เขต/บัญชีรายชื่อ)',
+      turnoutGapConstStat: 'เขต +{pp} จุด | +{votes} คะแนน',
+      turnoutGapListStat: 'บัญชีรายชื่อ +{pp} จุด | +{votes} คะแนน',
       thParty: 'พรรค',
       thConstSeats: 'จำนวน ส.ส.เขต',
       thListSeats: 'จำนวน ส.ส.บัญชีรายชื่อ',
@@ -1636,6 +1881,16 @@
       selectPartyPlaceholder: 'Select party…',
       topProvinces: 'Top Provinces (Vote Share)',
       turnoutCompare: 'Turnout Comparison (Constituency vs Party-list)',
+      turnoutGapChartHeading: 'Top 20 turnout gap (constituency vs party-list)',
+      turnoutGapLegendConst: 'Constituency higher (left)',
+      turnoutGapLegendList: 'Party-list higher (right)',
+      turnoutGapTurnout: 'Turnout',
+      turnoutGapVotesCast: 'Votes cast',
+      turnoutGapConstTotal: 'Total constituency-side excess',
+      turnoutGapListTotal: 'Total party-list-side excess',
+      turnoutGapColConst: 'Constituency',
+      turnoutGapColCenter: 'Constituency',
+      turnoutGapColList: 'Party-list',
       topConstituencies: 'Top 10 Constituencies',
       topConstHeading: 'Constituency (Top vote share)',
       topListHeading: 'Party-list (Top vote share)',
@@ -1652,6 +1907,9 @@
       noData: 'No data',
       from: 'from',
       modalTitle: 'Party details',
+      turnoutGapVotesFrom: 'Votes cast (const./party-list)',
+      turnoutGapConstStat: 'Const +{pp} pp | +{votes} votes',
+      turnoutGapListStat: 'Party-list +{pp} pp | +{votes} votes',
       thParty: 'Party',
       thConstSeats: 'Const. seats',
       thListSeats: 'Party-list seats',
@@ -2078,6 +2336,7 @@
     setHeaderYearText();
     const topProvinceParty = getActiveTopProvinceParty();
     renderTopLists(topProvinceParty);
+    renderTurnoutGapLists();
     sendToProvince(topProvinceParty);
     // Re-apply summary filter after table re-render (important for mobile default party view).
     updateSummaryFilter(partySelect ? partySelect.value : 'ทั้งหมด');
@@ -2235,6 +2494,7 @@
       if (first) first.textContent = t('allParties');
     }
     renderTopLists(plotPartySelect ? plotPartySelect.value : defaultParty);
+    renderTurnoutGapLists();
     setPlotFrameSrc(lang);
 
     const frames = [
@@ -2314,6 +2574,9 @@
   const plotPartySelect = document.getElementById('plot-party-select');
   const topConstList = document.getElementById('top-const-list');
   const topListList = document.getElementById('top-list-list');
+  const turnoutGapConstTotal = document.getElementById('turnout-gap-const-total');
+  const turnoutGapListTotal = document.getElementById('turnout-gap-list-total');
+  const turnoutGapChart = document.getElementById('turnout-gap-chart');
   const sharePartySelect = document.getElementById('share-party-select');
   const shareProvince = document.getElementById('share-province');
   const shareDistrict = document.getElementById('share-district');
@@ -2560,6 +2823,165 @@
       };
     topConstList.innerHTML = renderList(constList);
     topListList.innerHTML = renderList(listList);
+  };
+
+  const computeTurnoutGapTop10 = () => {
+    const detail = (window.__turnoutDetailByDist && typeof window.__turnoutDetailByDist === 'object')
+      ? window.__turnoutDetailByDist
+      : {};
+    const turnoutConst = (window.__turnoutByDist && typeof window.__turnoutByDist === 'object')
+      ? window.__turnoutByDist
+      : {};
+    const turnoutList = (window.__turnoutListByDist && typeof window.__turnoutListByDist === 'object')
+      ? window.__turnoutListByDist
+      : {};
+    const rows = [];
+    let countConstHigher = 0;
+    let countListHigher = 0;
+    let countEqual = 0;
+    let sumAbsGapPp = 0;
+    let sumAbsVoteGap = 0;
+    let netVoteGap = 0;
+    let nVotePairs = 0;
+    let constExcessVotes = 0;
+    let listExcessVotes = 0;
+
+    Object.keys(detail).forEach((distId) => {
+      const row = detail[distId] || {};
+      const constTurnout = row.turnout != null ? Number(row.turnout) : Number(turnoutConst[distId]);
+      const listTurnout = row.turnout_list != null ? Number(row.turnout_list) : Number(turnoutList[distId]);
+      if (!Number.isFinite(constTurnout) || !Number.isFinite(listTurnout)) return;
+      const gapPp = (constTurnout - listTurnout) * 100;
+      if (!Number.isFinite(gapPp)) return;
+      sumAbsGapPp += Math.abs(gapPp);
+
+      const province = row.province || distId.split('_').slice(0, -1).join('_');
+      const district = row.district != null ? row.district : distId.split('_').slice(-1)[0];
+      const votedConst = Number(row.voted);
+      const votedList = Number(row.voted_list);
+      const voteGap = (Number.isFinite(votedConst) && Number.isFinite(votedList)) ? (votedConst - votedList) : null;
+      if (voteGap != null) {
+        sumAbsVoteGap += Math.abs(voteGap);
+        netVoteGap += voteGap;
+        nVotePairs += 1;
+        if (voteGap > 0) constExcessVotes += voteGap;
+        if (voteGap < 0) listExcessVotes += (-voteGap);
+      }
+      const entry = {
+        distId,
+        constituency: `${province} ${district}`,
+        turnoutConstPct: constTurnout * 100,
+        turnoutListPct: listTurnout * 100,
+        gapPp: Math.abs(gapPp),
+        signedGapPp: gapPp,
+        voteGap: voteGap == null ? null : Math.abs(voteGap),
+        signedVoteGap: voteGap == null ? null : voteGap,
+        votedConst: Number.isFinite(votedConst) ? votedConst : null,
+        votedList: Number.isFinite(votedList) ? votedList : null,
+      };
+
+      if (Math.abs(gapPp) < 0.0005) {
+        countEqual += 1;
+        return;
+      }
+      if (gapPp > 0) {
+        countConstHigher += 1;
+      } else {
+        countListHigher += 1;
+      }
+      rows.push(entry);
+    });
+
+    const sorter = (a, b) => (Math.abs(b.signedVoteGap || 0) - Math.abs(a.signedVoteGap || 0)) || (b.gapPp - a.gapPp) || a.constituency.localeCompare(b.constituency, 'th');
+    rows.sort(sorter);
+
+    return {
+      rows: rows.slice(0, 20),
+      summary: {
+        countConstHigher,
+        countListHigher,
+        countEqual,
+        sumAbsGapPp,
+        meanAbsGapPp: (countConstHigher + countListHigher + countEqual) ? (sumAbsGapPp / (countConstHigher + countListHigher + countEqual)) : 0,
+        sumAbsVoteGap,
+        tvVoteGap: sumAbsVoteGap / 2,
+        netVoteGap,
+        nVotePairs,
+        constExcessVotes,
+        listExcessVotes,
+      },
+    };
+  };
+
+  const renderTurnoutGapLists = () => {
+    if (!turnoutGapChart || !turnoutGapConstTotal || !turnoutGapListTotal) return;
+    if (activeYear !== '2569') {
+      turnoutGapConstTotal.textContent = '';
+      turnoutGapListTotal.textContent = '';
+      turnoutGapChart.innerHTML = '';
+      return;
+    }
+    const locale = currentLang === 'en' ? 'en-US' : 'th-TH';
+    const data = computeTurnoutGapTop10();
+    const s = data.summary || {};
+    const constTotalLabel = currentLang === 'en'
+      ? `Total ${(Math.round(s.constExcessVotes || 0)).toLocaleString(locale)} votes`
+      : `รวม ${(Math.round(s.constExcessVotes || 0)).toLocaleString(locale)} คะแนน`;
+    const listTotalLabel = currentLang === 'en'
+      ? `Total ${(Math.round(s.listExcessVotes || 0)).toLocaleString(locale)} votes`
+      : `รวม ${(Math.round(s.listExcessVotes || 0)).toLocaleString(locale)} คะแนน`;
+    turnoutGapConstTotal.textContent = constTotalLabel;
+    turnoutGapListTotal.textContent = listTotalLabel;
+    const rows = Array.isArray(data.rows) ? data.rows : [];
+    if (!rows.length) {
+      turnoutGapChart.innerHTML = `<div class="top-meta">${t('noData')}</div>`;
+      return;
+    }
+    const scaleCapPp = 10;
+    turnoutGapChart.innerHTML = rows.map((entry, idx) => {
+      const distName = translateConstituencyName(entry.constituency || '—');
+      const votedConst = entry.votedConst == null ? '—' : entry.votedConst.toLocaleString(locale);
+      const votedList = entry.votedList == null ? '—' : entry.votedList.toLocaleString(locale);
+      const turnoutConst = Number.isFinite(entry.turnoutConstPct) ? `${entry.turnoutConstPct.toFixed(2)}%` : '—';
+      const turnoutList = Number.isFinite(entry.turnoutListPct) ? `${entry.turnoutListPct.toFixed(2)}%` : '—';
+      const signedVotes = Number(entry.signedVoteGap || 0);
+      const signedGap = Number(entry.signedGapPp || 0);
+      const ratio = Math.min(1, Math.abs(signedGap) / scaleCapPp);
+      const halfWidthPct = (ratio * 50).toFixed(4);
+      const barStyle = signedGap > 0
+        ? `left: calc(50% - ${halfWidthPct}%); width: ${halfWidthPct}%;`
+        : `left: 50%; width: ${halfWidthPct}%;`;
+      const barClass = signedGap > 0 ? 'left' : 'right';
+      const gapAbsPp = Math.abs(Number(entry.signedGapPp || 0)).toFixed(2);
+      const gapAbsVotes = Math.abs(signedVotes).toLocaleString(locale);
+      const diffVotesText = signedGap > 0
+        ? (currentLang === 'en'
+          ? `Constituency excess ${gapAbsVotes} votes (${gapAbsPp}%)`
+          : `แบ่งเขตเกินมา ${gapAbsVotes} คะแนน (${gapAbsPp}%)`)
+        : (currentLang === 'en'
+          ? `Party-list excess ${gapAbsVotes} votes (${gapAbsPp}%)`
+          : `บัญชีรายชื่อเกินมา ${gapAbsVotes} คะแนน (${gapAbsPp}%)`);
+      const votesCastLabel = t('turnoutGapVotesCast');
+      return `
+      <div class="turnout-gap-row" data-dist="${entry.distId}">
+        <div class="turnout-gap-side left">
+          <div class="rate">${turnoutConst}</div>
+          <div class="votes">${votesCastLabel}: ${votedConst}</div>
+        </div>
+        <div class="turnout-gap-center">
+          <div class="turnout-gap-name">${idx + 1}. ${distName}</div>
+          <div class="turnout-gap-track">
+            <div class="turnout-gap-midline"></div>
+            <div class="turnout-gap-bar ${barClass}" style="${barStyle}"></div>
+          </div>
+          <div class="turnout-gap-diff-votes">${diffVotesText}</div>
+        </div>
+        <div class="turnout-gap-side right">
+          <div class="rate">${turnoutList}</div>
+          <div class="votes">${votesCastLabel}: ${votedList}</div>
+        </div>
+      </div>`;
+    }).join('');
   };
 
   function setPlotFrameSrc(lang) {
@@ -3602,6 +4024,12 @@
       shareSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+  const scrollToMainMap = () => {
+    const mapSection = mapIframe && mapIframe.closest('section');
+    if (mapSection) {
+      mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const selectInIframeMap = (iframe, distId, mode) => {
     if (!iframe || !iframe.contentWindow) return;
@@ -3630,6 +4058,24 @@
       win.postMessage({ type: 'select-constituency', distId, mode }, '*');
     }
   };
+  const selectInMainMap = (distId) => {
+    if (!distId) return;
+    const parts = String(distId).split('_');
+    const district = parts.pop();
+    const province = parts.join('_');
+    const mode = mapToggle && mapToggle.checked ? 'list' : 'const';
+    if (mapProvince) {
+      mapProvince.value = province;
+      updateDistricts(province);
+    }
+    if (mapDistrict) {
+      mapDistrict.value = distId;
+      mapDistrict.disabled = false;
+    }
+    postToMapReliable({ type: 'set-province', province, mode });
+    postToMapReliable({ type: 'select-constituency', distId, mode });
+    if (district && mapDistrict && mapDistrict.value !== distId) mapDistrict.value = distId;
+  };
 
   const handleTopListClick = (event) => {
     const item = event.target.closest('.top-list-item');
@@ -3650,6 +4096,15 @@
   if (topListList) {
     topListList.addEventListener('click', handleTopListClick);
   }
+  const handleTurnoutGapClick = (event) => {
+    const item = event.target.closest('.turnout-gap-row');
+    if (!item) return;
+    const distId = item.getAttribute('data-dist');
+    if (!distId) return;
+    selectInMainMap(distId);
+    scrollToMainMap();
+  };
+  if (turnoutGapChart) turnoutGapChart.addEventListener('click', handleTurnoutGapClick);
 
 	  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
 	    btn.addEventListener('click', () => applyLang(btn.dataset.lang || 'th'));
