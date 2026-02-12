@@ -1167,8 +1167,8 @@
     opacity: 0.18;
   }
   .arch-wrap {
-    width: min(860px, 92%);
-    height: 300px;
+    width: min(980px, 96%);
+    height: 360px;
     margin: 0 auto 14px;
   }
   .arch-divider {
@@ -1197,7 +1197,7 @@
   @media (max-width: 900px) {
     .arch-wrap {
       width: 100%;
-      height: 260px;
+      height: 300px;
     }
   }
   @media (max-width: 900px) {
@@ -1778,7 +1778,7 @@
       <h2 class="section-title" data-i18n="heatmapTitle">Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด</h2>
       <div class="grid-1">
         <div class="card heatmap-card">
-          <iframe class="iframe-mid" src="figure/heatmap_interactive_2026.html?v=hm28" scrolling="no" id="heatmap-frame"></iframe>
+          <iframe class="iframe-mid" src="figure/heatmap_interactive_2026.html?v=hm30" scrolling="no" id="heatmap-frame"></iframe>
         </div>
       </div>
     </section>
@@ -1794,12 +1794,7 @@
       <h2 class="section-title" data-i18n="referendumCorrelationTitle">Correlation: Party-list Support vs Referendum</h2>
       <div class="grid-1">
         <div class="card">
-          <iframe class="iframe-mid" src="figure/referendum_partylist_correlation_2026.html?v=refcorr41&view=scatter" scrolling="no" id="referendum-correlation-scatter-frame"></iframe>
-        </div>
-      </div>
-      <div class="grid-1" style="margin-top: 24px;">
-        <div class="card">
-          <iframe class="iframe-mid" src="figure/referendum_partylist_correlation_2026.html?v=refcorr41&view=ranking" scrolling="no" id="referendum-correlation-rank-frame"></iframe>
+          <iframe class="iframe-mid" src="figure/referendum_partylist_correlation_2026.html?v=refcorr45&view=both" scrolling="no" id="referendum-correlation-scatter-frame"></iframe>
         </div>
       </div>
     </section>
@@ -2749,7 +2744,7 @@
       document.getElementById('heatmap-frame'),
       document.getElementById('referendum-map-frame'),
       document.getElementById('referendum-correlation-scatter-frame'),
-      document.getElementById('referendum-correlation-rank-frame'),
+      document.getElementById('number-match-frame'),
       document.getElementById('map-iframe'),
       document.getElementById('share-map-const'),
       document.getElementById('share-map-list'),
@@ -3242,7 +3237,7 @@
   const heatmapFrame = document.getElementById('heatmap-frame');
   const referendumFrame = document.getElementById('referendum-map-frame');
   const referendumCorrelationScatterFrame = document.getElementById('referendum-correlation-scatter-frame');
-  const referendumCorrelationRankFrame = document.getElementById('referendum-correlation-rank-frame');
+  const numberMatchFrame = document.getElementById('number-match-frame');
   const provinceSupportFrame = document.getElementById('province-support-frame');
   const shareMapConst = document.getElementById('share-map-const');
   const shareMapList = document.getElementById('share-map-list');
@@ -3384,14 +3379,14 @@
       });
     }
 
-    const width = 620;
-    const height = 360;
+    const width = 760;
+    const height = 420;
     const cx = width / 2;
-    const cy = height - 20;
+    const cy = height - 22;
     const rowsCount = 10;
-    const innerR = 110;
-    const outerR = 270;
-    const seatSpacing = 16;
+    const innerR = 138;
+    const outerR = 352;
+    const seatSpacing = 20;
 
     const radii = Array.from({ length: rowsCount }, (_, i) =>
       innerR + ((outerR - innerR) * i) / (rowsCount - 1)
@@ -3452,7 +3447,7 @@
       const seat = seats[i];
       const color = getPartyColor(party);
       circles.push(
-        `<circle cx="${seat.x.toFixed(1)}" cy="${seat.y.toFixed(1)}" r="5.2" fill="${color}" data-party="${party}" />`
+        `<circle cx="${seat.x.toFixed(1)}" cy="${seat.y.toFixed(1)}" r="6.2" fill="${color}" data-party="${party}" />`
       );
     }
 
@@ -3590,10 +3585,10 @@
       }, '*');
     });
   }
-  if (referendumCorrelationRankFrame) {
-    referendumCorrelationRankFrame.addEventListener('load', () => {
-      if (!referendumCorrelationRankFrame.contentWindow) return;
-      referendumCorrelationRankFrame.contentWindow.postMessage({
+  if (numberMatchFrame) {
+    numberMatchFrame.addEventListener('load', () => {
+      if (!numberMatchFrame.contentWindow) return;
+      numberMatchFrame.contentWindow.postMessage({
         type: 'set-lang',
         lang: currentLang,
         provinceMap: PROVINCE_NAME_EN,
@@ -3650,7 +3645,7 @@
       const rawHeight = Math.round((payload.height || 0) + extra);
       const maxHeight = payload.id === 'density-frame'
         ? (window.innerWidth <= 900 ? 1200 : 900)
-        : (payload.id === 'province-support-frame' ? 3800 : 1600);
+        : (payload.id === 'province-support-frame' ? 3800 : (payload.id === 'number-match-frame' ? 2600 : 1600));
       const nextHeight = Math.max(300, Math.min(rawHeight, maxHeight));
       if (nextHeight) {
         target.style.height = `${nextHeight}px`;
@@ -3801,7 +3796,7 @@
 	    const heatmapFrame = document.getElementById('heatmap-frame');
 	    if (!heatmapFrame) return;
 	    const heatmapSrc = year === '2569'
-	      ? 'figure/heatmap_interactive_2026.html?v=hm28'
+	      ? 'figure/heatmap_interactive_2026.html?v=hm30'
 	      : 'figure/heatmap_interactive.html?v=hm5';
 	    if (heatmapFrame.getAttribute('src') !== heatmapSrc) heatmapFrame.setAttribute('src', heatmapSrc);
 	  };
@@ -3818,16 +3813,24 @@
     };
     const setReferendumCorrelationIframeYear = (year) => {
       const sec = document.getElementById('referendum-correlation-section');
-      const scatterFrame = document.getElementById('referendum-correlation-scatter-frame');
-      const rankFrame = document.getElementById('referendum-correlation-rank-frame');
-      if (!sec || !scatterFrame || !rankFrame) return;
+      const frame = document.getElementById('referendum-correlation-scatter-frame');
+      if (!sec || !frame) return;
       const show = year === '2569';
       sec.style.display = show ? '' : 'none';
       if (show) {
-        const scatterSrc = 'figure/referendum_partylist_correlation_2026.html?v=refcorr41&view=scatter';
-        const rankSrc = 'figure/referendum_partylist_correlation_2026.html?v=refcorr41&view=ranking';
-        if (scatterFrame.getAttribute('src') !== scatterSrc) scatterFrame.setAttribute('src', scatterSrc);
-        if (rankFrame.getAttribute('src') !== rankSrc) rankFrame.setAttribute('src', rankSrc);
+        const src = 'figure/referendum_partylist_correlation_2026.html?v=refcorr45&view=both';
+        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+      }
+    };
+    const setNumberMatchIframeYear = (year) => {
+      const sec = document.getElementById('number-match-section');
+      const frame = document.getElementById('number-match-frame');
+      if (!sec || !frame) return;
+      const show = year === '2569';
+      sec.style.display = show ? '' : 'none';
+      if (show) {
+        const src = 'figure/number_match_exposure_2026.html?v=nm2';
+        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       }
     };
 	  const setShareVoteIframesYear = (year) => {
@@ -3873,6 +3876,7 @@
 	    setHeatmapIframeYear(currentMapYear);
 	    setReferendumIframeYear(currentMapYear);
 	    setReferendumCorrelationIframeYear(currentMapYear);
+      setNumberMatchIframeYear(currentMapYear);
 	    setShareVoteIframesYear(currentMapYear);
 	    setDensityIframeYear(currentMapYear);
       setTurnoutCompareIframeYear(currentMapYear);

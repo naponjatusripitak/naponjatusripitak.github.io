@@ -7,7 +7,7 @@
   <style>
     html, body { margin: 0; padding: 0; background: #f6f7f9; }
     body { font-family: Kanit, system-ui, sans-serif; color: #0f172a; }
-    .wrap { padding: 12px; }
+    .wrap { padding: 12px 12px 6px; }
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -41,7 +41,7 @@
       border-radius: 14px;
       padding: 8px;
       box-shadow: 0 8px 18px rgba(15,23,42,0.08);
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     #scatter { height: 520px; }
     #rank { height: 420px; }
@@ -53,7 +53,7 @@
       margin: 2px 2px 8px;
     }
     @media (max-width: 900px) {
-      .wrap { padding: 8px; }
+      .wrap { padding: 8px 8px 4px; }
       .controls {
         flex-direction: column;
         align-items: stretch;
@@ -270,10 +270,17 @@
     let lastIsMobile = window.innerWidth <= 900;
 
     function postHeight() {
-      const h = Math.max(
+      // Use only visible panel heights to avoid oversized iframe tails.
+      const wrapEl = document.querySelector('.wrap');
+      const controlsH = (controlsEl && controlsEl.offsetParent !== null) ? controlsEl.offsetHeight : 0;
+      const scatterH = (scatterCardEl && scatterCardEl.offsetParent !== null) ? scatterCardEl.offsetHeight : 0;
+      const rankH = (rankCardEl && rankCardEl.offsetParent !== null) ? rankCardEl.offsetHeight : 0;
+      const contentH = controlsH + scatterH + rankH + 24;
+      const fallbackH = Math.max(
         document.body ? document.body.scrollHeight : 0,
         document.documentElement ? document.documentElement.scrollHeight : 0
       );
+      const h = Math.max(320, wrapEl ? Math.max(contentH, wrapEl.offsetHeight) : fallbackH);
       if (window.parent) {
         window.parent.postMessage({ type: 'iframe-height', id: frameId, height: h }, '*');
       }
@@ -375,12 +382,12 @@
 
       if (VIEW !== 'ranking') {
         Plotly.newPlot('scatter', traces, {
-          margin: isMobile ? { l: 50, r: 12, t: 16, b: 52 } : { l: 60, r: 20, t: 20, b: 56 },
+          margin: isMobile ? { l: 50, r: 10, t: 14, b: 34 } : { l: 60, r: 18, t: 18, b: 40 },
           xaxis: { title: t('xTitle'), zeroline: false },
           yaxis: { title: metricLabel, zeroline: false },
           paper_bgcolor: '#ffffff',
           plot_bgcolor: '#ffffff',
-          legend: { orientation: 'h', x: 0, y: 1.12 },
+          legend: { orientation: 'h', x: 0, y: 1.08 },
         }, { displayModeBar: false, responsive: true }).then(() => {
           postHeight();
         });
