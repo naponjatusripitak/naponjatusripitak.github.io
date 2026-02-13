@@ -4445,13 +4445,16 @@
   const handleTopListClick = (event) => {
     const item = event.target.closest('.top-list-item');
     if (!item) return;
-    const listEl = event.currentTarget;
-    const mode = listEl && listEl.getAttribute('data-mode') ? listEl.getAttribute('data-mode') : 'const';
     const distId = item.getAttribute('data-dist');
     if (!distId) return;
     // Send selection to side-by-side vote-share maps instead of the top map
     selectInIframeMap(shareMapConst, distId, 'const');
     selectInIframeMap(shareMapList, distId, 'list');
+    // Retry once for hosted environments where iframe listeners attach slightly later.
+    setTimeout(() => {
+      selectInIframeMap(shareMapConst, distId, 'const');
+      selectInIframeMap(shareMapList, distId, 'list');
+    }, 220);
     scrollToShareMaps();
   };
 
