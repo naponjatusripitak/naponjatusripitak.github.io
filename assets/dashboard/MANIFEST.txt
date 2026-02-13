@@ -5,10 +5,13 @@ figure/plotly.min.js
 figure/thailand_election_2026.html
 figure/turnout_compare_2026.html
 figure/plot_density.html
+figure/plot_density_2026.html
 figure/share_vote_map_const_pure_2026.html
 figure/share_vote_map_list_pure_2026.html
 figure/province_support.html
+figure/province_support_2026.html
 figure/region_support.html
+figure/region_support_2026.html
 figure/heatmap_interactive_2026.html
 figure/referendum_map_2026.html
 figure/referendum_partylist_correlation_2026.html
