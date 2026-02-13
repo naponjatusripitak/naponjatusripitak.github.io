@@ -1360,7 +1360,7 @@
       <h2 class="section-title" data-i18n="turnoutCompare">Turnout Comparison (Constituency vs Party-list)</h2>
       <div class="grid-1">
         <div class="card">
-          <iframe class="iframe-mid" src="figure/turnout_compare_2026.html?v=tc26" scrolling="no" id="turnout-compare-frame"></iframe>
+          <iframe class="iframe-mid" src="figure/turnout_compare_2026.html?v=tc27" scrolling="no" id="turnout-compare-frame"></iframe>
         </div>
       </div>
       <div class="turnout-gap-head">
@@ -1708,7 +1708,7 @@
       </div>
       <div class="grid-1">
         <div class="card scatter-card">
-          <iframe class="iframe-mid" src="plot_2026.html?v=scatter14" scrolling="no" id="plotly-frame"></iframe>
+          <iframe class="iframe-mid" src="plot_2026.html?v=scatter15" scrolling="no" id="plotly-frame"></iframe>
         </div>
       </div>
     </section>
@@ -3229,7 +3229,7 @@
     if (!frame) return;
     const safeLang = lang === 'en' ? 'en' : 'th';
     const plotPage = activeYear === '2569' ? 'plot_2026.html' : 'plot.html';
-    const newSrc = `${plotPage}?v=scatter14&lang=${safeLang}&t=${Date.now()}`;
+    const newSrc = `${plotPage}?v=scatter15&lang=${safeLang}&t=${Date.now()}`;
     frame.src = newSrc;
   }
   const plotFrame = document.getElementById('plotly-frame');
@@ -3864,7 +3864,7 @@
       const show = year === '2569';
       sec.style.display = show ? '' : 'none';
       if (show) {
-        const src = 'figure/turnout_compare_2026.html?v=tc26';
+        const src = 'figure/turnout_compare_2026.html?v=tc27';
         if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       }
     };

@@ -287,15 +287,15 @@
         const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 720;
         const plotEl = document.getElementById('plot');
         const width = plotEl ? plotEl.getBoundingClientRect().width : 520;
-        const legendSpace = isMobile ? 80 : 90;
+        const legendSpace = isMobile ? 70 : 78;
 
         return {
           title: { text: title, x: 0.02 },
-          xaxis: { title: { text: axis.x }, range: [0, maxRange] },
+          xaxis: { title: { text: axis.x, standoff: 6 }, range: [0, maxRange] },
           yaxis: { title: { text: axis.y }, range: [0, maxRange] },
-          margin: { l: 60, r: 30, t: 50, b: isMobile ? 60 : 90 },
+          margin: { l: 60, r: 30, t: 50, b: isMobile ? 48 : 66 },
           showlegend: true,
-          legend: { orientation: 'h', x: 0, xanchor: 'left', y: isMobile ? -0.18 : -0.28 },
+          legend: { orientation: 'h', x: 0, xanchor: 'left', y: isMobile ? -0.12 : -0.14 },
           font: { family: 'Sarabun, sans-serif', size: 12 },
           height: Math.round(width + legendSpace),
           autosize: true,
