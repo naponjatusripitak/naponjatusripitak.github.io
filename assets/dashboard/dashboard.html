@@ -4419,9 +4419,10 @@
         distSel.value = distId;
         distSel.dispatchEvent(new Ev('change'));
       }
-    } catch (e) {
-      win.postMessage({ type: 'select-constituency', distId, mode }, '*');
-    }
+    } catch (e) {}
+    // Always send postMessage so "pure" map iframes (without dropdown controls)
+    // still receive and apply selection reliably in hosted environments.
+    win.postMessage({ type: 'select-constituency', distId, mode }, '*');
   };
   const selectInMainMap = (distId) => {
     if (!distId) return;
