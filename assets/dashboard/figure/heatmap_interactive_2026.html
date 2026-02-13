@@ -13,7 +13,8 @@
       font-style: normal;
       font-display: swap;
     }
-    html, body, #chart { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+    html, body { margin: 0; padding: 0; width: 100%; background: #fff; }
+    #chart { width: 100%; background: #fff; }
   </style>
 </head>
 <body>
@@ -152,26 +153,38 @@
       font: { family: 'Sarabun, Arial, sans-serif', size: 12 },
     };
     const config = { displayModeBar: false, responsive: true };
+    const computePlotHeight = (mobile) => {
+      const vh = Math.max(320, window.innerHeight || 0);
+      // Keep some headroom for iframe quirks while ensuring labels/legend fit.
+      return mobile ? Math.max(640, vh - 54) : Math.max(700, vh - 18);
+    };
     const applyResponsiveLayout = () => {
       const w = window.innerWidth || 1200;
       if (w <= 900) {
-        const mobile = true;
-        heatTrace.showscale = false;
-        layout.margin = { l: 68, r: 0, t: 12, b: 86 };
-        layout.xaxis.tickangle = 40;
-        layout.xaxis.tickfont = { size: 10 };
+        heatTrace.showscale = true;
+        heatTrace.colorbar = {
+          title: { text: (LANG_TEXT[currentLang] || LANG_TEXT.th).cb, side: 'right' },
+          thickness: 10,
+          len: 0.82,
+          x: 1.01,
+          y: 0.56,
+          tickfont: { size: 9 }
+        };
+        layout.margin = { l: 66, r: 22, t: 10, b: 146 };
+        layout.xaxis.tickangle = -90;
+        layout.xaxis.tickfont = { size: 8 };
         layout.yaxis.tickfont = { size: 10 };
         layout.xaxis.title = '';
         layout.yaxis.title = '';
-        layout.height = 640;
+        layout.height = computePlotHeight(true);
       } else {
-        const mobile = false;
         heatTrace.showscale = true;
+        heatTrace.colorbar = { title: { text: (LANG_TEXT[currentLang] || LANG_TEXT.th).cb, side: 'right' } };
         layout.margin = { l: 140, r: 30, t: 40, b: 140 };
         layout.xaxis.tickangle = 45;
         layout.xaxis.tickfont = { size: 12 };
         layout.yaxis.tickfont = { size: 12 };
-        layout.height = 720;
+        layout.height = computePlotHeight(false);
       }
     };
 
@@ -192,16 +205,47 @@
       layout.yaxis.title = mobile ? '' : t.y;
       applyResponsiveLayout();
 
-      Plotly.react('chart', [heatTrace], layout, config);
+      Plotly.react('chart', [heatTrace], layout, config).then(() => {
+        postHeight();
+      });
+    };
+
+    const postHeight = () => {
+      const chartEl = document.getElementById('chart');
+      const plotEl = chartEl && chartEl.querySelector ? chartEl.querySelector('.js-plotly-plot') : null;
+      const plotted = plotEl ? Math.ceil(plotEl.getBoundingClientRect().height) : 0;
+      const docH = Math.max(
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0
+      );
+      const h = Math.max(200, plotted || docH);
+      if (window.parent) {
+        window.parent.postMessage({ type: 'iframe-height', id: 'heatmap-frame', height: h }, '*');
+      }
     };
 
     buildHeatmapData();
     currentLang = getInitLang();
     Plotly.newPlot('chart', [heatTrace], layout, config);
     applyLang(currentLang);
+    // On mobile iframe init, first paint can use stale dimensions.
+    // Re-apply layout after the frame settles to prevent label/legend clipping.
+    requestAnimationFrame(() => applyLang(currentLang));
+    setTimeout(() => applyLang(currentLang), 120);
+    setTimeout(() => applyLang(currentLang), 360);
+    setTimeout(postHeight, 520);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        applyLang(currentLang);
+        const chartEl = document.getElementById('chart');
+        if (chartEl) Plotly.Plots.resize(chartEl);
+        setTimeout(postHeight, 80);
+      }).catch(() => {});
+    }
 
     window.addEventListener('resize', () => {
       applyLang(currentLang);
+      setTimeout(postHeight, 120);
     });
     window.addEventListener('message', (event) => {
       if (!event || !event.data || event.data.type !== 'set-lang') return;
