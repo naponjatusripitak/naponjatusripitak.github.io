@@ -1096,8 +1096,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var row = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
               "</div>";
             }
             html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
@@ -1151,8 +1151,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var row = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
                 '<span style="font-variant-numeric:tabular-nums;color:#4b5563;">' + row.margin.toFixed(1) + " pp</span>" +
               "</div>";
             }
@@ -1230,8 +1230,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var row = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
                 '<span style="font-variant-numeric:tabular-nums;color:#4b5563;">' + row.enp.toFixed(2) + "</span>" +
               "</div>";
             }
@@ -1298,8 +1298,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var row = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
                 '<span style="font-variant-numeric:tabular-nums;color:#4b5563;">' + (row.turnout * 100).toFixed(1) + "%</span>" +
               "</div>";
             }
@@ -1366,8 +1366,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var row = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
                 '<span style="font-variant-numeric:tabular-nums;color:#4b5563;">' + (row.turnout * 100).toFixed(1) + "%</span>" +
               "</div>";
             }
@@ -1448,8 +1448,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var rr = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(rr.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(rr.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(rr.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(rr.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(rr.district) + "</span>" +
               "</div>";
             }
             html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
@@ -1542,8 +1542,8 @@
             var listHtml = "";
             for (var r = 0; r < distRows.length; r++) {
               var row = distRows[r];
-              listHtml += '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
                 '<span style="font-variant-numeric:tabular-nums;color:#4b5563;">' + row.value.toFixed(1) + " pp</span>" +
               "</div>";
             }
@@ -1600,12 +1600,31 @@
       function wireLegendCollapse() {
         var wrap = document.getElementById("party-legend");
         var head = document.getElementById("legend-head");
+        var body = document.getElementById("legend-body");
         var chev = document.getElementById("legend-chevron");
         if (!wrap || !head || !chev) return;
         head.addEventListener("click", function() {
           var collapsed = wrap.classList.toggle("collapsed");
           chev.textContent = collapsed ? "▸" : "▾";
         });
+        if (body && !body.__distLegendBound) {
+          body.addEventListener("click", function(e) {
+            var node = e.target && e.target.closest ? e.target.closest(".legend-dist-item[data-dist-id]") : null;
+            if (!node) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var distId = node.getAttribute("data-dist-id");
+            if (!distId) return;
+            var layer = layerByDistId && layerByDistId[distId] ? layerByDistId[distId] : null;
+            if (!layer) return;
+            try { map.fitBounds(layer.getBounds(), { padding: [20, 20] }); } catch (err) {}
+            try {
+              layer.bindPopup(popupFor(distId), { maxWidth: 560 });
+              layer.openPopup();
+            } catch (err) {}
+          });
+          body.__distLegendBound = true;
+        }
       }
 
       function setOverlay(overlay) {
