@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Sarabun';
+      src: url('../font/Sarabun/Sarabun-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    html,body,#chart { margin:0; padding:0; width:100%; height:100%; background:#fff; }
+  </style>
+</head>
+<body>
+  <div id="chart"></div>
+  <script>
+    const data = [{"type": "heatmap", "z": [[110, 2, 0, 0], [23, 89, 0, 0], [34, 29, 4, 1], [23, 11, 2, 3], [13, 1, 8, 1], [11, 2, 8, 1], [8, 1, 0, 0], [0, 0, 0, 7], [0, 5, 0, 0], [0, 2, 0, 0], [1, 0, 0, 0]], "x": ["ก้าวไกล", "เพื่อไทย", "รวมไทยสร้างชาติ", "ประชาชาติ"], "y": ["ก้าวไกล", "เพื่อไทย", "ภูมิใจไทย", "พลังประชารัฐ", "รวมไทยสร้างชาติ", "ประชาธิปัตย์", "ชาติไทยพัฒนา", "ประชาชาติ", "ไทยสร้างไทย", "เพื่อไทรวมพลัง", "ชาติพัฒนากล้า"], "colorscale": [[0.0, "#fff5f0"], [0.125, "#fee0d2"], [0.25, "#fcbba1"], [0.375, "#fc9272"], [0.5, "#fb6a4a"], [0.625, "#ef3b2c"], [0.75, "#cb181d"], [1.0, "#99000d"]], "zmin": 0, "showscale": true, "colorbar": {"title": {"text": "จำนวนเขต", "side": "right"}}, "text": [["110", "2", "0", "0"], ["23", "89", "0", "0"], ["34", "29", "4", "1"], ["23", "11", "2", "3"], ["13", "1", "8", "1"], ["11", "2", "8", "1"], ["8", "1", "0", "0"], ["0", "0", "0", "7"], ["0", "5", "0", "0"], ["0", "2", "0", "0"], ["1", "0", "0", "0"]], "texttemplate": "%{text}", "textfont": {"color": [["white", "black", "black", "black"], ["black", "white", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"]], "size": 12}, "hovertemplate": "พรรคที่ชนะเขต: %{y}<br>พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด: %{x}<br>จำนวนเขต: %{z}<extra></extra>", "xgap": 1, "ygap": 1}];
+    const layout = {"margin": {"l": 140, "r": 30, "t": 40, "b": 140}, "xaxis": {"title": "พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด", "tickangle": 45, "tickfont": {"size": 12}}, "yaxis": {"title": "พรรคที่ชนะเขต", "tickangle": 0, "tickfont": {"size": 12}, "autorange": "reversed"}, "height": 720, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "font": {"family": "Sarabun, Arial, sans-serif", "size": 12}};
+    const config = {displayModeBar:false, responsive:true};
+    const LANG_TEXT = {
+      th: {
+        x: 'พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
+        y: 'พรรคที่ชนะเขต',
+        cb: 'จำนวนเขต',
+        hover: 'พรรคที่ชนะเขต: %{y}<br>พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด: %{x}<br>จำนวนเขต: %{z}<extra></extra>'
+      },
+      en: {
+        x: 'Top party-list winner',
+        y: 'Constituency winner',
+        cb: 'Constituencies',
+        hover: 'Constituency winner: %{y}<br>Top party-list winner: %{x}<br>Constituencies: %{z}<extra></extra>'
+      }
+    };
+    const PARTY_NAME_EN = {
+      'ก้าวไกล': 'Move Forward',
+      'เพื่อไทย': 'Pheu Thai',
+      'ภูมิใจไทย': 'Bhumjaithai',
+      'พลังประชารัฐ': 'Palang Pracharath',
+      'รวมไทยสร้างชาติ': 'United Thai Nation',
+      'ประชาธิปัตย์': 'Democrat',
+      'ชาติไทยพัฒนา': 'Chart Thai Pattana',
+      'ประชาชาติ': 'Prachachat',
+      'ไทยสร้างไทย': 'Thai Sang Thai',
+      'เพื่อไทรวมพลัง': 'Pheu Thai Ruam Palang',
+      'ชาติพัฒนากล้า': 'Chart Pattana Kla'
+    };
+    const baseX = data[0].x.slice();
+    const baseY = data[0].y.slice();
+    const initLang = () => {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const stored = localStorage.getItem('lang');
+      return urlLang || stored || 'th';
+    };
+    let currentLang = initLang();
+    const translateParty = (name, lang) => (lang === 'en' ? (PARTY_NAME_EN[name] || name) : name);
+    const applyLang = (lang) => {
+      currentLang = lang;
+      const t = LANG_TEXT[lang] || LANG_TEXT.th;
+      data[0].x = baseX.map((p) => translateParty(p, lang));
+      data[0].y = baseY.map((p) => translateParty(p, lang));
+      layout.xaxis.title = t.x;
+      layout.yaxis.title = t.y;
+      if (data[0] && data[0].colorbar) data[0].colorbar.title.text = t.cb;
+      data[0].hovertemplate = t.hover;
+      Plotly.react('chart', data, layout, config);
+    };
+
+    Plotly.newPlot('chart', data, layout, config);
+    applyLang(currentLang);
+    window.addEventListener('resize', () => Plotly.Plots.resize('chart'));
+
+    window.addEventListener('message', (event) => {
+      if (event && event.data && event.data.type === 'set-lang') {
+        applyLang(event.data.lang || 'th');
+      }
+    });
+
+</script>
+</body>
+</html>
