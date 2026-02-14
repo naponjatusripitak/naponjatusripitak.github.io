@@ -13,7 +13,9 @@
 ./data/party_colors_2569.js
 ./data/referendum_results_2569_by_dist.js
 ./data/summary_rows_2569.js
+./data/turnout_2566_by_dist.js
 ./data/turnout_2569_by_dist.js
+./figure/heatmap_interactive.html
 ./figure/heatmap_interactive_2026.html
 ./figure/plot_density.html
 ./figure/plot_density_2026.html
@@ -26,12 +28,16 @@
 ./figure/region_support_2026.html
 ./figure/share_geojson.js
 ./figure/share_geojson.json
+./figure/share_vote_map_const_pure.html
 ./figure/share_vote_map_const_pure_2026.html
+./figure/share_vote_map_list_pure.html
 ./figure/share_vote_map_list_pure_2026.html
+./figure/thailand_election_2023.html
 ./figure/thailand_election_2026.html
 ./figure/turnout_compare_2026.html
 ./font/Kanit/Kanit-Bold.ttf
 ./font/Kanit/Kanit-Regular.ttf
 ./font/Kanit/Kanit-SemiBold.ttf
 ./font/Sarabun/Sarabun-Regular.ttf
+./plot.html
 ./plot_2026.html
