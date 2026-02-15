@@ -76,14 +76,15 @@
     <div id="legend-body"></div>
   </div>
 
-  <div id="load-error"></div>
+	  <div id="load-error"></div>
 
-  <script src="../data/election_results_2569_by_dist.js"></script>
-  <script src="../data/election_results_2566_by_dist.js"></script>
-  <script src="../data/turnout_2569_by_dist.js"></script>
-  <script src="../data/Election Boundaries/2569/geojson/2569_constituencies_simplified.js"></script>
-  <script>
-    (function() {
+	  <script src="../data/election_results_2569_by_dist.js"></script>
+	  <script src="../data/election_results_2566_by_dist.js"></script>
+	  <script src="../data/turnout_2569_by_dist.js"></script>
+	  <script src="../data/ntl_mean_pre2026_by_dist.js"></script>
+	  <script src="../data/Election Boundaries/2569/geojson/2569_constituencies_simplified.js"></script>
+	  <script>
+	    (function() {
       var uiLang = (window.__mapLang === "en") ? "en" : "th";
       window.__provinceNameEn = window.__provinceNameEn || {};
       window.__partyNameEn = window.__partyNameEn || {};
@@ -293,15 +294,16 @@
       var changeListVs2023ByDist = {};
       var changeVs2023MetaByDist = {};
       var winners2023Index = null;
-      var turnoutByDist = (window.__turnoutByDist && typeof window.__turnoutByDist === "object") ? window.__turnoutByDist : {};
-      var turnoutListByDist = (window.__turnoutListByDist && typeof window.__turnoutListByDist === "object") ? window.__turnoutListByDist : {};
-      var turnoutMetaByDist = (window.__turnoutDetailByDist && typeof window.__turnoutDetailByDist === "object")
-        ? window.__turnoutDetailByDist
-        : ((window.__turnoutMetaByDist && typeof window.__turnoutMetaByDist === "object") ? window.__turnoutMetaByDist : {});
+	      var turnoutByDist = (window.__turnoutByDist && typeof window.__turnoutByDist === "object") ? window.__turnoutByDist : {};
+	      var turnoutListByDist = (window.__turnoutListByDist && typeof window.__turnoutListByDist === "object") ? window.__turnoutListByDist : {};
+	      var turnoutMetaByDist = (window.__turnoutDetailByDist && typeof window.__turnoutDetailByDist === "object")
+	        ? window.__turnoutDetailByDist
+	        : ((window.__turnoutMetaByDist && typeof window.__turnoutMetaByDist === "object") ? window.__turnoutMetaByDist : {});
+	      var ntlMeanByDist = (window.__ntlMeanPre2026ByDist && typeof window.__ntlMeanPre2026ByDist === "object") ? window.__ntlMeanPre2026ByDist : {};
 
-      var MOV_BINS = [0, 2, 5, 10, 20, 100];
-      var MOV_COLORS = ["#fff5eb", "#fdd0a2", "#fdae6b", "#fd8d3c", "#e6550d"];
-      var selectedMovBin = null;
+	      var MOV_BINS = [0, 2, 5, 10, 20, 100];
+	      var MOV_COLORS = ["#fff5eb", "#fdd0a2", "#fdae6b", "#fd8d3c", "#e6550d"];
+	      var selectedMovBin = null;
       var selectedBaseLegendParty = null;
       var selectedBaseLegendMode = null;
       var selectedSwingChangeKey = null;
@@ -310,16 +312,24 @@
       var selectedTurnoutBin = null;
       var selectedTurnoutMode = null;
 
-      var ENP_BINS = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 99.0];
-      var ENP_LABELS = ["1-2", "2-3", "3-4", "4-5", "5-6", "6+"];
-      var ENP_COLORS = ["#edf8fb", "#ccece6", "#99d8c9", "#66c2a4", "#2ca25f", "#006d2c"];
-      var selectedEnpBin = null;
-      var TURNOUT_BINS = [0.0, 0.60, 0.65, 0.70, 0.75, 0.80, 1.00];
-      var TURNOUT_COLORS = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#d7301f"];
+	      var ENP_BINS = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 99.0];
+	      var ENP_LABELS = ["1-2", "2-3", "3-4", "4-5", "5-6", "6+"];
+	      var ENP_COLORS = ["#edf8fb", "#ccece6", "#99d8c9", "#66c2a4", "#2ca25f", "#006d2c"];
+	      var selectedEnpBin = null;
+	      var TURNOUT_BINS = [0.0, 0.60, 0.65, 0.70, 0.75, 0.80, 1.00];
+	      var TURNOUT_COLORS = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#d7301f"];
+				      // Quantile bins on mean NTL (computed from constituencies with data).
+				      // Dark -> light (higher NTL = lighter).
+				      // "magma" (dark -> light)
+				      var NTL_COLORS = ["#000004", "#51127c", "#b73779", "#fc8961", "#fcfdbf"];
+			      var NTL_BIN_EDGES = null;   // length = NTL_COLORS.length + 1
+			      var NTL_BIN_LABELS = null;  // length = NTL_COLORS.length
+			      var selectedNtlParty = "";
+			      var selectedNtlBin = null;
 
-      function movBinIndex(v) {
-        for (var i = 0; i < MOV_BINS.length - 1; i++) {
-          if (v >= MOV_BINS[i] && v < MOV_BINS[i + 1]) return i;
+	      function movBinIndex(v) {
+	        for (var i = 0; i < MOV_BINS.length - 1; i++) {
+	          if (v >= MOV_BINS[i] && v < MOV_BINS[i + 1]) return i;
         }
         return MOV_BINS.length - 2;
       }
@@ -330,16 +340,85 @@
         }
         return ENP_BINS.length - 2;
       }
-      function turnoutBinIndex(v) {
-        var x = Number(v);
-        if (!isFinite(x) || x < 0) x = 0;
-        for (var i = 0; i < TURNOUT_BINS.length - 1; i++) {
-          if (x >= TURNOUT_BINS[i] && x < TURNOUT_BINS[i + 1]) return i;
-        }
-        return TURNOUT_BINS.length - 2;
-      }
+	      function turnoutBinIndex(v) {
+	        var x = Number(v);
+	        if (!isFinite(x) || x < 0) x = 0;
+	        for (var i = 0; i < TURNOUT_BINS.length - 1; i++) {
+	          if (x >= TURNOUT_BINS[i] && x < TURNOUT_BINS[i + 1]) return i;
+	        }
+	        return TURNOUT_BINS.length - 2;
+	      }
+			      function ntlValue(distId) {
+			        if (!distId) return null;
+			        var v = ntlMeanByDist && Object.prototype.hasOwnProperty.call(ntlMeanByDist, distId) ? Number(ntlMeanByDist[distId]) : null;
+			        if (!isFinite(v) || v <= 0) return null;
+			        return v;
+			      }
+			      function fmtNtl(x) {
+			        if (x == null || !isFinite(Number(x))) return "—";
+			        var v = Number(x);
+			        if (v >= 100) return v.toFixed(0);
+			        if (v >= 10) return v.toFixed(1);
+			        return v.toFixed(2);
+			      }
+			      function ensureNtlBins() {
+			        if (NTL_BIN_EDGES && NTL_BIN_LABELS) return;
+			        var values = [];
+			        Object.keys((results && results.byDist) || {}).forEach(function(did) {
+			          var v = ntlValue(did);
+			          if (v == null) return;
+			          values.push(v);
+			        });
+			        values.sort(function(a, b) { return a - b; });
+			        var binsN = NTL_COLORS.length;
+			        if (!values.length || binsN < 2) {
+			          NTL_BIN_EDGES = [0, 1];
+			          NTL_BIN_LABELS = [i18n("ไม่มีข้อมูล", "No data")];
+			          return;
+			        }
+				        // Skew-aware percentile edges (more resolution at the low end, fewer constituencies in the brightest bins).
+				        // 5 bins => 6 cutpoints.
+				        var PCTS = [0.00, 0.45, 0.72, 0.88, 0.96, 1.00];
+			        var q = function(p) {
+			          var n = values.length;
+			          if (!n) return null;
+			          var idx = (n - 1) * p;
+			          var lo = Math.floor(idx);
+			          var hi = Math.ceil(idx);
+			          var frac = idx - lo;
+			          if (hi >= n) hi = n - 1;
+			          if (lo < 0) lo = 0;
+			          var a = values[lo];
+			          var b = values[hi];
+			          return a + (b - a) * frac;
+			        };
+			        var cuts = new Array(binsN + 1);
+			        for (var i = 0; i <= binsN; i++) cuts[i] = q(PCTS[i] != null ? PCTS[i] : (i / binsN));
+			        for (var j = 1; j < cuts.length; j++) {
+			          if (cuts[j] < cuts[j - 1]) cuts[j] = cuts[j - 1];
+			        }
+			        var labels = new Array(binsN);
+			        for (var k = 0; k < binsN; k++) labels[k] = fmtNtl(cuts[k]) + "–" + fmtNtl(cuts[k + 1]);
+			        NTL_BIN_EDGES = cuts;
+			        NTL_BIN_LABELS = labels;
+			      }
+			      function ntlBinIndex(v) {
+			        if (v == null || !isFinite(Number(v)) || Number(v) <= 0) return -1;
+			        ensureNtlBins();
+			        var x = Number(v);
+			        var binsN = NTL_COLORS.length;
+			        for (var i = 0; i < binsN - 1; i++) {
+			          if (x < NTL_BIN_EDGES[i + 1]) return i;
+			        }
+			        return binsN - 1;
+			      }
+			      function ntlBinLabel(i) {
+			        ensureNtlBins();
+			        if (i == null || i < 0 || i >= (NTL_BIN_LABELS || []).length) return "—";
+			        return NTL_BIN_LABELS[i];
+			      }
 
-      function currentMode() { return overlayMode || baseMode; }
+	      function currentMode() { return overlayMode || baseMode; }
       function maybeDecodeThai(s) {
         if (s == null) return "";
         var txt = String(s);
@@ -598,16 +677,22 @@
         var col = TURNOUT_COLORS[idx] || TURNOUT_COLORS[0];
         return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
       }
-      function styleTurnoutList(distId) {
-        var v = (turnoutListByDist[distId] != null) ? Number(turnoutListByDist[distId]) : 0;
-        var idx = turnoutBinIndex(v);
-        var col = TURNOUT_COLORS[idx] || TURNOUT_COLORS[0];
-        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
-      }
-      function styleChange23(distId) {
-        var statusConst = changeVs2023ByDist[distId] || "unknown";
-        var statusList = changeListVs2023ByDist[distId] || "unknown";
-        var col = "#d1d5db";
+	      function styleTurnoutList(distId) {
+	        var v = (turnoutListByDist[distId] != null) ? Number(turnoutListByDist[distId]) : 0;
+	        var idx = turnoutBinIndex(v);
+	        var col = TURNOUT_COLORS[idx] || TURNOUT_COLORS[0];
+	        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+	      }
+		      function styleNTL(distId) {
+		        var mean = ntlValue(distId);
+		        var idx = ntlBinIndex(mean);
+		        var col = idx >= 0 ? (NTL_COLORS[idx] || NTL_COLORS[NTL_COLORS.length - 1]) : "#d1d5db";
+		        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+		      }
+	      function styleChange23(distId) {
+	        var statusConst = changeVs2023ByDist[distId] || "unknown";
+	        var statusList = changeListVs2023ByDist[distId] || "unknown";
+	        var col = "#d1d5db";
         if (statusConst === "unknown" && statusList === "unknown") col = "#d1d5db";
         else if (statusConst === "changed" && statusList === "changed") col = "#7c3aed";
         else if (statusConst === "changed") col = "#ef4444";
@@ -627,19 +712,20 @@
         return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
       }
 
-      function baseStyleFor(distId) {
-        var mode = currentMode();
-        var s;
-        if (mode === "mov") s = styleMov(distId);
-        else if (mode === "hhi") s = styleHHI(distId);
-        else if (mode === "div") s = styleDiv(distId);
-        else if (mode === "enp") s = styleENP(distId);
-        else if (mode === "turnout") s = styleTurnout(distId);
-        else if (mode === "turnout_list") s = styleTurnoutList(distId);
-        else if (mode === "swing_change") s = styleChange23(distId);
-        else if (mode === "swing_const") s = styleSwingIndex(distId, "const");
-        else if (mode === "swing_list") s = styleSwingIndex(distId, "list");
-        else s = styleWinner(distId, mode);
+	      function baseStyleFor(distId) {
+	        var mode = currentMode();
+	        var s;
+	        if (mode === "mov") s = styleMov(distId);
+	        else if (mode === "hhi") s = styleHHI(distId);
+	        else if (mode === "div") s = styleDiv(distId);
+	        else if (mode === "enp") s = styleENP(distId);
+	        else if (mode === "turnout") s = styleTurnout(distId);
+	        else if (mode === "turnout_list") s = styleTurnoutList(distId);
+	        else if (mode === "ntl") s = styleNTL(distId);
+	        else if (mode === "swing_change") s = styleChange23(distId);
+	        else if (mode === "swing_const") s = styleSwingIndex(distId, "const");
+	        else if (mode === "swing_list") s = styleSwingIndex(distId, "list");
+	        else s = styleWinner(distId, mode);
         return Object.assign({}, s, {
           stroke: true,
           color: "#ffffff",
@@ -964,9 +1050,9 @@
           listRow +
         "</div>";
       }
-      function popupSwingIndex(distId, which) {
-        var d = results && results.byDist ? results.byDist[distId] : null;
-        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+	      function popupSwingIndex(distId, which) {
+	        var d = results && results.byDist ? results.byDist[distId] : null;
+	        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
         var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
         var indexVal = which === "const" ? swingConstByDist[distId] : swingListByDist[distId];
         var rows = which === "const" ? swingConstDetailsByDist[distId] : swingListDetailsByDist[distId];
@@ -985,27 +1071,89 @@
             "<div style='min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>" + escapeHtml(partyLabel(r.party)) + "</div>" +
             "<div style='font-variant-numeric:tabular-nums;color:#374151;'>" + sign + Number(r.diff || 0).toFixed(1) + " pp</div></div>";
         });
-        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
-          '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + title + "</div>" +
-          '<div style="margin-bottom:8px;color:#374151;">' + label + ': <b style="font-variant-numeric:tabular-nums;">' + Number(indexVal).toFixed(1) + " pp</b></div>" +
-          '<div style="font-size:12px;color:#6b7280;">' + i18n("พรรคที่เปลี่ยนมากสุด (pp)", "Largest party shifts (pp)") + "</div>" +
-          rowsHtml +
-        "</div>";
-      }
+	        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+	          '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + title + "</div>" +
+	          '<div style="margin-bottom:8px;color:#374151;">' + label + ': <b style="font-variant-numeric:tabular-nums;">' + Number(indexVal).toFixed(1) + " pp</b></div>" +
+	          '<div style="font-size:12px;color:#6b7280;">' + i18n("พรรคที่เปลี่ยนมากสุด (pp)", "Largest party shifts (pp)") + "</div>" +
+	          rowsHtml +
+	        "</div>";
+	      }
+			      function popupNTL(distId) {
+			        var d = results && results.byDist ? results.byDist[distId] : null;
+			        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+			        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+			        var mean = ntlValue(distId);
+			        var idx = ntlBinIndex(mean);
+			        var binLabel = idx >= 0 ? ntlBinLabel(idx) : i18n("ไม่มีข้อมูล", "No data");
+			        var winner = (baseMode === "list") ? (d.winner_plist_party || "") : (d.winner_const_party || "");
+			        var winnerLabel = winner ? escapeHtml(partyLabel(winner)) : "—";
+			        var cands = Array.isArray(d.const_candidates) ? d.const_candidates : [];
+			        var top1 = cands[0] || null;
+			        var top2 = cands[1] || null;
+			        var p1 = top1 ? Number(top1.share_pp || 0) : null;
+			        var p2 = top2 ? Number(top2.share_pp || 0) : null;
+			        var v1 = top1 ? Number(top1.votes || 0) : null;
+			        var v2 = top2 ? Number(top2.votes || 0) : null;
+			        var marginPp = (p1 != null && p2 != null) ? Math.max(0, p1 - p2) : null;
+			        var marginVotes = (v1 != null && v2 != null) ? Math.max(0, v1 - v2) : null;
+			        var winnerCandHtml =
+			          '<div style="margin-top:8px;padding:8px;border:1px solid rgba(0,0,0,0.08);border-radius:10px;">' +
+			            '<div style="font-size:12px;color:#475569;font-weight:700;margin-bottom:4px;">' + i18n("ผู้สมัครผู้ชนะ (แบ่งเขต)", "Winning candidate (constituency)") + "</div>" +
+			            '<div style="font-size:13px;font-weight:800;line-height:1.25;">' +
+			              escapeHtml(top1 ? top1.candidate : "—") +
+			              ' <span style="font-weight:400;color:#666;">(' + escapeHtml(partyLabel(top1 ? top1.party : "")) + ")</span>" +
+			            "</div>" +
+			            '<div style="font-size:12px;color:#444;margin-top:2px;font-variant-numeric:tabular-nums;">' +
+			              (p1 == null ? "—" : p1.toFixed(1) + "%") +
+			              (v1 == null ? "" : " · " + v1.toLocaleString() + " " + i18n("คะแนน", "votes")) +
+			            "</div>" +
+			            (top2 ? (
+			              '<div style="margin-top:6px;font-size:12px;color:#6b7280;line-height:1.25;">' +
+			                i18n("อันดับ 2: ", "Runner-up: ") +
+			                escapeHtml(top2.candidate || "—") + " (" + escapeHtml(partyLabel(top2.party || "")) + ")" +
+			                " · " + Number(p2 || 0).toFixed(1) + "% · " + Number(v2 || 0).toLocaleString() + " " + i18n("คะแนน", "votes") +
+			              "</div>"
+			            ) : "") +
+			            ((top2 && marginPp != null && marginVotes != null) ? (
+			              '<div style="margin-top:2px;font-size:12px;color:#6b7280;">' +
+			                i18n("ส่วนต่างผู้ชนะ: ", "Winner margin: ") +
+			                '<span style="font-variant-numeric:tabular-nums;color:#111827;font-weight:700;">' + marginPp.toFixed(1) + " pp</span>" +
+			                " · <span style=\"font-variant-numeric:tabular-nums;\">" + marginVotes.toLocaleString() + "</span>" +
+			              "</div>"
+			            ) : "") +
+			          "</div>";
+			        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+			          '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + title + "</div>" +
+			          '<div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;">' +
+			            '<div style="color:#6b7280;">' + i18n("ผู้ชนะ", "Winner") + "</div>" +
+			            '<div style="font-variant-numeric:tabular-nums;">' + winnerLabel + "</div>" +
+			          "</div>" +
+			          '<div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;">' +
+			            '<div style="color:#6b7280;">' + i18n("ค่าเฉลี่ย NTL", "Mean NTL") + "</div>" +
+			            '<div style="font-variant-numeric:tabular-nums;">' + (mean == null ? "—" : fmtNtl(mean)) + "</div>" +
+			          "</div>" +
+			          '<div style="display:flex;justify-content:space-between;gap:10px;">' +
+			            '<div style="color:#6b7280;">' + i18n("ช่วง (bin)", "Bin") + "</div>" +
+			            '<div style="font-variant-numeric:tabular-nums;">' + binLabel + "</div>" +
+			          "</div>" +
+			          winnerCandHtml +
+			        "</div>";
+			      }
 
-      function popupFor(distId) {
-        var mode = currentMode();
-        if (mode === "mov") return popupMov(distId);
-        if (mode === "hhi") return popupHHI(distId);
-        if (mode === "div") return popupDiv(distId);
-        if (mode === "enp") return popupENP(distId);
-        if (mode === "turnout") return popupTurnout(distId);
-        if (mode === "turnout_list") return popupTurnoutList(distId);
-        if (mode === "swing_change") return popupChange23(distId);
-        if (mode === "swing_const") return popupSwingIndex(distId, "const");
-        if (mode === "swing_list") return popupSwingIndex(distId, "list");
-        return popupWinner(distId, mode);
-      }
+	      function popupFor(distId) {
+	        var mode = currentMode();
+	        if (mode === "mov") return popupMov(distId);
+	        if (mode === "hhi") return popupHHI(distId);
+	        if (mode === "div") return popupDiv(distId);
+	        if (mode === "enp") return popupENP(distId);
+	        if (mode === "turnout") return popupTurnout(distId);
+	        if (mode === "turnout_list") return popupTurnoutList(distId);
+	        if (mode === "ntl") return popupNTL(distId);
+	        if (mode === "swing_change") return popupChange23(distId);
+	        if (mode === "swing_const") return popupSwingIndex(distId, "const");
+	        if (mode === "swing_list") return popupSwingIndex(distId, "list");
+	        return popupWinner(distId, mode);
+	      }
 
       var layerByDistId = {};
       var geoLayer = null;
@@ -1177,10 +1325,24 @@
         if (mode === "enp") {
           title.textContent = i18n("จำนวนพรรคที่มีผลจริง (ENP)", "Effective # of Parties (ENP)");
           modeEl.textContent = i18n("ค่าสูง = แข่งขันหลายพรรค (กดช่วงเพื่อดูรายชื่อเขต)", "Higher = more fragmented competition (click a bin to list constituencies)");
+          var partyWins = {};
+          Object.keys(results.byDist).forEach(function(did) {
+            var dd = results.byDist[did] || {};
+            var p = dd.winner_const_party;
+            if (!p) return;
+            partyWins[p] = (partyWins[p] || 0) + 1;
+          });
+          var parties = Object.keys(partyWins);
+          parties.sort(function(a, b) { return (partyWins[b] || 0) - (partyWins[a] || 0); });
           var labels = ["1–2", "2–3", "3–4", "4–5", "5–6", "6+"];
           var counts = [0, 0, 0, 0, 0, 0];
           var winCounts = [0, 0, 0, 0, 0, 0];
           var winnerPartyFilter = window.__winnerPartyFilter || "";
+          if (winnerPartyFilter && partyWins[winnerPartyFilter] == null) {
+            winnerPartyFilter = "";
+            window.__winnerPartyFilter = "";
+            setTimeout(function() { try { applyStylesAndPopups(); } catch (e) {} }, 0);
+          }
           Object.keys(enpByDist).forEach(function(did) {
             var idx = Math.min(5, Math.max(0, enpBinIndex(enpByDist[did])));
             counts[idx] += 1;
@@ -1190,7 +1352,11 @@
               if (winner && winner === winnerPartyFilter) winCounts[idx] += 1;
             }
           });
-          var html = '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">' + i18n("ช่วงค่า ENP", "ENP bins") + "</div>";
+          var selectHtml = '<div style="margin-bottom:10px;">' +
+            '<div style="font-size:12px;color:#6b7280;font-weight:700;margin-bottom:6px;">' + i18n("เลือกพรรค", "Choose party") + "</div>" +
+            '<select id="enp-party-select" style="width:100%;padding:6px 8px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);background:#fff;font-family:system-ui;font-size:12.5px;"></select>' +
+          "</div>";
+          var html = selectHtml + '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">' + i18n("ช่วงค่า ENP", "ENP bins") + "</div>";
           for (var i = 0; i < labels.length; i++) {
             var col = enpColor(i / 5.0);
             var right = counts[i].toLocaleString() + " " + i18n("เขต", "constituencies");
@@ -1241,6 +1407,25 @@
             "</div>";
           }
           body.innerHTML = html;
+          var sel = document.getElementById("enp-party-select");
+          if (sel) {
+            sel.innerHTML = "";
+            var optAll = document.createElement("option");
+            optAll.value = "";
+            optAll.textContent = i18n("ทั้งหมด", "All");
+            sel.appendChild(optAll);
+            parties.forEach(function(p) {
+              var opt = document.createElement("option");
+              opt.value = p;
+              opt.textContent = partyLabel(p);
+              sel.appendChild(opt);
+            });
+            sel.value = winnerPartyFilter;
+            sel.addEventListener("change", function() {
+              window.__winnerPartyFilter = sel.value || "";
+              applyStylesAndPopups();
+            });
+          }
           var enpBinNodes = body.querySelectorAll(".enp-bin-item[data-bin]");
           enpBinNodes.forEach(function(node) {
             node.addEventListener("click", function() {
@@ -1578,23 +1763,163 @@
           return;
         }
 
-        if (mode === "div") {
-          title.textContent = i18n("เทียบ แบ่งเขต vs บัญชีรายชื่อ", "Ballot Splitting");
-          modeEl.textContent = i18n("ยิ่งสูง = ต่างมาก", "Constituency vs party-list mismatch");
-          var grad = "linear-gradient(90deg, rgb(237,248,255), rgb(8,81,156))";
+	        if (mode === "div") {
+	          title.textContent = i18n("เทียบ แบ่งเขต vs บัญชีรายชื่อ", "Ballot Splitting");
+	          modeEl.textContent = i18n("ยิ่งสูง = ต่างมาก", "Constituency vs party-list mismatch");
+	          var grad = "linear-gradient(90deg, rgb(237,248,255), rgb(8,81,156))";
           body.innerHTML =
             '<div style="font-size:12.5px; color:#444; margin-bottom:8px; font-weight:800;">Total variation distance (0–100%)</div>' +
             '<div style="font-size:12px; color:#666; margin:-2px 0 10px 0; line-height:1.35;">' + i18n("TV = ½ Σ |pᵢ − cᵢ| (p=บัญชีรายชื่อ, c=แบ่งเขต)", "TV = ½ Σ |pᵢ − cᵢ| (p=party-list, c=constituency)") + "</div>" +
             '<div style="height:12px; border-radius:8px; background:' + grad + '; border:1px solid rgba(0,0,0,0.08);"></div>' +
             '<div style="display:flex; justify-content:space-between; font-size:12px; color:#666; margin-top:6px;"><span>0%</span><span>100%</span></div>' +
             '<div style="font-size:12px; color:#666; margin-top:10px; line-height:1.35;">' + i18n("ยิ่งสูง = รูปแบบคะแนนต่างกันมาก", "Higher = more different voting patterns") + "</div>";
-          return;
-        }
+	          return;
+	        }
+	
+			        if (mode === "ntl") {
+			          title.textContent = i18n("แสงไฟยามค่ำคืน (NTL)", "Night-time lights (NTL)");
+			          modeEl.textContent = i18n("ค่าเฉลี่ย NTL · ยิ่งสูง = ยิ่งสว่าง", "Mean NTL · Higher = brighter");
+			          var winnerKey = (baseMode === "list") ? "winner_plist_party" : "winner_const_party";
+			          var partyWins = {};
+			          Object.keys(results.byDist).forEach(function(did) {
+			            var dd = results.byDist[did] || {};
+			            var p = dd[winnerKey];
+			            if (!p) return;
+			            partyWins[p] = (partyWins[p] || 0) + 1;
+			          });
+			          var parties = Object.keys(partyWins);
+			          parties.sort(function(a, b) { return (partyWins[b] || 0) - (partyWins[a] || 0); });
+			          if (selectedNtlParty && partyWins[selectedNtlParty] == null) selectedNtlParty = "";
 
-        // Fallback
-        title.textContent = i18n("แผนที่", "Map");
-        modeEl.textContent = "";
-        body.innerHTML = "";
+			          var binsN = NTL_COLORS.length;
+			          var totals = new Array(binsN).fill(0);
+			          var wins = new Array(binsN).fill(0);
+			          var totalNoData = 0;
+			          var winsNoData = 0;
+				          Object.keys(results.byDist).forEach(function(did) {
+				            var dd = results.byDist[did] || {};
+				            var idx = ntlBinIndex(ntlValue(did));
+				            if (idx >= 0) totals[idx] += 1;
+			            else totalNoData += 1;
+			            var p = dd[winnerKey] || "";
+			            if (selectedNtlParty && p === selectedNtlParty) {
+			              if (idx >= 0) wins[idx] += 1;
+			              else winsNoData += 1;
+			            }
+				          });
+
+				          var selectHtml = '<div style="margin-bottom:10px;">' +
+				            '<div style="font-size:12px;color:#6b7280;font-weight:700;margin-bottom:6px;">' + i18n("เลือกพรรค", "Choose party") + "</div>" +
+				            '<select id="ntl-party-select" style="width:100%;padding:6px 8px;border-radius:10px;border:1px solid rgba(0,0,0,0.12);background:#fff;font-family:system-ui;font-size:12.5px;"></select>' +
+				          "</div>";
+
+				          var html =
+				            '<div style="font-size:12px;color:#6b7280;line-height:1.35;margin-bottom:10px;">' +
+				              i18n("ข้อมูล NTL จาก VIIRS (VNP46A2, รายวัน) เฉลี่ย 1 ปีก่อนวันเลือกตั้ง", "NTL from VIIRS (VNP46A2, daily) averaged over 1 year before election day") +
+				            "</div>" +
+				            selectHtml;
+				          for (var i = 0; i < totals.length; i++) {
+				            var label = ntlBinLabel(i);
+				            var col = NTL_COLORS[i] || NTL_COLORS[NTL_COLORS.length - 1];
+			            var totalTxt = (totals[i] || 0).toLocaleString() + " " + i18n("เขต", "const.");
+			            var winTxt = (wins[i] || 0).toLocaleString() + " " + i18n("ที่นั่ง", "seats");
+			            var rightTxt = selectedNtlParty ? (totalTxt + " · " + winTxt) : totalTxt;
+			            html += '<div class="legend-item">' +
+			              '<div class="legend-left ntl-bin-item" data-bin="' + i + '" style="cursor:pointer; padding:2px 4px; border-radius:8px; background:' + (selectedNtlBin === i ? "rgba(15,23,42,0.06)" : "transparent") + ';">' +
+			                '<span class="legend-swatch" style="background:' + col + '"></span>' +
+			                '<span class="legend-name" style="' + (selectedNtlBin === i ? "font-weight:700;" : "") + '" title="' + escapeHtml(label) + '">' + escapeHtml(label) + "</span>" +
+			              "</div>" +
+			              '<span class="legend-count">' + rightTxt + "</span>" +
+			            "</div>";
+			          }
+			          if (totalNoData > 0) {
+			            var totalTxt2 = totalNoData.toLocaleString() + " " + i18n("เขต", "const.");
+			            var winTxt2 = winsNoData.toLocaleString() + " " + i18n("ที่นั่ง", "seats");
+			            var rightTxt2 = selectedNtlParty ? (totalTxt2 + " · " + winTxt2) : totalTxt2;
+			            html += '<div class="legend-item">' +
+			              '<div class="legend-left" style="padding:2px 4px;">' +
+			                '<span class="legend-swatch" style="background:#d1d5db"></span>' +
+			                '<span class="legend-name">' + i18n("ไม่มีข้อมูล", "No data") + "</span>" +
+			              "</div>" +
+			              '<span class="legend-count">' + rightTxt2 + "</span>" +
+			            "</div>";
+			          }
+
+				          if (selectedNtlBin != null) {
+				            var distRows = [];
+				            Object.keys(results.byDist).forEach(function(did) {
+				              var idx = ntlBinIndex(ntlValue(did));
+				              if (idx !== selectedNtlBin) return;
+				              var dd = results.byDist[did] || {};
+				              var w = dd[winnerKey] || "";
+				              if (selectedNtlParty && w !== selectedNtlParty) return;
+				              distRows.push({
+				                distId: did,
+				                province: dd.province || "",
+				                district: dd.district || "",
+				                winner: w,
+				                ntl: ntlValue(did)
+				              });
+				            });
+			            distRows.sort(function(a, b) {
+			              if (a.province !== b.province) return a.province.localeCompare(b.province, "th");
+			              return Number(a.district || 0) - Number(b.district || 0);
+			            });
+			            var listHtml = "";
+			            for (var r = 0; r < distRows.length; r++) {
+			              var row = distRows[r];
+			              var right = (row.ntl == null ? "—" : fmtNtl(row.ntl)) + " · " + escapeHtml(partyLabel(row.winner || ""));
+			              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+			                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+			                '<span style="font-variant-numeric:tabular-nums;color:#4b5563;white-space:nowrap;">' + right + "</span>" +
+			              "</div>";
+			            }
+			            html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
+			              '<div style="font-size:12px; font-weight:700; color:#334155;">' + i18n("รายชื่อเขต", "Constituencies") + " (" + distRows.length.toLocaleString() + ")</div>" +
+			              '<div style="max-height:180px; overflow:auto; padding-right:2px;">' + listHtml + "</div>" +
+			            "</div>";
+				          }
+
+				          body.innerHTML = html;
+				          var sel = document.getElementById("ntl-party-select");
+				          if (sel && !sel.__ntlBound) {
+				            sel.addEventListener("click", function(e) { e.stopPropagation(); });
+				            sel.addEventListener("change", function(e) {
+				              selectedNtlParty = e.target && e.target.value ? e.target.value : "";
+				              buildLegend();
+				            });
+				            sel.__ntlBound = true;
+				          }
+				          if (sel) {
+				            sel.innerHTML = "";
+				            var optAll = document.createElement("option");
+				            optAll.value = "";
+				            optAll.textContent = i18n("ทั้งหมด", "All");
+				            sel.appendChild(optAll);
+				            for (var pi = 0; pi < parties.length; pi++) {
+				              var opt = document.createElement("option");
+				              opt.value = parties[pi];
+				              opt.textContent = partyLabel(parties[pi]);
+				              sel.appendChild(opt);
+				            }
+				            sel.value = selectedNtlParty || "";
+				          }
+				          var binNodes = body.querySelectorAll(".ntl-bin-item[data-bin]");
+				          binNodes.forEach(function(node) {
+				            node.addEventListener("click", function() {
+				              var idx = Number(node.getAttribute("data-bin"));
+			              if (!isFinite(idx)) return;
+			              selectedNtlBin = (selectedNtlBin === idx) ? null : idx;
+			              buildLegend();
+			            });
+			          });
+			          return;
+			        }
+
+	        // Fallback
+	        title.textContent = i18n("แผนที่", "Map");
+	        modeEl.textContent = "";
+	        body.innerHTML = "";
       }
 
       function wireLegendCollapse() {
@@ -1627,24 +1952,25 @@
         }
       }
 
-      function setOverlay(overlay) {
-        var next = overlay || null;
-        if (next === "change23") next = "swing_change";
-        if (next != null) {
-          selectedBaseLegendParty = null;
-          selectedBaseLegendMode = null;
-        }
-        if (next !== "mov") selectedMovBin = null;
-        if (next !== "enp") selectedEnpBin = null;
-        if (next !== "turnout" && next !== "turnout_list") {
-          selectedTurnoutBin = null;
-          selectedTurnoutMode = null;
-        }
-        if (next !== "swing_change") selectedSwingChangeKey = null;
-        if (next !== "swing_const" && next !== "swing_list") {
-          selectedSwingValueBin = null;
-          selectedSwingValueMode = null;
-        }
+	      function setOverlay(overlay) {
+	        var next = overlay || null;
+	        if (next === "change23") next = "swing_change";
+	        if (next != null) {
+	          selectedBaseLegendParty = null;
+	          selectedBaseLegendMode = null;
+	        }
+	        if (next !== "mov") selectedMovBin = null;
+	        if (next !== "enp") selectedEnpBin = null;
+	        if (next !== "turnout" && next !== "turnout_list") {
+	          selectedTurnoutBin = null;
+	          selectedTurnoutMode = null;
+	        }
+	        if (next !== "ntl") selectedNtlBin = null;
+	        if (next !== "swing_change") selectedSwingChangeKey = null;
+	        if (next !== "swing_const" && next !== "swing_list") {
+	          selectedSwingValueBin = null;
+	          selectedSwingValueMode = null;
+	        }
         overlayMode = next;
         applyStylesAndPopups();
       }
@@ -1693,6 +2019,11 @@
         if (d.type === "set-winner-party") {
           window.__winnerPartyFilter = (d.party || "");
           applyStylesAndPopups();
+          return;
+        }
+        if (d.type === "set-ntl-party") {
+          selectedNtlParty = (d.party || "");
+          buildLegend();
           return;
         }
         if (d.type === "set-mode") { setMapMode(d.mode); return; }

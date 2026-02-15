@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+    body { font-family: Sarabun, sans-serif; color: #0f172a; }
+    #wrap { height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px 6px;
+      border-bottom: 1px solid rgba(15,23,42,0.08);
+    }
+    #controls label { font-weight: 800; font-size: 12px; }
+    #sSelect {
+      min-width: 120px;
+      padding: 8px 10px;
+      border: 1px solid #d7dbe2;
+      border-radius: 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    #hint { font-size: 12px; color: #475569; margin-left: auto; }
+    #bar { width: 100%; height: 52vh; min-height: 320px; }
+    #tableWrap { overflow: auto; border-top: 1px solid rgba(15,23,42,0.08); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid rgba(15,23,42,0.06); vertical-align: top; }
+    th { text-align: left; position: sticky; top: 0; background: #fff; z-index: 1; }
+    tr[data-dist] { cursor: pointer; }
+    tr[data-dist]:hover { background: rgba(15,23,42,0.03); }
+    .mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pos { color: #0b6b2e; font-weight: 700; }
+    .neg { color: #b42318; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="controls">
+      <label for="sSelect">Party-list #</label>
+      <select id="sSelect" aria-label="Party-list number"></select>
+      <div id="hint">Click a bar or row to jump to the constituency on the main map.</div>
+    </div>
+    <div id="bar"></div>
+    <div id="tableWrap">
+      <table>
+	        <thead>
+	          <tr>
+	            <th style="width:48px">#</th>
+	            <th>Constituency</th>
+	            <th>Candidate</th>
+	            <th>Candidate's Party</th>
+	            <th style="width:84px">Ranking</th>
+	            <th>Matched Party</th>
+	            <th class="mono">Matched Party's Party-list Vote Share</th>
+	          </tr>
+	        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const MIN_NO = 1;
+      const MAX_NO = 10;
+      const EXCLUDED_NUMBERS = new Set([6, 9]);
+      const TOP_N = 30;
+
+      const results = window.__electionResults2569 || {};
+      const byDist = results.byDist || {};
+
+      const isFiniteNumber = (v) => Number.isFinite(Number(v));
+
+      const S = [];
+      for (let s = MIN_NO; s <= MAX_NO; s++) {
+        if (EXCLUDED_NUMBERS.has(s)) continue;
+        S.push(s);
+      }
+
+      const rowsByS = new Map(S.map((s) => [s, []]));
+
+      Object.keys(byDist).forEach((distId) => {
+        const row = byDist[distId] || {};
+        const plist = Array.isArray(row.plist_parties) ? row.plist_parties : [];
+        const plistTotal = Number(row.plist_total_votes || 0);
+        if (!plistTotal) return;
+
+        const candidates = Array.isArray(row.const_candidates) ? row.const_candidates : [];
+        const winner = candidates.length ? candidates[0] : null;
+        const winnerKey = winner ? `${winner.candidate || ''}|||${winner.party || ''}` : null;
+        const constTotal = Number(row.const_total_votes || 0);
+
+        const shareByS = new Map();
+        const partyByS = new Map();
+        plist.forEach((p) => {
+          if (!p) return;
+          const s = Number(p.party_list_no);
+          if (!isFiniteNumber(s)) return;
+          if (s < MIN_NO || s > MAX_NO) return;
+          if (EXCLUDED_NUMBERS.has(s)) return;
+          const votes = Number(p.votes || 0);
+          shareByS.set(s, (votes / plistTotal) * 100.0);
+          partyByS.set(s, p.party || '—');
+        });
+        if (shareByS.size < 3) return;
+
+        const label = `${row.province || ''} ${row.district || ''}`.trim();
+
+	        S.forEach((s) => {
+	          if (!shareByS.has(s)) return;
+	          const y = shareByS.get(s);
+	          const matched = candidates
+	            .filter((c) => c && Number(c.candidate_no) === s)
+	            .sort((a, b) => Number(b.votes || 0) - Number(a.votes || 0))[0] || null;
+          const candName = matched ? (matched.candidate || '—') : '—';
+          const candParty = matched ? (matched.party || '—') : '—';
+          const candVotes = matched ? Number(matched.votes || 0) : null;
+          const candidateKey = matched ? (`${matched.candidate || ''}|||${matched.party || ''}`) : null;
+	          let candRank = null;
+	          if (candidateKey) {
+	            for (let i = 0; i < candidates.length; i++) {
+	              const c = candidates[i];
+	              if (!c) continue;
+	              const k = `${c.candidate || ''}|||${c.party || ''}`;
+	              if (k === candidateKey) {
+	                candRank = i + 1;
+	                break;
+	              }
+	            }
+	          }
+
+	          const rec = {
+	            distId,
+	            label,
+	            s,
+            party: partyByS.get(s) || '—',
+            share: y,
+	            candName,
+	            candParty,
+	            candVotes,
+	            candRank,
+	          };
+	          rowsByS.get(s).push(rec);
+	        });
+	      });
+
+      const sSelect = document.getElementById('sSelect');
+      const rowsEl = document.getElementById('rows');
+
+      const postSelectDist = (distId) => {
+        if (!distId) return;
+        try {
+          window.parent.postMessage({ type: 'select-dist', distId }, '*');
+        } catch (e) {}
+      };
+
+      const fmt = (v) => (Number.isFinite(v) ? v.toFixed(2) : '—');
+
+	      const renderTable = (items) => {
+	        if (!rowsEl) return;
+	        rowsEl.innerHTML = '';
+	        items.forEach((r, i) => {
+	          const tr = document.createElement('tr');
+	          tr.setAttribute('data-dist', r.distId);
+	          tr.innerHTML = `
+	            <td class="mono">${i + 1}</td>
+	            <td>${r.label}</td>
+	            <td class="mono">#${r.s} ${r.candName}</td>
+	            <td>${r.candParty}</td>
+	            <td class="mono">${Number.isFinite(r.candRank) ? ('#' + r.candRank) : '—'}</td>
+	            <td>${r.party}</td>
+	            <td class="mono">${fmt(r.share)}%</td>
+	          `;
+	          tr.addEventListener('click', () => postSelectDist(r.distId));
+	          rowsEl.appendChild(tr);
+	        });
+	      };
+
+	      const renderBar = (items, s) => {
+	        const top = items.slice(0, 20).reverse();
+	        const y = top.map((r) => r.label);
+	        const x = top.map((r) => r.share);
+	        const custom = top.map((r) => [r.distId, r.s, r.candName, r.candParty, r.candRank, r.party, r.share]);
+	        const colors = '#0f172a';
+
+        const trace = {
+          type: 'bar',
+          orientation: 'h',
+          x,
+          y,
+          marker: { color: colors, opacity: 0.85 },
+          customdata: custom,
+	          hovertemplate:
+	            '<b>%{y}</b><br>' +
+	            'District candidate #' + s + ': %{customdata[2]} (%{customdata[3]})<br>' +
+	            'Ranking: %{customdata[4]}<br>' +
+	            'Party-list #' + s + ': %{customdata[5]}<br>' +
+	            '<b>Matched Party’s Party-list Vote Share</b>: %{customdata[6]:.2f}%<extra></extra>',
+	        };
+
+        const layout = {
+          title: {
+            text: `Top constituencies (2026): highest party-list shares for party-list #${s}<br><span style="font-size:12px;color:#555">Top 20 shown. Click to jump to map.</span>`,
+            x: 0.02
+          },
+          margin: { l: 180, r: 22, t: 70, b: 44 },
+          xaxis: { title: { text: 'Party-list vote share (%)' }, gridcolor: 'rgba(15,23,42,0.08)', rangemode: 'tozero' },
+          yaxis: { automargin: true },
+          font: { family: 'Sarabun, sans-serif', size: 12 },
+          paper_bgcolor: '#fff',
+          plot_bgcolor: '#fff',
+          height: document.getElementById('bar') ? document.getElementById('bar').getBoundingClientRect().height : 420,
+        };
+
+        Plotly.newPlot('bar', [trace], layout, { displayModeBar: false, responsive: true });
+        const barEl = document.getElementById('bar');
+        if (barEl) {
+          barEl.on('plotly_click', (ev) => {
+            const pt = ev && ev.points && ev.points[0];
+            const distId = pt && pt.customdata && pt.customdata[0];
+            postSelectDist(distId);
+          });
+        }
+      };
+
+      const setS = (s) => {
+        const all = rowsByS.get(s) || [];
+        const sorted = [...all].sort((a, b) => (b.share - a.share) || String(a.label).localeCompare(String(b.label)));
+        const top = sorted.slice(0, TOP_N);
+        renderBar(sorted, s);
+        renderTable(top);
+      };
+
+      const hintEl = document.getElementById('hint');
+      if (hintEl) hintEl.textContent = 'Click a bar or row to jump to the constituency on the main map.';
+
+      if (sSelect) {
+        S.forEach((s) => {
+          const opt = document.createElement('option');
+          opt.value = String(s);
+          opt.textContent = `#${s}`;
+          sSelect.appendChild(opt);
+        });
+        sSelect.value = String(S[0]);
+        sSelect.addEventListener('change', () => setS(Number(sSelect.value)));
+        setS(Number(sSelect.value));
+      }
+
+      try {
+        const totalHeight = document.documentElement.scrollHeight || 1200;
+        const frameId = (window.frameElement && window.frameElement.id) ? window.frameElement.id : null;
+        if (frameId) window.parent.postMessage({ type: 'iframe-height', id: frameId, height: totalHeight }, '*');
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
