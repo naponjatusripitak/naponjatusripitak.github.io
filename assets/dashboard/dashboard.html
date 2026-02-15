@@ -1733,20 +1733,33 @@
       </div>
     </section>
 
-    <section>
-      <h2 class="section-title" data-i18n="densityTitle">การกระจายตัวของคะแนนบัญชีรายชื่อ</h2>
-      <div class="grid-1">
-        <div class="card density-card">
-          <iframe class="iframe-short" src="figure/plot_density.html?v=density24" scrolling="no" id="density-frame"></iframe>
-        </div>
-      </div>
-    </section>
+	    <section>
+	      <h2 class="section-title" data-i18n="densityTitle">การกระจายตัวของคะแนนบัญชีรายชื่อ</h2>
+	      <div class="grid-1">
+	        <div class="card density-card">
+	          <iframe class="iframe-short" src="figure/plot_density.html?v=density24" scrolling="no" id="density-frame"></iframe>
+	        </div>
+	      </div>
+	    </section>
+
+	    <section id="partylist-donut-section">
+	      <h2 class="section-title" data-i18n="partylistDonutTitle">ที่มาคะแนนบัญชีรายชื่อ: จังหวัดใดมีส่วนมาก?</h2>
+	      <div class="plot-select">
+	        <label for="donut-party-select" data-i18n="selectParty">เลือกพรรค</label>
+	        <select id="donut-party-select"></select>
+	      </div>
+	      <div class="grid-1">
+	        <div class="card">
+	          <iframe class="iframe-mid" src="figure/partylist_province_donut_2026.html?v=donut1" scrolling="no" id="partylist-donut-frame"></iframe>
+	        </div>
+	      </div>
+	    </section>
 
 
-    <section>
-      <h2 class="section-title" data-i18n="voteShareMap">Vote Share Map</h2>
-      <div class="map-controls">
-        <div class="map-select">
+	    <section>
+	      <h2 class="section-title" data-i18n="voteShareMap">Vote Share Map</h2>
+	      <div class="map-controls">
+	        <div class="map-select">
           <select id="share-party-select">
             <option value="" data-i18n="selectPartyPlaceholder">เลือกพรรค…</option>
           </select>
@@ -2068,7 +2081,7 @@
     'อุบลราชธานี': 'Ubon Ratchathani'
   };
   const I18N = {
-    th: {
+	    th: {
       title: 'Thailand 2023 General Election Dashboard',
       subtitle: 'ผลสรุปการเลือกตั้งทั่วไป พ.ศ. 2566',
       topParties: 'Top Parties',
@@ -2087,9 +2100,10 @@
       coalitionHelp: 'คลิกที่พรรคเพื่อเลือก/ยกเลิก',
       scatter: 'Scatter',
       selectParty: 'เลือกพรรค',
-      allParties: 'ทั้งหมด',
-      densityTitle: 'การกระจายตัวของคะแนนบัญชีรายชื่อ',
-      voteShareMap: 'Vote Share Map',
+	      allParties: 'ทั้งหมด',
+	      densityTitle: 'การกระจายตัวของคะแนนบัญชีรายชื่อ',
+	      partylistDonutTitle: 'ที่มาคะแนนบัญชีรายชื่อ: จังหวัดใดมีส่วนมาก?',
+	      voteShareMap: 'Vote Share Map',
       selectPartyPlaceholder: 'เลือกพรรค…',
       topProvinces: 'Top Provinces (Vote Share)',
       turnoutCompare: 'เปรียบเทียบการใช้สิทธิ: แบ่งเขต vs บัญชีรายชื่อ',
@@ -2154,7 +2168,7 @@
       thListDiff: 'ส่วนต่าง (บัญชีรายชื่อ−เขต) (%)',
       thSeatDelta: 'เปลี่ยนแปลงที่นั่งเทียบปี 2566'
     },
-    en: {
+	    en: {
       title: 'Thailand 2023 General Election Dashboard',
       subtitle: 'Summary of the 2023 General Election',
       topParties: 'Top Parties',
@@ -2173,9 +2187,10 @@
       coalitionHelp: 'Click parties to select/deselect',
       scatter: 'Scatter',
       selectParty: 'Select party',
-      allParties: 'All',
-      densityTitle: 'Distribution of Party-list Vote Share',
-      voteShareMap: 'Vote Share Map',
+	      allParties: 'All',
+	      densityTitle: 'Distribution of Party-list Vote Share',
+	      partylistDonutTitle: 'Party-list votes: where do they come from?',
+	      voteShareMap: 'Vote Share Map',
       selectPartyPlaceholder: 'Select party…',
       topProvinces: 'Top Provinces (Vote Share)',
       turnoutCompare: 'Turnout Comparison (Constituency vs Party-list)',
@@ -2629,10 +2644,10 @@
     updateTableLanguage();
   };
 
-  const setDashboardYear = async (year) => {
-    activeYear = year || '2566';
-    try { localStorage.setItem('year', activeYear); } catch (e) {}
-    if (yearSelectEl && yearSelectEl.value !== activeYear) yearSelectEl.value = activeYear;
+	  const setDashboardYear = async (year) => {
+	    activeYear = year || '2566';
+	    try { localStorage.setItem('year', activeYear); } catch (e) {}
+	    if (yearSelectEl && yearSelectEl.value !== activeYear) yearSelectEl.value = activeYear;
 
     let rows = summaryRowsByYear[activeYear];
     if (activeYear === '2569') rows = await computeSummaryRows2569();
@@ -2644,18 +2659,20 @@
       topData = topDataByYear['2566'] || {};
     }
 
-    renderSummaryTable(rows);
-    buildSummaryCards();
-    refreshPartySelectOptions();
-    refreshPlotPartyOptions();
-    if (plotPartySelect) setSelectValue(plotPartySelect, getDefaultScatterParty());
-    refreshSharePartyOptions();
-    renderParliamentArch();
-    setHeaderYearText();
-    const topProvinceParty = getActiveTopProvinceParty();
-    renderTopLists(topProvinceParty);
-    renderTurnoutGapLists();
-    sendToProvince(topProvinceParty);
+	    renderSummaryTable(rows);
+	    buildSummaryCards();
+	    refreshPartySelectOptions();
+	    refreshPlotPartyOptions();
+	    if (plotPartySelect) setSelectValue(plotPartySelect, getDefaultScatterParty());
+	    refreshSharePartyOptions();
+	    refreshDonutPartyOptions();
+	    if (donutPartySelect) setSelectValue(donutPartySelect, getDefaultScatterParty());
+	    renderParliamentArch();
+	    setHeaderYearText();
+	    const topProvinceParty = getActiveTopProvinceParty();
+	    renderTopLists(topProvinceParty);
+	    renderTurnoutGapLists();
+	    sendToProvince(topProvinceParty);
     // Re-apply summary filter after table re-render (important for mobile default party view).
     updateSummaryFilter(partySelect ? partySelect.value : 'ทั้งหมด');
   };
@@ -2821,23 +2838,25 @@
         opt.textContent = currentLang === 'en' ? `District ${no}` : `เขต ${no}`;
       });
     });
-    refreshPlotPartyOptions();
-    refreshSharePartyOptions();
-    if (partySelect) {
-      const first = partySelect.querySelector('option[value=\"ทั้งหมด\"]');
-      if (first) first.textContent = t('allParties');
-    }
+	    refreshPlotPartyOptions();
+	    refreshSharePartyOptions();
+	    refreshDonutPartyOptions();
+	    if (partySelect) {
+	      const first = partySelect.querySelector('option[value=\"ทั้งหมด\"]');
+	      if (first) first.textContent = t('allParties');
+	    }
     renderTopLists(plotPartySelect ? plotPartySelect.value : defaultParty);
     renderTurnoutGapLists();
     setPlotFrameSrc(lang);
 
-    const frames = [
-      document.getElementById('plotly-frame'),
-      document.getElementById('density-frame'),
-      document.getElementById('heatmap-frame'),
-      document.getElementById('referendum-map-frame'),
-      document.getElementById('referendum-correlation-scatter-frame'),
-      document.getElementById('number-match-frame'),
+	    const frames = [
+	      document.getElementById('plotly-frame'),
+	      document.getElementById('density-frame'),
+	      document.getElementById('partylist-donut-frame'),
+	      document.getElementById('heatmap-frame'),
+	      document.getElementById('referendum-map-frame'),
+	      document.getElementById('referendum-correlation-scatter-frame'),
+	      document.getElementById('number-match-frame'),
       document.getElementById('map-iframe'),
       document.getElementById('share-map-const'),
       document.getElementById('share-map-list'),
@@ -2908,15 +2927,16 @@
   }
 
   const partySelect = document.getElementById('party-select');
-  const plotPartySelect = document.getElementById('plot-party-select');
+	  const plotPartySelect = document.getElementById('plot-party-select');
   const topConstList = document.getElementById('top-const-list');
   const topListList = document.getElementById('top-list-list');
-  const turnoutGapConstTotal = document.getElementById('turnout-gap-const-total');
-  const turnoutGapListTotal = document.getElementById('turnout-gap-list-total');
-  const turnoutGapChart = document.getElementById('turnout-gap-chart');
-  const sharePartySelect = document.getElementById('share-party-select');
-  const shareProvince = document.getElementById('share-province');
-  const shareDistrict = document.getElementById('share-district');
+	  const turnoutGapConstTotal = document.getElementById('turnout-gap-const-total');
+	  const turnoutGapListTotal = document.getElementById('turnout-gap-list-total');
+	  const turnoutGapChart = document.getElementById('turnout-gap-chart');
+	  const donutPartySelect = document.getElementById('donut-party-select');
+	  const sharePartySelect = document.getElementById('share-party-select');
+	  const shareProvince = document.getElementById('share-province');
+	  const shareDistrict = document.getElementById('share-district');
 
   let topData = {};
   const topDataByYear = {
@@ -3081,20 +3101,31 @@
     setSelectValue(plotPartySelect, resolved);
   };
 
-  const refreshSharePartyOptions = () => {
-    if (!sharePartySelect) return;
-    const list = getActivePartyList(false);
-    const keepValue = sharePartySelect.value || defaultParty;
-    sharePartySelect.innerHTML = '<option value=""></option>';
-    const first = sharePartySelect.querySelector('option');
-    if (first) first.textContent = t('selectPartyPlaceholder');
-    appendOptions(sharePartySelect, list);
-    setSelectValue(sharePartySelect, keepValue);
-  };
+	  const refreshSharePartyOptions = () => {
+	    if (!sharePartySelect) return;
+	    const list = getActivePartyList(false);
+	    const keepValue = sharePartySelect.value || defaultParty;
+	    sharePartySelect.innerHTML = '<option value=""></option>';
+	    const first = sharePartySelect.querySelector('option');
+	    if (first) first.textContent = t('selectPartyPlaceholder');
+	    appendOptions(sharePartySelect, list);
+	    setSelectValue(sharePartySelect, keepValue);
+	  };
 
-  if (partySelect) refreshPartySelectOptions();
-  refreshPlotPartyOptions();
-  refreshSharePartyOptions();
+	  const refreshDonutPartyOptions = () => {
+	    if (!donutPartySelect) return;
+	    const list = getActivePartyList(false);
+	    const keepValue = donutPartySelect.value || defaultParty;
+	    donutPartySelect.innerHTML = '';
+	    appendOptions(donutPartySelect, list);
+	    const resolved = list.includes(keepValue) ? keepValue : (list.includes(defaultParty) ? defaultParty : (list[0] || defaultParty));
+	    setSelectValue(donutPartySelect, resolved);
+	  };
+
+	  if (partySelect) refreshPartySelectOptions();
+	  refreshPlotPartyOptions();
+	  refreshSharePartyOptions();
+	  refreshDonutPartyOptions();
 
   const normalizeParty = (party) => (party || '').trim();
 
@@ -3330,10 +3361,11 @@
   const heatmapFrame = document.getElementById('heatmap-frame');
   const referendumFrame = document.getElementById('referendum-map-frame');
   const referendumCorrelationScatterFrame = document.getElementById('referendum-correlation-scatter-frame');
-  const numberMatchFrame = document.getElementById('number-match-frame');
-  const provinceSupportFrame = document.getElementById('province-support-frame');
-  const shareMapConst = document.getElementById('share-map-const');
-  const shareMapList = document.getElementById('share-map-list');
+	  const numberMatchFrame = document.getElementById('number-match-frame');
+	  const provinceSupportFrame = document.getElementById('province-support-frame');
+	  const donutFrame = document.getElementById('partylist-donut-frame');
+	  const shareMapConst = document.getElementById('share-map-const');
+	  const shareMapList = document.getElementById('share-map-list');
 
   const sendToPlot = (party) => {
     if (!plotFrame || !plotFrame.contentWindow) return;
@@ -3343,10 +3375,14 @@
     if (!densityFrame || !densityFrame.contentWindow) return;
     densityFrame.contentWindow.postMessage({ type: 'party-select', party }, '*');
   };
-  const sendToProvince = (party) => {
-    if (!provinceSupportFrame || !provinceSupportFrame.contentWindow) return;
-    provinceSupportFrame.contentWindow.postMessage({ type: 'set-party', party }, '*');
-  };
+	  const sendToProvince = (party) => {
+	    if (!provinceSupportFrame || !provinceSupportFrame.contentWindow) return;
+	    provinceSupportFrame.contentWindow.postMessage({ type: 'set-party', party }, '*');
+	  };
+	  const sendToDonut = (party) => {
+	    if (!donutFrame || !donutFrame.contentWindow) return;
+	    donutFrame.contentWindow.postMessage({ type: 'set-party', party }, '*');
+	  };
 
   const sendToShareMaps = (party) => {
     const targetParty = party && party !== 'ทั้งหมด' ? party : defaultParty;
@@ -3364,24 +3400,27 @@
       : getDefaultScatterParty()
   );
 
-  const applyPartySelection = (party, source) => {
-    const normalized = normalizeParty(party);
-    const plotValue = normalized || defaultParty;
-    const summaryValue = normalized || defaultParty;
-    const shareValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
-    const provinceValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
+	  const applyPartySelection = (party, source) => {
+	    const normalized = normalizeParty(party);
+	    const plotValue = normalized || defaultParty;
+	    const summaryValue = normalized || defaultParty;
+	    const shareValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
+	    const provinceValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
+	    const donutValue = normalized && normalized !== 'ทั้งหมด' ? normalized : defaultParty;
 
-    if (partySelect && source !== 'summary') setSelectValue(partySelect, summaryValue);
-    if (plotPartySelect && source !== 'plot') setSelectValue(plotPartySelect, plotValue);
-    if (sharePartySelect && source !== 'share') setSelectValue(sharePartySelect, plotValue);
+	    if (partySelect && source !== 'summary') setSelectValue(partySelect, summaryValue);
+	    if (plotPartySelect && source !== 'plot') setSelectValue(plotPartySelect, plotValue);
+	    if (sharePartySelect && source !== 'share') setSelectValue(sharePartySelect, plotValue);
+	    if (donutPartySelect && source !== 'donut') setSelectValue(donutPartySelect, donutValue);
 
-    updateSummaryFilter(partySelect ? partySelect.value : summaryValue);
-    renderTopLists(plotPartySelect ? plotPartySelect.value : plotValue);
-    sendToPlot(plotValue);
-    sendToDensity(plotValue);
-    sendToProvince(provinceValue);
-    sendToShareMaps(shareValue);
-  };
+	    updateSummaryFilter(partySelect ? partySelect.value : summaryValue);
+	    renderTopLists(plotPartySelect ? plotPartySelect.value : plotValue);
+	    sendToPlot(plotValue);
+	    sendToDensity(plotValue);
+	    sendToProvince(provinceValue);
+	    sendToDonut(donutValue);
+	    sendToShareMaps(shareValue);
+	  };
 
   const renderParliamentArch = () => {
     const container = document.getElementById('parliament-arch');
@@ -3605,11 +3644,16 @@
       applyPartySelection(event.target.value, 'plot');
     });
   }
-  if (sharePartySelect) {
-    sharePartySelect.addEventListener('change', (event) => {
-      applyPartySelection(event.target.value, 'share');
-    });
-  }
+	  if (sharePartySelect) {
+	    sharePartySelect.addEventListener('change', (event) => {
+	      applyPartySelection(event.target.value, 'share');
+	    });
+	  }
+	  if (donutPartySelect) {
+	    donutPartySelect.addEventListener('change', (event) => {
+	      applyPartySelection(event.target.value, 'donut');
+	    });
+	  }
 
   if (plotFrame) {
     plotFrame.addEventListener('load', () => {
@@ -3625,12 +3669,26 @@
       }
     }
   });
-  if (provinceSupportFrame) {
-    provinceSupportFrame.addEventListener('load', () => {
-      const party = getActiveTopProvinceParty();
-      sendToProvince(party);
-    });
-  }
+	  if (provinceSupportFrame) {
+	    provinceSupportFrame.addEventListener('load', () => {
+	      const party = getActiveTopProvinceParty();
+	      sendToProvince(party);
+	    });
+	  }
+	  if (donutFrame) {
+	    donutFrame.addEventListener('load', () => {
+	      const party = donutPartySelect ? donutPartySelect.value : defaultParty;
+	      if (donutFrame.contentWindow) {
+	        donutFrame.contentWindow.postMessage({
+	          type: 'set-lang',
+	          lang: currentLang,
+	          provinceMap: PROVINCE_NAME_EN,
+	          partyMap: getPartyNameMap()
+	        }, '*');
+	      }
+	      sendToDonut(party);
+	    });
+	  }
   if (densityFrame) {
     densityFrame.addEventListener('load', () => {
       const party = plotPartySelect ? plotPartySelect.value : defaultParty;
@@ -3761,10 +3819,12 @@
   ) ? mobileSummaryDefaultParty : initialParty;
   if (partySelect) setSelectValue(partySelect, initialSummaryParty);
   if (plotPartySelect) setSelectValue(plotPartySelect, initialParty);
-  if (sharePartySelect) setSelectValue(sharePartySelect, initialParty);
-  updateSummaryFilter(partySelect ? partySelect.value : initialSummaryParty);
-  renderTopLists(initialParty);
-  sendToProvince(initialParty);
+	  if (sharePartySelect) setSelectValue(sharePartySelect, initialParty);
+	  if (donutPartySelect) setSelectValue(donutPartySelect, initialParty);
+	  updateSummaryFilter(partySelect ? partySelect.value : initialSummaryParty);
+	  renderTopLists(initialParty);
+	  sendToProvince(initialParty);
+	  sendToDonut(initialParty);
 
 	  const mapIframe = document.getElementById('map-iframe');
 	  const mapToggle = document.getElementById('map-mode-toggle');
@@ -4019,6 +4079,14 @@
 	      : 'figure/plot_density.html?v=density24';
 	    if (densityFrameEl.getAttribute('src') !== densitySrc) densityFrameEl.setAttribute('src', densitySrc);
 	  };
+	  const setDonutIframeYear = (year) => {
+	    const frame = document.getElementById('partylist-donut-frame');
+	    if (!frame) return;
+	    const src = year === '2569'
+	      ? 'figure/partylist_province_donut_2026.html?v=donut1'
+	      : 'figure/partylist_province_donut_2023.html?v=donut23_1';
+	    if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+	  };
     const setTurnoutCompareIframeYear = (year) => {
       const sec = document.getElementById('turnout-compare-section');
       const frame = document.getElementById('turnout-compare-frame');
@@ -4030,21 +4098,22 @@
         if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       }
     };
-		  const onYearChanged = async (year) => {
-		    currentMapYear = year || '2566';
-		    setMapIframeYear(currentMapYear);
-		    setSupportIframesYear(currentMapYear);
-		    setHeatmapIframeYear(currentMapYear);
-		    setReferendumIframeYear(currentMapYear);
-		    setReferendumCorrelationIframeYear(currentMapYear);
-	      setNumberMatchIframeYear(currentMapYear);
-        setSameNumberScatterIframeYear(currentMapYear);
-        setSameNumberLiftIframesYear(currentMapYear);
-	      setShareVoteIframesYear(currentMapYear);
-		    setDensityIframeYear(currentMapYear);
-	      setTurnoutCompareIframeYear(currentMapYear);
-		    mapDistIndex = await loadDistIndexForYear(currentMapYear);
-	    refreshProvinceOptions();
+			  const onYearChanged = async (year) => {
+			    currentMapYear = year || '2566';
+			    setMapIframeYear(currentMapYear);
+			    setSupportIframesYear(currentMapYear);
+			    setHeatmapIframeYear(currentMapYear);
+			    setReferendumIframeYear(currentMapYear);
+			    setReferendumCorrelationIframeYear(currentMapYear);
+		      setNumberMatchIframeYear(currentMapYear);
+	        setSameNumberScatterIframeYear(currentMapYear);
+	        setSameNumberLiftIframesYear(currentMapYear);
+		      setShareVoteIframesYear(currentMapYear);
+			    setDensityIframeYear(currentMapYear);
+			    setDonutIframeYear(currentMapYear);
+		      setTurnoutCompareIframeYear(currentMapYear);
+			    mapDistIndex = await loadDistIndexForYear(currentMapYear);
+		    refreshProvinceOptions();
 	    if (mapProvince) mapProvince.value = '';
 	    if (mapDistrict) {
 	      mapDistrict.value = '';

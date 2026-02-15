@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <style>
+    @font-face { font-family:'Sarabun'; src:url('../font/Sarabun/Sarabun-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+    html,body { margin:0; padding:0; font-family:Sarabun, sans-serif; background:#ffffff; color:#111827; }
+    #wrap { padding:12px 12px 8px 12px; }
+    #title { font-size:14px; font-weight:800; margin:0 0 6px 0; }
+    #subtitle { font-size:12px; color:#4b5563; margin:0 0 10px 0; line-height:1.35; }
+    #chart { width:100%; height:520px; }
+    #err { display:none; padding:10px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:12px; background:#fff7ed; color:#7c2d12; font-size:12px; line-height:1.35; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="title"></div>
+    <div id="subtitle"></div>
+    <div id="err"></div>
+    <div id="chart"></div>
+  </div>
+
+  <script>
+    let currentLang = (new URLSearchParams(location.search).get('lang') || (localStorage.getItem('lang') || localStorage.getItem('dashboardLang')) || 'th');
+    if (!['th','en'].includes(currentLang)) currentLang = 'th';
+
+    let provinceMap = {};
+    let partyMap = {};
+    let byDistCache = null;
+    let totalsCache = null; // party -> total list votes
+
+    const TOP_N = 12;
+    let currentParty = "";
+
+    const i18n = (th, en) => (currentLang === 'en' ? en : th);
+    const fmtInt = (x) => (Number(x) || 0).toLocaleString(currentLang === 'en' ? 'en-US' : 'th-TH');
+    const partyLabel = (p) => (currentLang === 'en' ? (partyMap[p] || p) : p);
+    const provinceLabel = (p) => (currentLang === 'en' ? (provinceMap[p] || p) : p);
+
+    const titleEl = document.getElementById('title');
+    const subEl = document.getElementById('subtitle');
+    const errEl = document.getElementById('err');
+
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.style.display = 'block';
+      errEl.textContent = msg;
+    }
+
+    async function loadByDist() {
+      if (byDistCache) return byDistCache;
+      try {
+        if (window.__electionResults2569 && window.__electionResults2569.byDist) {
+          byDistCache = window.__electionResults2569.byDist;
+          return byDistCache;
+        }
+      } catch (e) {}
+      try {
+        const res = await fetch('../data/election_results_2569_by_dist.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('fetch failed');
+        const json = await res.json();
+        byDistCache = (json && json.byDist) ? json.byDist : {};
+        return byDistCache;
+      } catch (e) {
+        byDistCache = {};
+        return byDistCache;
+      }
+    }
+
+    function computePartyTotals(byDist) {
+      if (totalsCache) return totalsCache;
+      const totals = {};
+      Object.values(byDist || {}).forEach((d) => {
+        (Array.isArray(d && d.plist_parties) ? d.plist_parties : []).forEach((r) => {
+          const party = (r && r.party) ? String(r.party) : '';
+          if (!party) return;
+          const v = Number(r.votes || 0) || 0;
+          totals[party] = (totals[party] || 0) + v;
+        });
+      });
+      totalsCache = totals;
+      return totals;
+    }
+
+    function computeProvinceVotes(byDist, party) {
+      const byProv = {};
+      Object.values(byDist || {}).forEach((d) => {
+        const prov = (d && d.province) ? String(d.province) : '';
+        if (!prov) return;
+        const rows = Array.isArray(d.plist_parties) ? d.plist_parties : [];
+        for (let i = 0; i < rows.length; i += 1) {
+          const r = rows[i] || {};
+          if ((r.party || '') !== party) continue;
+          const v = Number(r.votes || 0) || 0;
+          byProv[prov] = (byProv[prov] || 0) + v;
+          break;
+        }
+      });
+      return byProv;
+    }
+
+    function pickDefaultParty(totals) {
+      const parties = Object.keys(totals || {});
+      if (!parties.length) return '';
+      parties.sort((a, b) => (totals[b] - totals[a]) || a.localeCompare(b, 'th'));
+      return parties[0] || '';
+    }
+
+    function postHeight() {
+      const h = document.getElementById('wrap') ? document.getElementById('wrap').scrollHeight : 600;
+      if (window.parent) window.parent.postMessage({ type: 'iframe-height', id: 'partylist-donut-frame', height: h }, '*');
+    }
+
+    async function render() {
+      errEl.style.display = 'none';
+      const byDist = await loadByDist();
+      const totals = computePartyTotals(byDist);
+      if (!currentParty) currentParty = pickDefaultParty(totals);
+
+      const total = Number(totals[currentParty] || 0) || 0;
+      if (!currentParty || !total) {
+        titleEl.textContent = i18n('ที่มาคะแนนบัญชีรายชื่อรายจังหวัด', 'Party-list vote contributions by province');
+        subEl.textContent = i18n('ไม่พบข้อมูลคะแนนบัญชีรายชื่อ', 'No party-list data found.');
+        showErr(i18n('ไม่สามารถโหลดข้อมูลคะแนนได้ กรุณาลองรีเฟรชหน้า', 'Could not load vote data. Please refresh.'));
+        try { Plotly.purge('chart'); } catch (e) {}
+        postHeight();
+        return;
+      }
+
+      const byProv = computeProvinceVotes(byDist, currentParty);
+      const items = Object.keys(byProv).map((prov) => ({ prov, votes: byProv[prov] || 0 }))
+        .sort((a, b) => (b.votes - a.votes) || a.prov.localeCompare(b.prov, 'th'));
+
+      const labels = [];
+      const values = [];
+      for (let i = 0; i < Math.min(TOP_N, items.length); i += 1) {
+        labels.push(provinceLabel(items[i].prov));
+        values.push(items[i].votes);
+      }
+      const other = items.slice(TOP_N).reduce((acc, x) => acc + (Number(x.votes || 0) || 0), 0);
+      if (other > 0) {
+        labels.push(i18n('อื่นๆ', 'Other'));
+        values.push(other);
+      }
+
+      const percentOfParty = values.map((v) => total ? (Number(v) / total * 100) : 0);
+
+      titleEl.textContent = i18n(
+        `ที่มาคะแนนบัญชีรายชื่อรายจังหวัด: ${partyLabel(currentParty)}`,
+        `Party-list vote contributions by province: ${partyLabel(currentParty)}`
+      );
+      subEl.textContent = i18n(
+        `สัดส่วนจากคะแนนบัญชีรายชื่อรวมของพรรค (รวมทั้งประเทศ): ${fmtInt(total)} คะแนน`,
+        `Share of the party’s national party-list votes (total): ${fmtInt(total)} votes`
+      );
+
+      const trace = {
+        type: 'pie',
+        labels,
+        values,
+        hole: 0.5,
+        sort: false,
+        direction: 'clockwise',
+        textinfo: 'label+percent',
+        textposition: 'outside',
+        hovertemplate:
+          '%{label}<br>' +
+          i18n('คะแนน: ','Votes: ') + '%{value:,}<br>' +
+          i18n('สัดส่วนของพรรค: ','Share of party: ') + '%{customdata:.2f}%<extra></extra>',
+        customdata: percentOfParty
+      };
+
+      const layout = {
+        margin: { l: 10, r: 10, t: 6, b: 10 },
+        height: 520,
+        showlegend: false,
+        font: { family: 'Sarabun, sans-serif', size: 12 },
+        annotations: [{
+          text: i18n(`รวม<br>${fmtInt(total)}`, `Total<br>${fmtInt(total)}`),
+          showarrow: false,
+          x: 0.5, y: 0.5,
+          font: { size: 12, color: '#111827' }
+        }]
+      };
+
+      Plotly.react('chart', [trace], layout, { displayModeBar: false, responsive: true });
+      setTimeout(postHeight, 50);
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = (event && event.data) || {};
+      if ((data.type === 'party-select' || data.type === 'set-party') && data.party) {
+        currentParty = String(data.party || '').trim();
+        render();
+      }
+      if (data.type === 'set-lang') {
+        currentLang = (data.lang === 'en') ? 'en' : 'th';
+        provinceMap = (data.provinceMap && typeof data.provinceMap === 'object') ? data.provinceMap : provinceMap;
+        partyMap = (data.partyMap && typeof data.partyMap === 'object') ? data.partyMap : partyMap;
+        try { localStorage.setItem('lang', currentLang); } catch (e) {}
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
