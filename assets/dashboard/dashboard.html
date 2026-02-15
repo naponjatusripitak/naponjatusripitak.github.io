@@ -893,6 +893,7 @@
     .iframe-tall { height: 860px; }
     .iframe-mid { height: 660px; }
     .heatmap-card .iframe-mid { height: 760px; }
+    .same-number-card .iframe-mid { height: 760px; }
   .iframe-region { height: 55vh; min-height: 420px; max-height: 700px; }
     .iframe-short { height: 720px; }
     .iframe-xlong { height: 2700px; }
@@ -1015,6 +1016,7 @@
       .iframe-tall { height: 720px; }
       .iframe-mid { height: 720px; }
       .heatmap-card .iframe-mid { height: 800px; }
+      .same-number-card .iframe-mid { height: 800px; }
       .iframe-region { height: 70vh; min-height: 520px; max-height: 820px; }
       .iframe-short { height: 700px; }
       .iframe-xlong { height: 2700px; }
@@ -1329,22 +1331,18 @@
           </select>
         </div>
         <div class="map-mobile-controls" id="map-mobile-controls">
-          <select id="map-metric-select" aria-label="Map metric">
-            <option value="none" data-i18n="mapMetricNone">ผู้ชนะ</option>
-            <option value="swing" data-i18n="mapMetricSwing">Swing</option>
-            <option value="turnout" data-i18n="mapMetricTurnout">ใช้สิทธิ (แบ่งเขต)</option>
-            <option value="turnout_list" data-i18n="mapMetricTurnoutList">ใช้สิทธิ (บัญชีรายชื่อ)</option>
-            <option value="mov" data-i18n="mapMetricMOV">Margin of Victory</option>
-            <option value="hhi" data-i18n="mapMetricHHI">Vote Concentration</option>
-            <option value="div" data-i18n="mapMetricTV">Ballot Splitting</option>
-            <option value="enp" data-i18n="mapMetricENP">Effective # of Parties</option>
-          </select>
-        </div>
-        <div class="map-mobile-controls" id="map-mobile-enp-wrap" style="display:none;">
-          <select id="map-mobile-enp-winner-party">
-            <option value="" data-i18n="all">ทั้งหมด</option>
-          </select>
-        </div>
+	          <select id="map-metric-select" aria-label="Map metric">
+	            <option value="none" data-i18n="mapMetricNone">ผู้ชนะ</option>
+	            <option value="swing" data-i18n="mapMetricSwing">Swing</option>
+	            <option value="turnout" data-i18n="mapMetricTurnout">ใช้สิทธิ (แบ่งเขต)</option>
+	            <option value="turnout_list" data-i18n="mapMetricTurnoutList">ใช้สิทธิ (บัญชีรายชื่อ)</option>
+	            <option value="mov" data-i18n="mapMetricMOV">Margin of Victory</option>
+	            <option value="hhi" data-i18n="mapMetricHHI">Vote Concentration</option>
+	            <option value="div" data-i18n="mapMetricTV">Ballot Splitting</option>
+	            <option value="enp" data-i18n="mapMetricENP">Effective # of Parties</option>
+	            <option value="ntl" data-i18n="mapMetricNTL">Night-time lights (NTL)</option>
+	          </select>
+	        </div>
         <div class="map-mobile-controls" id="map-mobile-swing-wrap" style="display:none;">
           <select id="map-mobile-swing-mode">
             <option value="swing_change" data-i18n="mapMetricSwingChange">Swing: ผู้ชนะเปลี่ยนพรรค</option>
@@ -1352,22 +1350,18 @@
             <option value="swing_list" data-i18n="mapMetricSwingList">Swing: คะแนนบัญชีรายชื่อ</option>
           </select>
         </div>
-        <div class="map-actions" id="map-actions">
-          <button type="button" class="map-btn" id="map-btn-turnout" data-tip="See turnout in that constituency (votes cast / eligible voters)">ใช้สิทธิ (แบ่งเขต)</button>
-          <button type="button" class="map-btn" id="map-btn-turnout-list" data-tip="See party-list turnout in that constituency (party-list votes cast / eligible voters)">Party-list Turnout</button>
-          <button type="button" class="map-btn" id="map-btn-mov" data-tip="See winner margin over runner-up">Margin of Victory</button>
-          <button type="button" class="map-btn" id="map-btn-hhi" data-tip="ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)">Vote Concentration</button>
-          <button type="button" class="map-btn" id="map-btn-tv" data-tip="ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)">Ballot Splitting</button>
-          <button type="button" class="map-btn" id="map-btn-enp" data-tip="See effective number of parties in that constituency (higher = more fragmented)">Effective # of Parties</button>
-          <div class="map-select" id="map-enp-select-wrap" style="display:none; min-width: 180px;">
-            <select id="map-enp-winner-party">
-              <option value="" data-i18n="all">ทั้งหมด</option>
-            </select>
-          </div>
-          <button type="button" class="map-btn" id="map-btn-swing" data-tip="Compare 2026 with 2023 using swing diagnostics">Swing</button>
-          <div class="map-select" id="map-swing-select-wrap" style="display:none; min-width: 220px;">
-            <select id="map-swing-mode">
-              <option value="swing_change" data-i18n="mapMetricSwingChange">Swing: ผู้ชนะเปลี่ยนพรรค</option>
+		        <div class="map-actions" id="map-actions">
+		          <button type="button" class="map-btn" id="map-btn-turnout" data-tip="See turnout in that constituency (votes cast / eligible voters)">ใช้สิทธิ (แบ่งเขต)</button>
+		          <button type="button" class="map-btn" id="map-btn-turnout-list" data-tip="See party-list turnout in that constituency (party-list votes cast / eligible voters)">Party-list Turnout</button>
+		          <button type="button" class="map-btn" id="map-btn-mov" data-tip="See winner margin over runner-up">Margin of Victory</button>
+	          <button type="button" class="map-btn" id="map-btn-hhi" data-tip="ดูความกระจุกตัวของคะแนนผู้สมัครในเขตนั้น (ยิ่งสูง = ยิ่งกระจุกตัว)">Vote Concentration</button>
+		          <button type="button" class="map-btn" id="map-btn-tv" data-tip="ดูความต่างระหว่างผลเลือกตั้งแบบแบ่งเขต vs บัญชีรายชื่อ (ยิ่งสูง = ยิ่งต่าง)">Ballot Splitting</button>
+		          <button type="button" class="map-btn" id="map-btn-enp" data-tip="See effective number of parties in that constituency (higher = more fragmented)">Effective # of Parties</button>
+		          <button type="button" class="map-btn" id="map-btn-ntl" data-tip="Night-time lights (NTL): bins of mean NTL; legend shows seats won by selected party in each bin">Night-time lights (NTL)</button>
+	          <button type="button" class="map-btn" id="map-btn-swing" data-tip="Compare 2026 with 2023 using swing diagnostics">Swing</button>
+	          <div class="map-select" id="map-swing-select-wrap" style="display:none; min-width: 220px;">
+	            <select id="map-swing-mode">
+	              <option value="swing_change" data-i18n="mapMetricSwingChange">Swing: ผู้ชนะเปลี่ยนพรรค</option>
               <option value="swing_const" data-i18n="mapMetricSwingConst">Swing: คะแนนแบ่งเขต</option>
               <option value="swing_list" data-i18n="mapMetricSwingList">Swing: คะแนนบัญชีรายชื่อ</option>
             </select>
@@ -1808,6 +1802,46 @@
         </div>
       </div>
     </section>
+    <section id="same-number-2026-section">
+      <h2 class="section-title" data-i18n="sameNumberTitle">Same-number voting: คะแนนผู้สมัครหมายเลขเดียวกัน vs คะแนนบัญชีรายชื่อหมายเลขเดียวกัน (1–10 ยกเว้น 6, 9)</h2>
+      <div class="grid-1">
+        <div class="card scatter-card same-number-card">
+          <iframe class="iframe-mid" src="figure/same_number_voting_scatter_2026.html?v=sn1" scrolling="no" id="same-number-scatter-frame"></iframe>
+        </div>
+      </div>
+    </section>
+    <section id="lift-conc-2026-section">
+      <h2 class="section-title" data-i18n="liftConcTitle">Same-number: Top constituencies by party-list vote share (2026)</h2>
+      <div class="grid-1">
+        <div class="card scatter-card same-number-card">
+          <iframe class="iframe-mid" src="figure/same_number_lift_concentration_2026.html?v=liftc26_1" scrolling="no" id="lift-conc-2026-frame"></iframe>
+        </div>
+      </div>
+    </section>
+    <section id="same-number-2023-section">
+      <h2 class="section-title" data-i18n="sameNumberTitle2023">Same-number voting (2023): คะแนนผู้สมัครหมายเลขเดียวกัน vs คะแนนบัญชีรายชื่อหมายเลขเดียวกัน (1–10 ยกเว้น 7)</h2>
+      <div class="grid-1">
+        <div class="card scatter-card same-number-card">
+          <iframe class="iframe-mid" src="figure/same_number_voting_scatter_2023.html?v=sn23_1" scrolling="no" id="same-number-scatter-2023-frame"></iframe>
+        </div>
+      </div>
+    </section>
+    <section id="lift-dist-2023-section">
+      <h2 class="section-title" data-i18n="liftDistTitle2023">Same-number vote-share distribution (2023)</h2>
+      <div class="grid-1">
+        <div class="card scatter-card same-number-card">
+          <iframe class="iframe-mid" src="figure/same_number_lift_distribution_2023.html?v=lift23_1" scrolling="no" id="lift-dist-2023-frame"></iframe>
+        </div>
+      </div>
+    </section>
+    <section id="lift-conc-2023-section">
+      <h2 class="section-title" data-i18n="liftConcTitle2023">Same-number: Top constituencies by party-list vote share (2023)</h2>
+      <div class="grid-1">
+        <div class="card scatter-card same-number-card">
+          <iframe class="iframe-mid" src="figure/same_number_lift_concentration_2023.html?v=liftc23_1" scrolling="no" id="lift-conc-2023-frame"></iframe>
+        </div>
+      </div>
+    </section>
     <section id="referendum-section">
       <h2 class="section-title" data-i18n="referendumTitle">Referendum Map: เห็นชอบ vs ไม่เห็นชอบ vs ไม่แสดงความคิดเห็น</h2>
       <div class="grid-1">
@@ -2073,6 +2107,11 @@
       topConstHeading: 'เขต (สัดส่วนคะแนนแบ่งเขตสูงสุด)',
       topListHeading: 'บัญชีรายชื่อ (สัดส่วนคะแนนสูงสุด)',
       heatmapTitle: 'Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
+      sameNumberTitle: 'Same-number voting: คะแนนผู้สมัครหมายเลขเดียวกัน vs คะแนนบัญชีรายชื่อหมายเลขเดียวกัน (1–10 ยกเว้น 6, 9)',
+      sameNumberTitle2023: 'Same-number voting (2023): คะแนนผู้สมัครหมายเลขเดียวกัน vs คะแนนบัญชีรายชื่อหมายเลขเดียวกัน (1–10 ยกเว้น 7)',
+      liftConcTitle: 'Same-number: Top constituencies by party-list vote share (2026)',
+      liftDistTitle2023: 'Same-number vote-share distribution (2023)',
+      liftConcTitle2023: 'Same-number: Top constituencies by party-list vote share (2023)',
       referendumTitle: 'Referendum Map: เห็นชอบ vs ไม่เห็นชอบ vs ไม่แสดงความคิดเห็น',
       referendumCorrelationTitle: 'Correlation: Party-list Support vs Referendum',
       hhiTip: 'ดูความกระจุกตัวของคะแนนผู้สมัคร (ยิ่งสูง = ยิ่งกระจุกตัว)',
@@ -2098,10 +2137,11 @@
       mapMetricSwing: 'Swing',
       mapMetricTurnout: 'ใช้สิทธิ (แบ่งเขต)',
       mapMetricTurnoutList: 'ใช้สิทธิ (บัญชีรายชื่อ)',
-      mapMetricMOV: 'Margin of Victory',
-      mapMetricHHI: 'Vote Concentration',
-      mapMetricTV: 'Ballot Splitting',
-      mapMetricENP: 'Effective # of Parties',
+	      mapMetricMOV: 'Margin of Victory',
+	      mapMetricHHI: 'Vote Concentration',
+	      mapMetricTV: 'Ballot Splitting',
+	      mapMetricENP: 'Effective # of Parties',
+	      mapMetricNTL: 'แสงไฟยามค่ำคืน (NTL)',
       thParty: 'พรรค',
       thConstSeats: 'จำนวน ส.ส.เขต',
       thListSeats: 'จำนวน ส.ส.บัญชีรายชื่อ',
@@ -2153,6 +2193,11 @@
       topConstHeading: 'Constituency (Top vote share)',
       topListHeading: 'Party-list (Top vote share)',
       heatmapTitle: 'Heatmap: Constituency winner vs Top party-list winner',
+      sameNumberTitle: 'Same-number voting: matched district-candidate votes vs party-list votes (1–10 excluding 6, 9)',
+      sameNumberTitle2023: 'Same-number voting (2023): matched district-candidate votes vs party-list votes (1–10 excluding 7)',
+      liftConcTitle: 'Same-number: Top constituencies by party-list vote share (2026)',
+      liftDistTitle2023: 'Same-number vote-share distribution (2023)',
+      liftConcTitle2023: 'Same-number: Top constituencies by party-list vote share (2023)',
       referendumTitle: 'Referendum Map: Yes vs No vs No preference',
       referendumCorrelationTitle: 'Correlation: Party-list Support vs Referendum',
       hhiTip: 'See how concentrated candidate votes are (higher = more concentrated)',
@@ -2178,10 +2223,11 @@
       mapMetricSwing: 'Swing',
       mapMetricTurnout: 'Turnout',
       mapMetricTurnoutList: 'Party-list turnout',
-      mapMetricMOV: 'Margin of Victory',
-      mapMetricHHI: 'Vote Concentration',
-      mapMetricTV: 'Ballot Splitting',
-      mapMetricENP: 'Effective # of Parties',
+	      mapMetricMOV: 'Margin of Victory',
+	      mapMetricHHI: 'Vote Concentration',
+	      mapMetricTV: 'Ballot Splitting',
+	      mapMetricENP: 'Effective # of Parties',
+	      mapMetricNTL: 'Night-time lights (NTL)',
       thParty: 'Party',
       thConstSeats: 'Const. seats',
       thListSeats: 'Party-list seats',
@@ -2721,32 +2767,35 @@
         el.textContent = I18N[currentLang][key];
       }
     });
-    if (mapBtnHHI) mapBtnHHI.dataset.tip = getHHIHelp();
-    if (mapBtnTV) mapBtnTV.dataset.tip = getTVHelp();
-    if (mapBtnMOV) mapBtnMOV.dataset.tip = getMOVHelp();
-    if (mapBtnHHI) mapBtnHHI.textContent = 'Vote Concentration';
-    if (mapBtnTV) mapBtnTV.textContent = 'Ballot Splitting';
-    if (mapBtnENP) {
-      mapBtnENP.dataset.tip = getENPHelp();
-      mapBtnENP.textContent = 'Effective # of Parties';
-    }
-    if (mapBtnSwing) {
-      mapBtnSwing.dataset.tip = getSwingHelp();
-      mapBtnSwing.textContent = 'Swing';
-    }
+	    if (mapBtnHHI) mapBtnHHI.dataset.tip = getHHIHelp();
+	    if (mapBtnTV) mapBtnTV.dataset.tip = getTVHelp();
+	    if (mapBtnMOV) mapBtnMOV.dataset.tip = getMOVHelp();
+	    if (mapBtnNTL) mapBtnNTL.dataset.tip = getNTLHelp();
+	    if (mapBtnHHI) mapBtnHHI.textContent = 'Vote Concentration';
+	    if (mapBtnTV) mapBtnTV.textContent = 'Ballot Splitting';
+	    if (mapBtnENP) {
+	      mapBtnENP.dataset.tip = getENPHelp();
+	      mapBtnENP.textContent = 'Effective # of Parties';
+	    }
+	    if (mapBtnNTL) {
+	      mapBtnNTL.textContent = currentLang === 'en' ? 'Night-time lights (NTL)' : 'แสงไฟยามค่ำคืน (NTL)';
+	    }
+	    if (mapBtnSwing) {
+	      mapBtnSwing.dataset.tip = getSwingHelp();
+	      mapBtnSwing.textContent = 'Swing';
+	    }
     if (mapBtnTurnout) {
       mapBtnTurnout.dataset.tip = getTurnoutHelp();
       mapBtnTurnout.textContent = 'ใช้สิทธิ (แบ่งเขต)';
     }
-    if (mapBtnTurnoutList) {
-      mapBtnTurnoutList.dataset.tip = getTurnoutListHelp();
-      mapBtnTurnoutList.textContent = currentLang === 'en' ? 'Party-list Turnout' : 'ใช้สิทธิ (บัญชีรายชื่อ)';
-    }
-    refreshMapMetricSelect();
-    refreshEnpPartyOptions();
-    updateTableLanguage();
-    buildSummaryCards();
-    renderParliamentArch();
+	    if (mapBtnTurnoutList) {
+	      mapBtnTurnoutList.dataset.tip = getTurnoutListHelp();
+	      mapBtnTurnoutList.textContent = currentLang === 'en' ? 'Party-list Turnout' : 'ใช้สิทธิ (บัญชีรายชื่อ)';
+	    }
+	    refreshMapMetricSelect();
+	    updateTableLanguage();
+	    buildSummaryCards();
+	    renderParliamentArch();
     refreshPartySelectOptions();
 	    updateSummaryFilter(partySelect ? partySelect.value : defaultParty);
 	    setHeaderYearText();
@@ -3676,11 +3725,18 @@
     });
   }
 
-  window.addEventListener('message', (event) => {
-    const payload = event.data || {};
-    if ((payload.type === 'iframe-height' || payload.type === 'resize-frame') && payload.id) {
-      const target = document.getElementById(payload.id);
-      if (!target) return;
+	  window.addEventListener('message', (event) => {
+	    const payload = event.data || {};
+	    if (payload.type === 'select-dist' && payload.distId) {
+	      try {
+	        selectInMainMap(payload.distId);
+	        scrollToMainMap();
+	      } catch (e) {}
+	      return;
+	    }
+	    if ((payload.type === 'iframe-height' || payload.type === 'resize-frame') && payload.id) {
+	      const target = document.getElementById(payload.id);
+	      if (!target) return;
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       const extraBase = isIOS ? 140 : 0;
       const extra = payload.id === 'density-frame'
@@ -3713,25 +3769,22 @@
 	  const mapIframe = document.getElementById('map-iframe');
 	  const mapToggle = document.getElementById('map-mode-toggle');
 	  const yearSelect = document.getElementById('year-select');
-  const mapBtnHHI = document.getElementById('map-btn-hhi');
-  const mapBtnTV = document.getElementById('map-btn-tv');
-  const mapBtnMOV = document.getElementById('map-btn-mov');
-  const mapBtnENP = document.getElementById('map-btn-enp');
-  const mapBtnSwing = document.getElementById('map-btn-swing');
-  const mapBtnTurnout = document.getElementById('map-btn-turnout');
-  const mapBtnTurnoutList = document.getElementById('map-btn-turnout-list');
-  const mapActions = document.getElementById('map-actions');
-  const mapMetricSelect = document.getElementById('map-metric-select');
-	  const mapBtnPop = document.getElementById('map-btn-pop');
-	  const mapEnpSelectWrap = document.getElementById('map-enp-select-wrap');
-	  const mapEnpWinnerParty = document.getElementById('map-enp-winner-party');
-  const mapMobileEnpWrap = document.getElementById('map-mobile-enp-wrap');
-  const mapMobileEnpWinnerParty = document.getElementById('map-mobile-enp-winner-party');
-  const mapSwingSelectWrap = document.getElementById('map-swing-select-wrap');
-  const mapSwingMode = document.getElementById('map-swing-mode');
-  const mapMobileSwingWrap = document.getElementById('map-mobile-swing-wrap');
-  const mapMobileSwingMode = document.getElementById('map-mobile-swing-mode');
-  const mapProvince = document.getElementById('map-province');
+	  const mapBtnHHI = document.getElementById('map-btn-hhi');
+	  const mapBtnTV = document.getElementById('map-btn-tv');
+	  const mapBtnMOV = document.getElementById('map-btn-mov');
+	  const mapBtnENP = document.getElementById('map-btn-enp');
+	  const mapBtnNTL = document.getElementById('map-btn-ntl');
+	  const mapBtnSwing = document.getElementById('map-btn-swing');
+	  const mapBtnTurnout = document.getElementById('map-btn-turnout');
+	  const mapBtnTurnoutList = document.getElementById('map-btn-turnout-list');
+	  const mapActions = document.getElementById('map-actions');
+		  const mapMetricSelect = document.getElementById('map-metric-select');
+		  const mapBtnPop = document.getElementById('map-btn-pop');
+	  const mapSwingSelectWrap = document.getElementById('map-swing-select-wrap');
+	  const mapSwingMode = document.getElementById('map-swing-mode');
+	  const mapMobileSwingWrap = document.getElementById('map-mobile-swing-wrap');
+	  const mapMobileSwingMode = document.getElementById('map-mobile-swing-mode');
+	  const mapProvince = document.getElementById('map-province');
   const mapDistrict = document.getElementById('map-district');
 	  const mapDataScript = document.getElementById('map-dist-data');
 	  let mapDistIndex = [];
@@ -3813,12 +3866,11 @@
 	    yearSelect.addEventListener('change', async (event) => {
 	      await onYearChanged(event.target.value);
 	      // For now: only map + top parties/summary table will follow the year (section-by-section rollout).
-	      await setDashboardYear(event.target.value);
-        setPlotFrameSrc(currentLang);
-        refreshEnpPartyOptions();
-        applyPartySelection(getActiveTopProvinceParty(), 'plot');
-	    });
-	  }
+			      await setDashboardYear(event.target.value);
+		        setPlotFrameSrc(currentLang);
+		        applyPartySelection(getActiveTopProvinceParty(), 'plot');
+			    });
+			  }
 
 	  const setMapIframeYear = (year) => {
 	    if (!mapIframe) return;
@@ -3873,17 +3925,76 @@
         if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       }
     };
-    const setNumberMatchIframeYear = (year) => {
-      const sec = document.getElementById('number-match-section');
-      const frame = document.getElementById('number-match-frame');
-      if (!sec || !frame) return;
-      const show = year === '2569';
-      sec.style.display = show ? '' : 'none';
-      if (show) {
-        const src = 'figure/number_match_exposure_2026.html?v=nm2';
-        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
-      }
-    };
+	    const setNumberMatchIframeYear = (year) => {
+	      const sec = document.getElementById('number-match-section');
+	      const frame = document.getElementById('number-match-frame');
+	      if (!sec || !frame) return;
+	      const show = year === '2569';
+	      sec.style.display = show ? '' : 'none';
+	      if (show) {
+	        const src = 'figure/number_match_exposure_2026.html?v=nm2';
+	        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+	      }
+	    };
+      const setSameNumberScatterIframeYear = (year) => {
+        const sec26 = document.getElementById('same-number-2026-section');
+        const frame26 = document.getElementById('same-number-scatter-frame');
+        const sec23 = document.getElementById('same-number-2023-section');
+        const frame23 = document.getElementById('same-number-scatter-2023-frame');
+
+        const show26 = year === '2569';
+        const show23 = year === '2566';
+
+        if (sec26 && frame26) {
+          sec26.style.display = show26 ? '' : 'none';
+          if (show26) {
+            const src = 'figure/same_number_voting_scatter_2026.html?v=sn1';
+            if (frame26.getAttribute('src') !== src) frame26.setAttribute('src', src);
+          }
+        }
+        if (sec23 && frame23) {
+          sec23.style.display = show23 ? '' : 'none';
+          if (show23) {
+            const src = 'figure/same_number_voting_scatter_2023.html?v=sn23_1';
+            if (frame23.getAttribute('src') !== src) frame23.setAttribute('src', src);
+          }
+        }
+      };
+      const setSameNumberLiftIframesYear = (year) => {
+        const secConc26 = document.getElementById('lift-conc-2026-section');
+        const frameConc26 = document.getElementById('lift-conc-2026-frame');
+
+        const secDist23 = document.getElementById('lift-dist-2023-section');
+        const frameDist23 = document.getElementById('lift-dist-2023-frame');
+        const secConc23 = document.getElementById('lift-conc-2023-section');
+        const frameConc23 = document.getElementById('lift-conc-2023-frame');
+
+        const show26 = year === '2569';
+        const show23 = year === '2566';
+
+        if (secConc26 && frameConc26) {
+          secConc26.style.display = show26 ? '' : 'none';
+          if (show26) {
+            const src = 'figure/same_number_lift_concentration_2026.html?v=liftc26_1';
+            if (frameConc26.getAttribute('src') !== src) frameConc26.setAttribute('src', src);
+          }
+        }
+
+        if (secDist23 && frameDist23) {
+          secDist23.style.display = show23 ? '' : 'none';
+          if (show23) {
+            const src = 'figure/same_number_lift_distribution_2023.html?v=lift23_1';
+            if (frameDist23.getAttribute('src') !== src) frameDist23.setAttribute('src', src);
+          }
+        }
+        if (secConc23 && frameConc23) {
+          secConc23.style.display = show23 ? '' : 'none';
+          if (show23) {
+            const src = 'figure/same_number_lift_concentration_2023.html?v=liftc23_1';
+            if (frameConc23.getAttribute('src') !== src) frameConc23.setAttribute('src', src);
+          }
+        }
+      };
 	  const setShareVoteIframesYear = (year) => {
 	    const shareConstFrame = document.getElementById('share-map-const');
 	    const shareListFrame = document.getElementById('share-map-list');
@@ -3919,18 +4030,20 @@
         if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       }
     };
-	  const onYearChanged = async (year) => {
-	    currentMapYear = year || '2566';
-	    setMapIframeYear(currentMapYear);
-	    setSupportIframesYear(currentMapYear);
-	    setHeatmapIframeYear(currentMapYear);
-	    setReferendumIframeYear(currentMapYear);
-	    setReferendumCorrelationIframeYear(currentMapYear);
-      setNumberMatchIframeYear(currentMapYear);
-      setShareVoteIframesYear(currentMapYear);
-	    setDensityIframeYear(currentMapYear);
-      setTurnoutCompareIframeYear(currentMapYear);
-	    mapDistIndex = await loadDistIndexForYear(currentMapYear);
+		  const onYearChanged = async (year) => {
+		    currentMapYear = year || '2566';
+		    setMapIframeYear(currentMapYear);
+		    setSupportIframesYear(currentMapYear);
+		    setHeatmapIframeYear(currentMapYear);
+		    setReferendumIframeYear(currentMapYear);
+		    setReferendumCorrelationIframeYear(currentMapYear);
+	      setNumberMatchIframeYear(currentMapYear);
+        setSameNumberScatterIframeYear(currentMapYear);
+        setSameNumberLiftIframesYear(currentMapYear);
+	      setShareVoteIframesYear(currentMapYear);
+		    setDensityIframeYear(currentMapYear);
+	      setTurnoutCompareIframeYear(currentMapYear);
+		    mapDistIndex = await loadDistIndexForYear(currentMapYear);
 	    refreshProvinceOptions();
 	    if (mapProvince) mapProvince.value = '';
 	    if (mapDistrict) {
@@ -3942,6 +4055,7 @@
 	    if (mapBtnTV) mapBtnTV.classList.remove('active');
 	    if (mapBtnMOV) mapBtnMOV.classList.remove('active');
 	    if (mapBtnENP) mapBtnENP.classList.remove('active');
+      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
       if (mapBtnSwing) mapBtnSwing.classList.remove('active');
 	    if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
       if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
@@ -3950,18 +4064,19 @@
       if (mapSwingMode) mapSwingMode.value = 'swing_change';
       if (mapMobileSwingMode) mapMobileSwingMode.value = 'swing_change';
       if (mapBtnSwing) mapBtnSwing.style.display = (currentMapYear === '2569') ? '' : 'none';
+      if (mapBtnNTL) mapBtnNTL.style.display = (currentMapYear === '2569') ? '' : 'none';
       if (mapMetricSelect) {
         ['swing_change', 'swing_const', 'swing_list'].forEach((metric) => {
           const opt = mapMetricSelect.querySelector(`option[value="${metric}"]`);
           if (opt) opt.disabled = currentMapYear !== '2569';
         });
+        const ntlOpt = mapMetricSelect.querySelector('option[value="ntl"]');
+        if (ntlOpt) ntlOpt.disabled = currentMapYear !== '2569';
       }
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-	    postToMapReliable({ type: 'set-winner-party', party: '' });
-	    setMapPop('');
-      refreshMapMetricSelect();
-	  };
+		    postToMapReliable({ type: 'set-winner-party', party: '' });
+		    setMapPop('');
+	      refreshMapMetricSelect();
+		  };
 
   if (mapProvince) {
     mapProvince.addEventListener('change', (event) => {
@@ -3989,13 +4104,16 @@
   };
   let mapModeSeq = 0;
 
-  const getHHIHelp = () => t('hhiTip');
-  const getTVHelp = () => t('tvTip');
-  const getMOVHelp = () => t('movTip');
-  const getSwingHelp = () => t('swingTip');
-  const getENPHelp = () => (currentLang === 'en'
-    ? 'See effective number of parties in that constituency (higher = more fragmented)'
-    : 'ดูจำนวนพรรคที่มีผลจริงในเขตนั้น (ค่าสูง = แข่งขันหลายพรรค)');
+	  const getHHIHelp = () => t('hhiTip');
+	  const getTVHelp = () => t('tvTip');
+	  const getMOVHelp = () => t('movTip');
+	  const getNTLHelp = () => (currentLang === 'en'
+	    ? 'Night-time lights (NTL): bins of mean NTL (skew-aware percentiles). Based on VIIRS NTL (VNP46A2, daily) averaged over 1 year before election day.'
+	    : 'แสงไฟยามค่ำคืน (NTL): แบ่งช่วงจากค่าเฉลี่ย NTL (เปอร์เซ็นไทล์แบบเน้นช่วงต่ำ) จากข้อมูล VIIRS NTL (VNP46A2, รายวัน) เฉลี่ย 1 ปีก่อนวันเลือกตั้ง');
+	  const getSwingHelp = () => t('swingTip');
+	  const getENPHelp = () => (currentLang === 'en'
+	    ? 'See effective number of parties in that constituency (higher = more fragmented)'
+	    : 'ดูจำนวนพรรคที่มีผลจริงในเขตนั้น (ค่าสูง = แข่งขันหลายพรรค)');
   const getTurnoutHelp = () => (currentLang === 'en'
     ? 'See turnout in that constituency (votes cast / eligible voters)'
     : 'ดูอัตราการใช้สิทธิในเขตนั้น (ผู้ใช้สิทธิ/ผู้มีสิทธิ)');
@@ -4031,13 +4149,11 @@
     if (mapPopTimer) clearTimeout(mapPopTimer);
     mapPopTimer = setTimeout(() => setMapPop(''), delay);
   };
-  const showMapSubControls = (kind) => {
-    const isMobile = window.matchMedia('(max-width: 900px)').matches;
-    if (mapEnpSelectWrap) mapEnpSelectWrap.style.display = (kind === 'enp') ? 'block' : 'none';
-    if (mapSwingSelectWrap) mapSwingSelectWrap.style.display = (kind === 'swing') ? 'block' : 'none';
-    if (mapMobileEnpWrap) mapMobileEnpWrap.style.display = (isMobile && kind === 'enp') ? 'flex' : 'none';
-    if (mapMobileSwingWrap) mapMobileSwingWrap.style.display = (isMobile && kind === 'swing') ? 'flex' : 'none';
-  };
+		  const showMapSubControls = (kind) => {
+		    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+		    if (mapSwingSelectWrap) mapSwingSelectWrap.style.display = (kind === 'swing') ? 'block' : 'none';
+		    if (mapMobileSwingWrap) mapMobileSwingWrap.style.display = (isMobile && kind === 'swing') ? 'flex' : 'none';
+		  };
 
     const formatDistLabel = (distId) => {
       if (!distId) return '';
@@ -4109,15 +4225,16 @@
         cfg = null;
         enpMap = null;
       }
-    if (!cfg) {
-      if (kind === 'hhi') setMapPop(getHHIHelp());
-      else if (kind === 'mov') setMapPop(getMOVHelp());
-      else if (kind === 'enp') setMapPop(getENPHelp());
-      else if (kind === 'swing') setMapPop(getSwingHelp());
-      else if (kind === 'turnout') setMapPop(getTurnoutHelp());
-      else setMapPop(getTVHelp());
-      return;
-    }
+	    if (!cfg) {
+	      if (kind === 'hhi') setMapPop(getHHIHelp());
+	      else if (kind === 'mov') setMapPop(getMOVHelp());
+	      else if (kind === 'enp') setMapPop(getENPHelp());
+	      else if (kind === 'ntl') setMapPop(getNTLHelp());
+	      else if (kind === 'swing') setMapPop(getSwingHelp());
+	      else if (kind === 'turnout') setMapPop(getTurnoutHelp());
+	      else setMapPop(getTVHelp());
+	      return;
+	    }
     const entry = kind === 'hhi'
       ? findMaxEntry(cfg.hhiNormByDist)
       : (kind === 'mov'
@@ -4161,18 +4278,19 @@
       }, 120);
   };
 
-  const detectActiveMapMetric = () => {
-    if (mapBtnSwing && mapBtnSwing.classList.contains('active')) {
-      return 'swing';
-    }
-    if (mapBtnTurnout && mapBtnTurnout.classList.contains('active')) return 'turnout';
-    if (mapBtnTurnoutList && mapBtnTurnoutList.classList.contains('active')) return 'turnout_list';
-    if (mapBtnMOV && mapBtnMOV.classList.contains('active')) return 'mov';
-    if (mapBtnHHI && mapBtnHHI.classList.contains('active')) return 'hhi';
-    if (mapBtnTV && mapBtnTV.classList.contains('active')) return 'div';
-    if (mapBtnENP && mapBtnENP.classList.contains('active')) return 'enp';
-    return 'none';
-  };
+	  const detectActiveMapMetric = () => {
+	    if (mapBtnSwing && mapBtnSwing.classList.contains('active')) {
+	      return 'swing';
+	    }
+	    if (mapBtnNTL && mapBtnNTL.classList.contains('active')) return 'ntl';
+	    if (mapBtnTurnout && mapBtnTurnout.classList.contains('active')) return 'turnout';
+	    if (mapBtnTurnoutList && mapBtnTurnoutList.classList.contains('active')) return 'turnout_list';
+	    if (mapBtnMOV && mapBtnMOV.classList.contains('active')) return 'mov';
+	    if (mapBtnHHI && mapBtnHHI.classList.contains('active')) return 'hhi';
+	    if (mapBtnTV && mapBtnTV.classList.contains('active')) return 'div';
+	    if (mapBtnENP && mapBtnENP.classList.contains('active')) return 'enp';
+	    return 'none';
+	  };
 
   const refreshMapMetricSelect = () => {
     if (!mapMetricSelect) return;
@@ -4219,22 +4337,21 @@
     });
   }
 
-  if (mapToggle) {
-    mapToggle.addEventListener('change', (event) => {
-      const mode = event && event.target && event.target.checked ? 'list' : 'const';
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-	      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-	      if (mapBtnENP) mapBtnENP.classList.remove('active');
-        if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-        if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      showMapSubControls(null);
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      setMapPop('');
-      syncMapMode(mode);
+	  if (mapToggle) {
+	    mapToggle.addEventListener('change', (event) => {
+	      const mode = event && event.target && event.target.checked ? 'list' : 'const';
+	      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+	      if (mapBtnTV) mapBtnTV.classList.remove('active');
+		      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+		      if (mapBtnENP) mapBtnENP.classList.remove('active');
+		      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	        if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	        if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      showMapSubControls(null);
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      setMapPop('');
+	      syncMapMode(mode);
       if (mapProvince && mapProvince.value) {
         postToMapReliable({ type: 'set-province', province: mapProvince.value, mode });
       }
@@ -4253,17 +4370,18 @@
         if (mapMobileSwingMode) mapMobileSwingMode.value = child;
         showMapSubControls('swing');
         mapBtnSwing.click();
-      }
-      else if (key === 'turnout' && mapBtnTurnout) mapBtnTurnout.click();
-      else if (key === 'turnout_list' && mapBtnTurnoutList) mapBtnTurnoutList.click();
-      else if (key === 'mov' && mapBtnMOV) mapBtnMOV.click();
-      else if (key === 'hhi' && mapBtnHHI) mapBtnHHI.click();
-      else if (key === 'div' && mapBtnTV) mapBtnTV.click();
-      else if (key === 'enp' && mapBtnENP) {
-        showMapSubControls('enp');
-        mapBtnENP.click();
-      }
-      else {
+	      }
+	      else if (key === 'turnout' && mapBtnTurnout) mapBtnTurnout.click();
+	      else if (key === 'turnout_list' && mapBtnTurnoutList) mapBtnTurnoutList.click();
+	      else if (key === 'ntl' && mapBtnNTL) mapBtnNTL.click();
+	      else if (key === 'mov' && mapBtnMOV) mapBtnMOV.click();
+	      else if (key === 'hhi' && mapBtnHHI) mapBtnHHI.click();
+	      else if (key === 'div' && mapBtnTV) mapBtnTV.click();
+	      else if (key === 'enp' && mapBtnENP) {
+	        showMapSubControls(null);
+	        mapBtnENP.click();
+	      }
+	      else {
         const mode = mapToggle && mapToggle.checked ? 'list' : 'const';
         if (mapBtnHHI) mapBtnHHI.classList.remove('active');
         if (mapBtnTV) mapBtnTV.classList.remove('active');
@@ -4271,13 +4389,11 @@
         if (mapBtnENP) mapBtnENP.classList.remove('active');
         if (mapBtnSwing) mapBtnSwing.classList.remove('active');
         if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-        if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-        showMapSubControls(null);
-        if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-        if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-        postToMapReliable({ type: 'set-winner-party', party: '' });
-        setMapPop('');
-        syncMapMode(mode);
+	        if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	        showMapSubControls(null);
+	        postToMapReliable({ type: 'set-winner-party', party: '' });
+	        setMapPop('');
+	        syncMapMode(mode);
       }
       refreshMapMetricSelect();
     });
@@ -4296,36 +4412,34 @@
     });
   }
 
-  [mapBtnSwing, mapBtnTurnout, mapBtnTurnoutList, mapBtnMOV, mapBtnHHI, mapBtnTV, mapBtnENP].forEach((btn) => {
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      refreshMapMetricSelect();
-    });
-  });
-  window.addEventListener('resize', () => {
-    const active = detectActiveMapMetric();
-    if (active === 'enp') showMapSubControls('enp');
-    else if (active === 'swing') showMapSubControls('swing');
-    else showMapSubControls(null);
-  });
+	  [mapBtnSwing, mapBtnTurnout, mapBtnTurnoutList, mapBtnMOV, mapBtnHHI, mapBtnTV, mapBtnENP, mapBtnNTL].forEach((btn) => {
+	    if (!btn) return;
+	    btn.addEventListener('click', () => {
+	      refreshMapMetricSelect();
+	    });
+	  });
+	  window.addEventListener('resize', () => {
+	    const active = detectActiveMapMetric();
+	    if (active === 'swing') showMapSubControls('swing');
+	    else showMapSubControls(null);
+	  });
 
-  if (mapBtnSwing) {
-    mapBtnSwing.addEventListener('click', () => {
-      const swingMode = mapSwingMode ? (mapSwingMode.value || 'swing_change') : 'swing_change';
-      if (mapMobileSwingMode) mapMobileSwingMode.value = swingMode;
-      mapBtnSwing.classList.add('active');
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-      if (mapBtnENP) mapBtnENP.classList.remove('active');
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      showMapSubControls('swing');
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      setMapPop(getSwingHelp(), mapBtnSwing);
-      autoHideMapPop(2500);
+	  if (mapBtnSwing) {
+	    mapBtnSwing.addEventListener('click', () => {
+	      const swingMode = mapSwingMode ? (mapSwingMode.value || 'swing_change') : 'swing_change';
+	      if (mapMobileSwingMode) mapMobileSwingMode.value = swingMode;
+	      mapBtnSwing.classList.add('active');
+	      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+	      if (mapBtnTV) mapBtnTV.classList.remove('active');
+	      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+	      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      showMapSubControls('swing');
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      setMapPop(getSwingHelp(), mapBtnSwing);
+	      autoHideMapPop(2500);
       if (mapIframe && mapIframe.contentWindow) {
         postToMapReliable({ type: 'set-overlay', overlay: swingMode });
       }
@@ -4336,46 +4450,44 @@
     mapBtnSwing.addEventListener('blur', () => setMapPop(''));
   }
 
-  if (mapBtnHHI) {
-    mapBtnHHI.addEventListener('click', () => {
-      if (!mapIframe || !mapIframe.contentWindow) return;
-      postToMapReliable({ type: 'set-overlay', overlay: 'hhi' });
-      mapBtnHHI.classList.add('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-      if (mapBtnENP) mapBtnENP.classList.remove('active');
-      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      showMapSubControls(null);
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      updateMapMetricHint('hhi');
-    });
+	  if (mapBtnHHI) {
+	    mapBtnHHI.addEventListener('click', () => {
+	      if (!mapIframe || !mapIframe.contentWindow) return;
+	      postToMapReliable({ type: 'set-overlay', overlay: 'hhi' });
+	      mapBtnHHI.classList.add('active');
+	      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	      if (mapBtnTV) mapBtnTV.classList.remove('active');
+	      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+	      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      showMapSubControls(null);
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      updateMapMetricHint('hhi');
+	    });
     mapBtnHHI.addEventListener('mouseenter', () => setMapPop(getHHIHelp(), mapBtnHHI));
     mapBtnHHI.addEventListener('mouseleave', () => setMapPop(''));
     mapBtnHHI.addEventListener('focus', () => setMapPop(getHHIHelp(), mapBtnHHI));
     mapBtnHHI.addEventListener('blur', () => setMapPop(''));
   }
 
-  if (mapBtnTV) {
-    mapBtnTV.addEventListener('click', () => {
-      if (!mapIframe || !mapIframe.contentWindow) return;
-      postToMapReliable({ type: 'set-overlay', overlay: 'div' });
-      mapBtnTV.classList.add('active');
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-      if (mapBtnENP) mapBtnENP.classList.remove('active');
-      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      showMapSubControls(null);
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      updateMapMetricHint('div');
-    });
+	  if (mapBtnTV) {
+	    mapBtnTV.addEventListener('click', () => {
+	      if (!mapIframe || !mapIframe.contentWindow) return;
+	      postToMapReliable({ type: 'set-overlay', overlay: 'div' });
+	      mapBtnTV.classList.add('active');
+	      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+	      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+	      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      showMapSubControls(null);
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      updateMapMetricHint('div');
+	    });
     mapBtnTV.addEventListener('mouseenter', () => setMapPop(getTVHelp(), mapBtnTV));
     mapBtnTV.addEventListener('mouseleave', () => setMapPop(''));
     mapBtnTV.addEventListener('focus', () => setMapPop(getTVHelp(), mapBtnTV));
@@ -4393,36 +4505,36 @@
       } catch (e) {
         postToMap({ type: 'set-overlay', overlay: 'mov' });
       }
-      mapBtnMOV.classList.add('active');
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-      if (mapBtnENP) mapBtnENP.classList.remove('active');
-      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      showMapSubControls(null);
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      updateMapMetricHint('mov');
-    });
+	      mapBtnMOV.classList.add('active');
+	      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+	      if (mapBtnTV) mapBtnTV.classList.remove('active');
+	      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      showMapSubControls(null);
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      updateMapMetricHint('mov');
+	    });
     mapBtnMOV.addEventListener('mouseenter', () => setMapPop(getMOVHelp(), mapBtnMOV));
     mapBtnMOV.addEventListener('mouseleave', () => setMapPop(''));
     mapBtnMOV.addEventListener('focus', () => setMapPop(getMOVHelp(), mapBtnMOV));
     mapBtnMOV.addEventListener('blur', () => setMapPop(''));
   }
 
-  if (mapBtnENP) {
-    mapBtnENP.addEventListener('click', () => {
-      mapBtnENP.classList.add('active');
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      showMapSubControls('enp');
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      updateMapMetricHint('enp');
+		  if (mapBtnENP) {
+		    mapBtnENP.addEventListener('click', () => {
+		      mapBtnENP.classList.add('active');
+		      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+		      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+		      if (mapBtnTV) mapBtnTV.classList.remove('active');
+		      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+		      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      showMapSubControls(null);
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      updateMapMetricHint('enp');
       if (mapIframe && mapIframe.contentWindow) {
         const win = mapIframe.contentWindow;
         try {
@@ -4436,13 +4548,36 @@
     });
     mapBtnENP.addEventListener('mouseenter', () => setMapPop(getENPHelp(), mapBtnENP));
     mapBtnENP.addEventListener('mouseleave', () => setMapPop(''));
-    mapBtnENP.addEventListener('focus', () => setMapPop(getENPHelp(), mapBtnENP));
-    mapBtnENP.addEventListener('blur', () => setMapPop(''));
+	    mapBtnENP.addEventListener('focus', () => setMapPop(getENPHelp(), mapBtnENP));
+	    mapBtnENP.addEventListener('blur', () => setMapPop(''));
+	  }
+
+	  if (mapBtnNTL) {
+	    mapBtnNTL.addEventListener('click', () => {
+	      if (!mapIframe || !mapIframe.contentWindow) return;
+	      postToMapReliable({ type: 'set-overlay', overlay: 'ntl' });
+	      mapBtnNTL.classList.add('active');
+      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+      if (mapBtnTV) mapBtnTV.classList.remove('active');
+      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+      showMapSubControls(null);
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      setMapPop(getNTLHelp(), mapBtnNTL);
+	      autoHideMapPop(2500);
+	    });
+    mapBtnNTL.addEventListener('mouseenter', () => setMapPop(getNTLHelp(), mapBtnNTL));
+    mapBtnNTL.addEventListener('mouseleave', () => setMapPop(''));
+    mapBtnNTL.addEventListener('focus', () => setMapPop(getNTLHelp(), mapBtnNTL));
+    mapBtnNTL.addEventListener('blur', () => setMapPop(''));
   }
 
-  if (mapBtnTurnout) {
-    mapBtnTurnout.addEventListener('click', () => {
-      if (!mapIframe || !mapIframe.contentWindow) return;
+	  if (mapBtnTurnout) {
+	    mapBtnTurnout.addEventListener('click', () => {
+	      if (!mapIframe || !mapIframe.contentWindow) return;
       const win = mapIframe.contentWindow;
       try {
         const btn = win.document.getElementById('turnout-btn');
@@ -4451,20 +4586,19 @@
       } catch (e) {
         postToMap({ type: 'set-overlay', overlay: 'turnout' });
       }
-      mapBtnTurnout.classList.add('active');
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-      if (mapBtnENP) mapBtnENP.classList.remove('active');
-      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      showMapSubControls(null);
-      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      setMapPop(getTurnoutHelp(), mapBtnTurnout);
-      autoHideMapPop(2500);
-    });
+	      mapBtnTurnout.classList.add('active');
+	      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+	      if (mapBtnTV) mapBtnTV.classList.remove('active');
+	      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+	      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      showMapSubControls(null);
+	      if (mapBtnTurnoutList) mapBtnTurnoutList.classList.remove('active');
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      setMapPop(getTurnoutHelp(), mapBtnTurnout);
+	      autoHideMapPop(2500);
+	    });
     mapBtnTurnout.addEventListener('mouseenter', () => setMapPop(getTurnoutHelp(), mapBtnTurnout));
     mapBtnTurnout.addEventListener('mouseleave', () => setMapPop(''));
     mapBtnTurnout.addEventListener('focus', () => setMapPop(getTurnoutHelp(), mapBtnTurnout));
@@ -4482,74 +4616,33 @@
       } catch (e) {
         postToMap({ type: 'set-overlay', overlay: 'turnout_list' });
       }
-      mapBtnTurnoutList.classList.add('active');
-      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
-      if (mapBtnTV) mapBtnTV.classList.remove('active');
-      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
-      if (mapBtnENP) mapBtnENP.classList.remove('active');
-      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
-      showMapSubControls(null);
-      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = '';
-      postToMapReliable({ type: 'set-winner-party', party: '' });
-      setMapPop(getTurnoutListHelp(), mapBtnTurnoutList);
-      autoHideMapPop(2500);
-    });
+	      mapBtnTurnoutList.classList.add('active');
+	      if (mapBtnNTL) mapBtnNTL.classList.remove('active');
+	      if (mapBtnHHI) mapBtnHHI.classList.remove('active');
+	      if (mapBtnTV) mapBtnTV.classList.remove('active');
+	      if (mapBtnMOV) mapBtnMOV.classList.remove('active');
+	      if (mapBtnENP) mapBtnENP.classList.remove('active');
+	      if (mapBtnSwing) mapBtnSwing.classList.remove('active');
+	      showMapSubControls(null);
+	      if (mapBtnTurnout) mapBtnTurnout.classList.remove('active');
+	      postToMapReliable({ type: 'set-winner-party', party: '' });
+	      setMapPop(getTurnoutListHelp(), mapBtnTurnoutList);
+	      autoHideMapPop(2500);
+	    });
     mapBtnTurnoutList.addEventListener('mouseenter', () => setMapPop(getTurnoutListHelp(), mapBtnTurnoutList));
     mapBtnTurnoutList.addEventListener('mouseleave', () => setMapPop(''));
     mapBtnTurnoutList.addEventListener('focus', () => setMapPop(getTurnoutListHelp(), mapBtnTurnoutList));
     mapBtnTurnoutList.addEventListener('blur', () => setMapPop(''));
   }
 
-  const refreshEnpPartyOptions = () => {
-    if (!mapEnpWinnerParty && !mapMobileEnpWinnerParty) return;
-    const curr = mapEnpWinnerParty.value || '';
-    const currMobile = mapMobileEnpWinnerParty ? (mapMobileEnpWinnerParty.value || '') : '';
-    const seatWinners = summaryRows
-      .filter((r) => Number((r && (r.totalSeats != null ? r.totalSeats : r.seats)) || 0) > 0)
-      .map((r) => r.party)
-      .sort((a, b) => a.localeCompare(b, 'th'));
-    [mapEnpWinnerParty, mapMobileEnpWinnerParty].forEach((selectEl, idx) => {
-      if (!selectEl) return;
-      const keep = idx === 0 ? curr : currMobile;
-      selectEl.innerHTML = '';
-      const optAll = document.createElement('option');
-      optAll.value = '';
-      optAll.textContent = currentLang === 'en' ? 'All' : 'ทั้งหมด';
-      selectEl.appendChild(optAll);
-      seatWinners.forEach((p) => {
-        const opt = document.createElement('option');
-        opt.value = p;
-        opt.textContent = displayPartyName(p);
-        selectEl.appendChild(opt);
-      });
-      selectEl.value = keep;
-    });
-  };
+	  // Party selectors for ENP/NTL live inside the map legend (iframe).
 
-  refreshEnpPartyOptions();
-  if (mapEnpWinnerParty) {
-    mapEnpWinnerParty.addEventListener('change', (event) => {
-      const party = event.target.value || '';
-      if (mapMobileEnpWinnerParty) mapMobileEnpWinnerParty.value = party;
-      postToMapReliable({ type: 'set-winner-party', party });
-    });
-  }
-  if (mapMobileEnpWinnerParty) {
-    mapMobileEnpWinnerParty.addEventListener('change', (event) => {
-      const party = event.target.value || '';
-      if (mapEnpWinnerParty) mapEnpWinnerParty.value = party;
-      postToMapReliable({ type: 'set-winner-party', party });
-    });
-  }
-
-  const scrollToShareMaps = () => {
-    const shareSection = (shareMapConst && shareMapConst.closest('section')) || (shareMapList && shareMapList.closest('section'));
-    if (shareSection) {
-      shareSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+	  const scrollToShareMaps = () => {
+	    const shareSection = (shareMapConst && shareMapConst.closest('section')) || (shareMapList && shareMapList.closest('section'));
+	    if (shareSection) {
+	      shareSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	    }
+	  };
   const scrollToMainMap = () => {
     const mapSection = mapIframe && mapIframe.closest('section');
     if (mapSection) {
@@ -4643,9 +4736,8 @@
       applyLang(currentLang);
       // Ensure year-specific sections (top parties + summary table + map) reflect the selected year.
       await setDashboardYear(activeYear);
-      refreshEnpPartyOptions();
-      await onYearChanged(activeYear);
-    })();
+	      await onYearChanged(activeYear);
+	    })();
 
 	</script>
 </body>

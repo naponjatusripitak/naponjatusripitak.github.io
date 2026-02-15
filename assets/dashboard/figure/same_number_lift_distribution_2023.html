@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2566_same_number.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+    #plot { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="plot"></div>
+  <script>
+    (() => {
+      const MIN_NO = 1;
+      const MAX_NO = 10;
+      const EXCLUDED_NUMBERS = new Set([7]);
+
+      const results = window.__electionResults2566SameNumber || {};
+      const byDist = results.byDist || {};
+
+      const isFiniteNumber = (v) => Number.isFinite(Number(v));
+
+      const S = [];
+      for (let s = MIN_NO; s <= MAX_NO; s++) {
+        if (EXCLUDED_NUMBERS.has(s)) continue;
+        S.push(s);
+      }
+
+      const matchedX = [];
+      const matchedY = [];
+      const matchedCustom = [];
+
+      const nonX = [];
+      const nonY = [];
+      const nonCustom = [];
+
+      Object.keys(byDist).forEach((distId) => {
+        const row = byDist[distId] || {};
+        const plist = Array.isArray(row.plist_parties) ? row.plist_parties : [];
+        const plistTotal = Number(row.plist_total_votes || 0);
+        if (!plistTotal) return;
+
+        const candidates = Array.isArray(row.const_candidates) ? row.const_candidates : [];
+        const winner = candidates.length ? candidates[0] : null;
+        const winnerNo = winner ? Number(winner.candidate_no) : null;
+        const winnerName = winner ? (winner.candidate || '—') : '—';
+        const winnerParty = winner ? (winner.party || '—') : '—';
+
+        const shareByS = new Map();
+        const partyByS = new Map();
+        plist.forEach((p) => {
+          if (!p) return;
+          const s = Number(p.party_list_no);
+          if (!isFiniteNumber(s)) return;
+          if (s < MIN_NO || s > MAX_NO) return;
+          if (EXCLUDED_NUMBERS.has(s)) return;
+          const votes = Number(p.votes || 0);
+          shareByS.set(s, (votes / plistTotal) * 100.0);
+          partyByS.set(s, p.party || '—');
+        });
+
+        const label = `${row.province || ''} ${row.district || ''}`.trim();
+
+        S.forEach((s) => {
+          if (!shareByS.has(s)) return;
+          const y = shareByS.get(s);
+
+          const custom = [
+            label,
+            distId,
+            s,
+            partyByS.get(s) || '—',
+            y,
+            isFiniteNumber(winnerNo) ? winnerNo : null,
+            winnerName,
+            winnerParty,
+          ];
+
+          if (isFiniteNumber(winnerNo) && winnerNo === s) {
+            matchedX.push(String(s));
+            matchedY.push(y);
+            matchedCustom.push(custom);
+          } else {
+            nonX.push(String(s));
+            nonY.push(y);
+            nonCustom.push(custom);
+          }
+        });
+      });
+
+      const hover =
+        '<b>%{customdata[0]}</b><br>' +
+        'Party-list # %{customdata[2]}: %{customdata[3]}<br>' +
+        '<b>Party-list share</b>: %{customdata[4]:.2f}%<br>' +
+        'Constituency winner: #%{customdata[5]} %{customdata[6]} (%{customdata[7]})<extra></extra>';
+
+      const traces = [
+        {
+          type: 'box',
+          name: 'Winner number = s',
+          x: matchedX,
+          y: matchedY,
+          customdata: matchedCustom,
+          hovertemplate: hover,
+          line: { color: '#111', width: 1.5 },
+          fillcolor: 'rgba(17,17,17,0.06)',
+          marker: { color: '#111', size: 3.5, opacity: 0.18 },
+          boxpoints: 'all',
+          jitter: 0.35,
+          pointpos: -0.25,
+          offsetgroup: 'm',
+        },
+        {
+          type: 'box',
+          name: 'Winner number ≠ s',
+          x: nonX,
+          y: nonY,
+          customdata: nonCustom,
+          hovertemplate: hover,
+          line: { color: '#e03131', width: 1.5 },
+          fillcolor: 'rgba(224,49,49,0.05)',
+          marker: { color: '#e03131', size: 3.0, opacity: 0.10, symbol: 'x' },
+          boxpoints: 'all',
+          jitter: 0.35,
+          pointpos: 0.25,
+          offsetgroup: 'n',
+        },
+      ];
+
+      const plotEl = document.getElementById('plot');
+      const width = plotEl ? plotEl.getBoundingClientRect().width : 720;
+      const height = Math.max(560, Math.round(width * 0.75));
+
+      const layout = {
+        title: {
+          text: 'Same-number diagnostic (2023): party-list vote share by party-list number<br><span style="font-size:12px;color:#555">Numbers 1–10 (excluding 7). Split by whether the constituency winner’s candidate number equals s.</span>',
+          x: 0.02
+        },
+        xaxis: {
+          title: { text: 'Party-list ballot number (s)' },
+          type: 'category',
+          categoryorder: 'array',
+          categoryarray: S.map(String),
+          showgrid: false,
+          zeroline: false,
+        },
+        yaxis: {
+          title: { text: 'Party-list vote share (%)' },
+          gridcolor: 'rgba(15,23,42,0.08)',
+          rangemode: 'tozero',
+          zeroline: false,
+        },
+        boxmode: 'group',
+        margin: { l: 70, r: 24, t: 104, b: 70 },
+        legend: { orientation: 'h', x: 0.02, xanchor: 'left', y: -0.18, groupclick: 'togglegroup' },
+        font: { family: 'Sarabun, sans-serif', size: 12 },
+        height,
+        autosize: true,
+        paper_bgcolor: '#fff',
+        plot_bgcolor: '#fff',
+      };
+
+      Plotly.newPlot('plot', traces, layout, { displayModeBar: false, responsive: true });
+      window.addEventListener('resize', () => Plotly.Plots.resize('plot'));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,622 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <script src="../data/party_assets_2569/party_name_map_2569.js"></script>
+  <style>
+    @font-face { font-family: 'Sarabun'; src: url('../font/Sarabun/Sarabun-Regular.ttf') format('truetype'); font-weight: 400; }
+    @font-face { font-family: 'Sarabun'; src: url('../font/Sarabun/Sarabun-Regular.ttf') format('truetype'); font-weight: 700; }
+    html, body { margin: 0; padding: 0; font-family: Sarabun, sans-serif; background: #f8fafc; color: #0f172a; }
+    #wrap { padding: 10px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; margin-bottom: 12px; }
+    .title { margin: 0 0 10px 0; font-size: 22px; font-weight: 800; }
+    .sub { margin: 0 0 10px 0; color: #475569; font-size: 13px; line-height: 1.35; }
+    .controls { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .control { min-width: 0; }
+    .control label { display: block; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+    select, input[type="number"] { width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px; font: inherit; }
+    .btn { border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; padding: 8px 10px; cursor: pointer; font-weight: 700; }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #64748b; margin-bottom: 8px; }
+    .chart { width: 100%; height: 420px; }
+    .table-wrap { overflow: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 8px; border-bottom: 1px solid #eef2f7; text-align: left; white-space: nowrap; }
+    th { position: sticky; top: 0; background: #f8fafc; z-index: 1; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    @media (max-width: 900px) {
+      #wrap { padding: 6px; }
+      .card { border-radius: 0; border-left: 0; border-right: 0; }
+      .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .chart { height: 360px; }
+      .title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div class="card">
+      <h2 class="title" id="section-title">Diagnostics</h2>
+      <p class="sub" id="section-sub">ตรวจจับสัญญาณ number-instruction จากการชนกันของหมายเลขผู้สมัครเขตกับหมายเลขพรรคบัญชีรายชื่อพรรคเล็ก โดยไม่จำกัดเฉพาะเขตที่ผู้สมัครชนะ</p>
+      <div class="controls">
+        <div class="control">
+          <label id="lbl-topn" for="top-n">Big parties (top N by constituency votes)</label>
+          <input id="top-n" type="number" min="3" max="20" step="1" value="6" />
+        </div>
+        <div class="control">
+          <label id="lbl-bigs" for="big-party-select">Big-party set</label>
+          <select id="big-party-select" multiple size="3"></select>
+        </div>
+        <div class="control">
+          <label id="lbl-bparty" for="scatter-party">Scatter: big party</label>
+          <select id="scatter-party"></select>
+        </div>
+        <div class="control">
+          <label id="lbl-k" for="scatter-k">Scatter: matching number (k)</label>
+          <select id="scatter-k"></select>
+        </div>
+        <div class="control">
+          <label id="lbl-smallmode" for="scatter-small-mode">Scatter: small-party mode</label>
+          <select id="scatter-small-mode">
+            <option value="matched" id="opt-small-matched">Matched small party only</option>
+            <option value="all_avg" id="opt-small-avg">Average of all small parties</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="btn-topn">Apply top N</button>
+        <button class="btn" id="btn-y-votes">Y: PL votes</button>
+        <button class="btn" id="btn-y-share">Y: PL share</button>
+        <button class="btn" id="btn-y-excess">Y: excess votes</button>
+        <button class="btn" id="btn-y-z">Y: z-excess</button>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
+
+    <div class="card">
+      <h3 id="heat-title">Exposure Matrix (big party × matching number)</h3>
+      <div id="heatmap" class="chart"></div>
+    </div>
+
+    <div class="card">
+      <h3 id="scatter-title">Scatter Explorer</h3>
+      <div id="scatter" class="chart"></div>
+    </div>
+
+    <div class="card">
+      <h3 id="table-title">Constituency Severity Leaderboard</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th id="th-rank">#</th>
+              <th id="th-const">Constituency</th>
+              <th id="th-driver">Top driver (B,k→small)</th>
+              <th id="th-observed">Observed PL</th>
+              <th id="th-baseline">Baseline</th>
+              <th id="th-excess">Excess</th>
+              <th id="th-z">z</th>
+              <th id="th-cshare">Candidate share</th>
+              <th id="th-crank">Cand. rank</th>
+              <th id="th-severity">Severity</th>
+              <th id="th-other">Other exposures</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SMALL_NUMBERS = [1, 2, 3, 4, 5, 7, 8, 10];
+    const SMALL_BY_NO = {
+      1: 'ไทยทรัพย์ทวี',
+      2: 'เพื่อชาติไทย',
+      3: 'ใหม่',
+      4: 'มิติใหม่',
+      5: 'รวมใจไทย',
+      7: 'พลวัต',
+      8: 'ประชาธิปไตยใหม่',
+      10: 'ทางเลือกใหม่'
+    };
+    const PROVINCE_REGION = {
+      'กรุงเทพมหานคร':'กรุงเทพมหานคร','นนทบุรี':'ภาคกลาง','ปทุมธานี':'ภาคกลาง','พระนครศรีอยุธยา':'ภาคกลาง','อ่างทอง':'ภาคกลาง','ลพบุรี':'ภาคกลาง','สิงห์บุรี':'ภาคกลาง','ชัยนาท':'ภาคกลาง','สระบุรี':'ภาคกลาง','นครนายก':'ภาคกลาง','สมุทรปราการ':'ภาคกลาง','สมุทรสาคร':'ภาคกลาง','สมุทรสงคราม':'ภาคกลาง','นครปฐม':'ภาคกลาง','สุพรรณบุรี':'ภาคกลาง','กาญจนบุรี':'ภาคกลาง','ราชบุรี':'ภาคกลาง','เพชรบุรี':'ภาคกลาง','ประจวบคีรีขันธ์':'ภาคกลาง',
+      'ฉะเชิงเทรา':'ภาคตะวันออก','ชลบุรี':'ภาคตะวันออก','ระยอง':'ภาคตะวันออก','จันทบุรี':'ภาคตะวันออก','ตราด':'ภาคตะวันออก','ปราจีนบุรี':'ภาคตะวันออก','สระแก้ว':'ภาคตะวันออก',
+      'เชียงใหม่':'ภาคเหนือ','เชียงราย':'ภาคเหนือ','ลำพูน':'ภาคเหนือ','ลำปาง':'ภาคเหนือ','แม่ฮ่องสอน':'ภาคเหนือ','พะเยา':'ภาคเหนือ','น่าน':'ภาคเหนือ','แพร่':'ภาคเหนือ','อุตรดิตถ์':'ภาคเหนือ','พิษณุโลก':'ภาคเหนือ','สุโขทัย':'ภาคเหนือ','ตาก':'ภาคเหนือ','กำแพงเพชร':'ภาคเหนือ','พิจิตร':'ภาคเหนือ','เพชรบูรณ์':'ภาคเหนือ','นครสวรรค์':'ภาคเหนือ','อุทัยธานี':'ภาคเหนือ',
+      'นครราชสีมา':'ภาคตะวันออกเฉียงเหนือ','ชัยภูมิ':'ภาคตะวันออกเฉียงเหนือ','บุรีรัมย์':'ภาคตะวันออกเฉียงเหนือ','สุรินทร์':'ภาคตะวันออกเฉียงเหนือ','ศรีสะเกษ':'ภาคตะวันออกเฉียงเหนือ','อุบลราชธานี':'ภาคตะวันออกเฉียงเหนือ','ยโสธร':'ภาคตะวันออกเฉียงเหนือ','อำนาจเจริญ':'ภาคตะวันออกเฉียงเหนือ','มุกดาหาร':'ภาคตะวันออกเฉียงเหนือ','ร้อยเอ็ด':'ภาคตะวันออกเฉียงเหนือ','มหาสารคาม':'ภาคตะวันออกเฉียงเหนือ','กาฬสินธุ์':'ภาคตะวันออกเฉียงเหนือ','ขอนแก่น':'ภาคตะวันออกเฉียงเหนือ','อุดรธานี':'ภาคตะวันออกเฉียงเหนือ','เลย':'ภาคตะวันออกเฉียงเหนือ','หนองบัวลำภู':'ภาคตะวันออกเฉียงเหนือ','หนองคาย':'ภาคตะวันออกเฉียงเหนือ','บึงกาฬ':'ภาคตะวันออกเฉียงเหนือ','นครพนม':'ภาคตะวันออกเฉียงเหนือ','สกลนคร':'ภาคตะวันออกเฉียงเหนือ',
+      'สุราษฎร์ธานี':'ภาคใต้','ชุมพร':'ภาคใต้','ระนอง':'ภาคใต้','พังงา':'ภาคใต้','ภูเก็ต':'ภาคใต้','กระบี่':'ภาคใต้','นครศรีธรรมราช':'ภาคใต้','ตรัง':'ภาคใต้','พัทลุง':'ภาคใต้','สงขลา':'ภาคใต้','สตูล':'ภาคใต้','ปัตตานี':'ภาคใต้','ยะลา':'ภาคใต้','นราธิวาส':'ภาคใต้'
+    };
+
+    const TEXT = {
+      th: {
+        sectionTitle: 'Diagnostics',
+        sectionSub: 'ตรวจจับสัญญาณ number-instruction จากการชนกันของหมายเลขผู้สมัครเขตกับหมายเลขพรรคบัญชีรายชื่อพรรคเล็ก โดยไม่จำกัดเฉพาะเขตที่ผู้สมัครชนะ',
+        topn: 'พรรคใหญ่ (Top N ตามคะแนนเขตรวม)', bigs: 'ชุดพรรคใหญ่ (เลือกเพิ่ม/ลดได้)', bparty: 'Scatter: พรรคใหญ่', k: 'Scatter: หมายเลขที่ชน (k)', smallMode: 'Scatter: โหมดพรรคเล็ก',
+        smallMatched: 'พรรคเล็กที่ตรงเลขเท่านั้น', smallAvg: 'ค่าเฉลี่ยทุกพรรคเล็ก',
+        heatTitle: 'Exposure Matrix (พรรคใหญ่ × หมายเลขที่ชน)', scatterTitle: 'Scatter Explorer', tableTitle: 'Constituency Severity Leaderboard',
+        yVotes: 'Y: คะแนนบัญชีรายชื่อ', yShare: 'Y: สัดส่วนบัญชีรายชื่อ', yExcess: 'Y: คะแนนส่วนเกิน', yZ: 'Y: z-excess',
+        rank: '#', cst: 'เขต', driver: 'Top driver (B,k→พรรคเล็ก)', obs: 'Observed PL', base: 'Baseline', excess: 'Excess', z: 'z', cshare: 'สัดส่วนผู้สมัคร', crank: 'อันดับผู้สมัคร', sev: 'Severity', other: 'Exposure อื่น',
+        expCount: 'rows ใน exposure table', flagged: 'เขตที่มี severity > 0', yLabelVotes: 'Small-party PL votes', yLabelShare: 'Small-party PL share (%)', yLabelExcess: 'Excess small-party PL votes', yLabelZ: 'z-excess', xLabel: 'Big-party candidate vote share (%)', noRows: 'ไม่มีข้อมูลสำหรับคู่ (B,k) นี้', modeInUse: 'โหมดพรรคเล็ก'
+      },
+      en: {
+        sectionTitle: 'Diagnostics',
+        sectionSub: 'Detect number-instruction spillover from overlaps between constituency candidate numbers and small party-list numbers, without restricting to winners.',
+        topn: 'Big parties (top N by constituency votes)', bigs: 'Big-party set (optional manual override)', bparty: 'Scatter: big party', k: 'Scatter: matching number (k)', smallMode: 'Scatter: small-party mode',
+        smallMatched: 'Matched small party only', smallAvg: 'Average of all small parties',
+        heatTitle: 'Exposure Matrix (big party × matching number)', scatterTitle: 'Scatter Explorer', tableTitle: 'Constituency Severity Leaderboard',
+        yVotes: 'Y: PL votes', yShare: 'Y: PL share', yExcess: 'Y: excess votes', yZ: 'Y: z-excess',
+        rank: '#', cst: 'Constituency', driver: 'Top driver (B,k→small)', obs: 'Observed PL', base: 'Baseline', excess: 'Excess', z: 'z', cshare: 'Candidate share', crank: 'Cand. rank', sev: 'Severity', other: 'Other exposures',
+        expCount: 'rows in exposure table', flagged: 'constituencies with severity > 0', yLabelVotes: 'Small-party PL votes', yLabelShare: 'Small-party PL share (%)', yLabelExcess: 'Excess small-party PL votes', yLabelZ: 'z-excess', xLabel: 'Big-party candidate vote share (%)', noRows: 'No data for this (B,k) pair', modeInUse: 'small-party mode'
+      }
+    };
+
+    let lang = (localStorage.getItem('lang') || 'th');
+    if (!['th', 'en'].includes(lang)) lang = 'th';
+    let yMode = 'votes';
+    let smallMode = 'matched';
+
+    const RAW = (window.__electionResults2569 && window.__electionResults2569.byDist) ? window.__electionResults2569.byDist : {};
+    const PARTY_EN = window.PARTY_NAME_MAP_2569 || {};
+    const COLORS = (window.__electionResults2569 && window.__electionResults2569.colorMapping) ? window.__electionResults2569.colorMapping : {};
+
+    const distRows = Object.entries(RAW).map(([id, d]) => ({
+      id,
+      province: d.province,
+      district: Number(d.district || 0),
+      region: PROVINCE_REGION[d.province] || 'ภาคกลาง',
+      urban: Number(d.district || 0) === 1,
+      constCandidates: Array.isArray(d.const_candidates) ? d.const_candidates : [],
+      plist: Array.isArray(d.plist_parties) ? d.plist_parties : []
+    }));
+
+    const plistByDist = new Map();
+    for (const d of distRows) {
+      const m = new Map();
+      for (const p of d.plist) m.set(p.party, { votes: Number(p.votes || 0), share: Number(p.plist_pp || 0) });
+      plistByDist.set(d.id, m);
+    }
+
+    const nationalConstVotes = new Map();
+    for (const d of distRows) {
+      for (const c of d.constCandidates) {
+        nationalConstVotes.set(c.party, (nationalConstVotes.get(c.party) || 0) + Number(c.votes || 0));
+      }
+    }
+    const partiesByVotes = Array.from(nationalConstVotes.entries()).sort((a,b)=>b[1]-a[1]).map(([p])=>p);
+
+    const bigPartySelect = document.getElementById('big-party-select');
+    const topNInput = document.getElementById('top-n');
+    const scatterPartySel = document.getElementById('scatter-party');
+    const scatterKSel = document.getElementById('scatter-k');
+    const scatterSmallModeSel = document.getElementById('scatter-small-mode');
+
+    function partyLabel(name) {
+      return lang === 'en' ? (PARTY_EN[name] || name) : name;
+    }
+
+    function setTexts() {
+      const t = TEXT[lang];
+      document.getElementById('section-title').textContent = t.sectionTitle;
+      document.getElementById('section-sub').textContent = t.sectionSub;
+      document.getElementById('lbl-topn').textContent = t.topn;
+      document.getElementById('lbl-bigs').textContent = t.bigs;
+      document.getElementById('lbl-bparty').textContent = t.bparty;
+      document.getElementById('lbl-k').textContent = t.k;
+      document.getElementById('lbl-smallmode').textContent = t.smallMode;
+      document.getElementById('opt-small-matched').textContent = t.smallMatched;
+      document.getElementById('opt-small-avg').textContent = t.smallAvg;
+      document.getElementById('btn-y-votes').textContent = t.yVotes;
+      document.getElementById('btn-y-share').textContent = t.yShare;
+      document.getElementById('btn-y-excess').textContent = t.yExcess;
+      document.getElementById('btn-y-z').textContent = t.yZ;
+      document.getElementById('heat-title').textContent = t.heatTitle;
+      document.getElementById('scatter-title').textContent = t.scatterTitle;
+      document.getElementById('table-title').textContent = t.tableTitle;
+      document.getElementById('th-rank').textContent = t.rank;
+      document.getElementById('th-const').textContent = t.cst;
+      document.getElementById('th-driver').textContent = t.driver;
+      document.getElementById('th-observed').textContent = t.obs;
+      document.getElementById('th-baseline').textContent = t.base;
+      document.getElementById('th-excess').textContent = t.excess;
+      document.getElementById('th-z').textContent = t.z;
+      document.getElementById('th-cshare').textContent = t.cshare;
+      document.getElementById('th-crank').textContent = t.crank;
+      document.getElementById('th-severity').textContent = t.sev;
+      document.getElementById('th-other').textContent = t.other;
+    }
+
+    function fillBigPartySelect(defaultN = 10) {
+      bigPartySelect.innerHTML = '';
+      for (const p of partiesByVotes) {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = partyLabel(p);
+        bigPartySelect.appendChild(opt);
+      }
+      for (let i = 0; i < Math.min(defaultN, bigPartySelect.options.length); i++) {
+        bigPartySelect.options[i].selected = true;
+      }
+    }
+
+    function selectedBigParties() {
+      return Array.from(bigPartySelect.selectedOptions).map(o => o.value);
+    }
+
+    function percentileRank(arr, v) {
+      if (!arr.length) return 0;
+      let less = 0;
+      for (const x of arr) if (x <= v) less++;
+      return less / arr.length;
+    }
+
+    function mean(arr) { return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+
+    function robustSd(arr) {
+      if (arr.length < 2) return 1;
+      const m = mean(arr);
+      const abs = arr.map(x => Math.abs(x - m)).sort((a,b)=>a-b);
+      const mad = abs[Math.floor(abs.length / 2)] || 0;
+      if (mad <= 1e-9) {
+        const var0 = mean(arr.map(x => (x-m)*(x-m)));
+        return Math.max(1, Math.sqrt(var0));
+      }
+      return Math.max(1, 1.4826 * mad);
+    }
+
+    function buildExposure(bigSet) {
+      const bigSetObj = new Set(bigSet);
+      const exposure = [];
+      const matchByDistK = new Map();
+
+      for (const d of distRows) {
+        const ranking = [...d.constCandidates].sort((a,b)=>Number(b.votes||0)-Number(a.votes||0));
+        const rankMap = new Map();
+        ranking.forEach((c, idx) => rankMap.set(c.candidate + '|' + c.party + '|' + c.candidate_no, idx + 1));
+
+        const plistMap = plistByDist.get(d.id) || new Map();
+        const smallVotes = SMALL_NUMBERS.map((k) => {
+          const p = SMALL_BY_NO[k];
+          return { k, party: p, votes: (plistMap.get(p)?.votes || 0) };
+        }).sort((a,b)=>b.votes-a.votes);
+        const smallRank = new Map();
+        smallVotes.forEach((x, i) => smallRank.set(x.party, i + 1));
+        const allSmallVotes = smallVotes.map((x) => Number(x.votes || 0));
+        const allSmallShares = SMALL_NUMBERS.map((k) => Number((plistMap.get(SMALL_BY_NO[k])?.share || 0)));
+        const allSmallAvgVotes = mean(allSmallVotes);
+        const allSmallAvgShare = mean(allSmallShares);
+
+        for (const c of d.constCandidates) {
+          const k = Number(c.candidate_no || 0);
+          if (!SMALL_NUMBERS.includes(k)) continue;
+          if (!bigSetObj.has(c.party)) continue;
+
+          if (!matchByDistK.has(d.id)) matchByDistK.set(d.id, new Set());
+          matchByDistK.get(d.id).add(k);
+
+          const smallParty = SMALL_BY_NO[k];
+          const s = plistMap.get(smallParty) || { votes: 0, share: 0 };
+          exposure.push({
+            constituency_id: d.id,
+            province: d.province,
+            district: d.district,
+            region: d.region,
+            urban_flag: d.urban ? 1 : 0,
+            big_party: c.party,
+            k,
+            small_party: smallParty,
+            candidate_votes: Number(c.votes || 0),
+            candidate_vote_share: Number(c.share_pp || 0),
+            candidate_rank_in_constituency: rankMap.get(c.candidate + '|' + c.party + '|' + c.candidate_no) || null,
+            small_party_PL_votes: Number(s.votes || 0),
+            small_party_PL_share: Number(s.share || 0),
+            small_party_PL_rank_among_small_parties: smallRank.get(smallParty) || null,
+            all_small_PL_votes: allSmallAvgVotes,
+            all_small_PL_share: allSmallAvgShare
+          });
+        }
+      }
+
+      const baselineByKey = new Map();
+      const baselineRegion = new Map();
+      const baselineGlobal = new Map();
+      const baselineAllByKey = new Map();
+      const baselineAllRegion = new Map();
+      const baselineAllGlobal = [];
+
+      for (const d of distRows) {
+        const kSet = matchByDistK.get(d.id) || new Set();
+        const plistMap = plistByDist.get(d.id) || new Map();
+        const allSmallAvgVotes = mean(SMALL_NUMBERS.map((k) => Number(plistMap.get(SMALL_BY_NO[k])?.votes || 0)));
+        const allKey1 = `${d.region}|${d.urban ? 1 : 0}`;
+        const allKey2 = `${d.region}`;
+        if (kSet.size === 0) {
+          if (!baselineAllByKey.has(allKey1)) baselineAllByKey.set(allKey1, []);
+          if (!baselineAllRegion.has(allKey2)) baselineAllRegion.set(allKey2, []);
+          baselineAllByKey.get(allKey1).push(allSmallAvgVotes);
+          baselineAllRegion.get(allKey2).push(allSmallAvgVotes);
+          baselineAllGlobal.push(allSmallAvgVotes);
+        }
+        for (const k of SMALL_NUMBERS) {
+          if (kSet.has(k)) continue;
+          const sParty = SMALL_BY_NO[k];
+          const val = Number(plistMap.get(sParty)?.votes || 0);
+          const key1 = `${k}|${d.region}|${d.urban ? 1 : 0}`;
+          const key2 = `${k}|${d.region}`;
+          if (!baselineByKey.has(key1)) baselineByKey.set(key1, []);
+          if (!baselineRegion.has(key2)) baselineRegion.set(key2, []);
+          if (!baselineGlobal.has(k)) baselineGlobal.set(k, []);
+          baselineByKey.get(key1).push(val);
+          baselineRegion.get(key2).push(val);
+          baselineGlobal.get(k).push(val);
+        }
+      }
+
+      for (const row of exposure) {
+        const key1 = `${row.k}|${row.region}|${row.urban_flag}`;
+        const key2 = `${row.k}|${row.region}`;
+        const arr = baselineByKey.get(key1) || baselineRegion.get(key2) || baselineGlobal.get(row.k) || [0];
+        const mu = mean(arr);
+        const sd = robustSd(arr);
+        row.baseline_mean = mu;
+        row.baseline_sd = sd;
+        row.excess_PL = row.small_party_PL_votes - mu;
+        row.z_excess_PL = (row.small_party_PL_votes - mu) / sd;
+        const arrAll = baselineAllByKey.get(`${row.region}|${row.urban_flag}`) || baselineAllRegion.get(`${row.region}`) || baselineAllGlobal || [0];
+        const muAll = mean(arrAll);
+        const sdAll = robustSd(arrAll);
+        row.all_baseline_mean = muAll;
+        row.all_baseline_sd = sdAll;
+        row.all_excess_PL = row.all_small_PL_votes - muAll;
+        row.all_z_excess_PL = (row.all_small_PL_votes - muAll) / sdAll;
+      }
+
+      const shares = exposure.map(r => r.candidate_vote_share);
+      const muShare = mean(shares);
+      const sdShare = robustSd(shares);
+      for (const row of exposure) {
+        const spillSignal = Math.max(0, row.z_excess_PL);
+        const spillSignalAll = Math.max(0, row.all_z_excess_PL);
+        const exposureStrength = Math.max(0, (row.candidate_vote_share - muShare) / sdShare);
+        row.row_score = 0.7 * spillSignal + 0.3 * exposureStrength;
+        row.row_score_all = 0.7 * spillSignalAll + 0.3 * exposureStrength;
+      }
+
+      const buildSeverity = (scoreField) => {
+        const byDist = new Map();
+        for (const row of exposure) {
+          if (!byDist.has(row.constituency_id)) byDist.set(row.constituency_id, []);
+          byDist.get(row.constituency_id).push(row);
+        }
+        const out = [];
+        for (const [did, rows] of byDist.entries()) {
+          const sorted = [...rows].sort((a,b)=>Number(b[scoreField]||0)-Number(a[scoreField]||0));
+          const top = sorted[0];
+          out.push({
+            constituency_id: did,
+            province: top.province,
+            district: top.district,
+            severity_d: Number(top[scoreField] || 0),
+            top,
+            others: sorted.slice(1)
+          });
+        }
+        out.sort((a,b)=>b.severity_d-a.severity_d);
+        return out;
+      };
+
+      return { exposure, severityMatched: buildSeverity('row_score'), severityAll: buildSeverity('row_score_all') };
+    }
+
+    let state = { exposure: [], severityMatched: [], severityAll: [] };
+
+    function updateScatterSelectors() {
+      const parties = Array.from(new Set(state.exposure.map(r => r.big_party)));
+      scatterPartySel.innerHTML = parties.map(p => `<option value="${p}">${partyLabel(p)}</option>`).join('');
+      if (!scatterPartySel.value && parties[0]) scatterPartySel.value = parties[0];
+      const ks = SMALL_NUMBERS;
+      scatterKSel.innerHTML = ks.map(k => `<option value="${k}">${k} → ${partyLabel(SMALL_BY_NO[k])}</option>`).join('');
+      if (!scatterKSel.value) scatterKSel.value = String(ks[0]);
+    }
+
+    function renderHeatmap(bigSet) {
+      const matrix = bigSet.map(p => SMALL_NUMBERS.map(k => state.exposure.filter(r => r.big_party===p && r.k===k).length));
+      const data = [{
+        type: 'heatmap',
+        z: matrix,
+        x: SMALL_NUMBERS.map(k => String(k)),
+        y: bigSet.map(partyLabel),
+        colorscale: 'Blues',
+        zmin: 0,
+        text: matrix,
+        texttemplate: '%{text}',
+        textfont: { size: 11 },
+        hovertemplate: '%{y}<br>k=%{x}<br>exposures=%{z}<extra></extra>'
+      }];
+      const layout = {
+        margin: { l: 140, r: 10, t: 10, b: 40 },
+        xaxis: { title: 'k' },
+        yaxis: { automargin: true },
+        paper_bgcolor: 'white',
+        plot_bgcolor: 'white'
+      };
+      Plotly.react('heatmap', data, layout, { displayModeBar: false, responsive: true });
+    }
+
+    function renderScatter() {
+      const t = TEXT[lang];
+      const party = scatterPartySel.value;
+      const k = Number(scatterKSel.value || 0);
+      const rows = state.exposure.filter(r => r.big_party === party && r.k === k);
+
+      if (!rows.length) {
+        Plotly.react('scatter', [{ x: [0], y: [0], mode: 'markers', marker: { opacity: 0 } }], {
+          annotations: [{ text: t.noRows, showarrow: false, x: 0.5, y: 0.5, xref: 'paper', yref: 'paper' }],
+          xaxis: { visible: false }, yaxis: { visible: false }, margin: { l: 20, r: 20, t: 20, b: 20 }
+        }, { displayModeBar: false, responsive: true });
+        return;
+      }
+
+      const x = rows.map(r => r.candidate_vote_share);
+      const y = rows.map(r => {
+        if (smallMode === 'all_avg') {
+          if (yMode === 'share') return r.all_small_PL_share;
+          if (yMode === 'excess') return r.all_excess_PL;
+          if (yMode === 'z') return r.all_z_excess_PL;
+          return r.all_small_PL_votes;
+        }
+        if (yMode === 'share') return r.small_party_PL_share;
+        if (yMode === 'excess') return r.excess_PL;
+        if (yMode === 'z') return r.z_excess_PL;
+        return r.small_party_PL_votes;
+      });
+
+      const c = COLORS[party] || '#2563eb';
+      const trace = {
+        type: 'scatter',
+        mode: 'markers',
+        x,
+        y,
+        marker: { color: c, size: 8, opacity: 0.75 },
+        text: rows.map(r => `${r.province} ${r.district}`),
+        customdata: rows.map(r => smallMode === 'all_avg'
+          ? [r.all_small_PL_votes, r.all_baseline_mean, r.all_excess_PL, r.all_z_excess_PL]
+          : [r.small_party_PL_votes, r.baseline_mean, r.excess_PL, r.z_excess_PL]
+        ),
+        hovertemplate: '%{text}<br>x=%{x:.2f}<br>y=%{y:.2f}<br>PL=%{customdata[0]:,.0f}<br>baseline=%{customdata[1]:.1f}<br>excess=%{customdata[2]:.1f}<br>z=%{customdata[3]:.2f}<extra></extra>'
+      };
+
+      const layout = {
+        margin: { l: 56, r: 16, t: 10, b: 50 },
+        xaxis: { title: t.xLabel },
+        yaxis: {
+          title: yMode === 'share' ? t.yLabelShare : yMode === 'excess' ? t.yLabelExcess : yMode === 'z' ? t.yLabelZ : t.yLabelVotes
+        },
+        paper_bgcolor: 'white',
+        plot_bgcolor: 'white'
+      };
+
+      Plotly.react('scatter', [trace], layout, { displayModeBar: false, responsive: true });
+    }
+
+    function activeSeverityRows() {
+      return smallMode === 'all_avg' ? state.severityAll : state.severityMatched;
+    }
+
+    function renderTable() {
+      const body = document.getElementById('leaderboard-body');
+      const fmt = (n, d=0) => Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
+      body.innerHTML = activeSeverityRows().slice(0, 80).map((row, i) => {
+        const top = row.top;
+        const name = `${top.province} ${top.district}`;
+        const drv = `${partyLabel(top.big_party)}, k=${top.k} → ${partyLabel(top.small_party)}`;
+        const others = row.others.map(o => `${partyLabel(o.big_party)}(k=${o.k})`).join(', ');
+        const observed = smallMode === 'all_avg' ? top.all_small_PL_votes : top.small_party_PL_votes;
+        const baseline = smallMode === 'all_avg' ? top.all_baseline_mean : top.baseline_mean;
+        const excess = smallMode === 'all_avg' ? top.all_excess_PL : top.excess_PL;
+        const zVal = smallMode === 'all_avg' ? top.all_z_excess_PL : top.z_excess_PL;
+        return `<tr>
+          <td class="num">${i + 1}</td>
+          <td>${name}</td>
+          <td>${drv}</td>
+          <td class="num">${fmt(observed)}</td>
+          <td class="num">${fmt(baseline, 1)}</td>
+          <td class="num">${fmt(excess, 1)}</td>
+          <td class="num">${fmt(zVal, 2)}</td>
+          <td class="num">${fmt(top.candidate_vote_share, 2)}%</td>
+          <td class="num">${top.candidate_rank_in_constituency || '-'}</td>
+          <td class="num">${fmt(row.severity_d, 2)}</td>
+          <td>${others || '-'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function refreshMeta() {
+      const t = TEXT[lang];
+      const flagged = activeSeverityRows().filter(x => x.severity_d > 0).length;
+      document.getElementById('meta').innerHTML = `
+        <span>${t.expCount}: <b>${state.exposure.length.toLocaleString()}</b></span>
+        <span>${t.flagged}: <b>${flagged.toLocaleString()}</b></span>
+        <span>${t.modeInUse}: <b>${smallMode === 'all_avg' ? t.smallAvg : t.smallMatched}</b></span>
+      `;
+    }
+
+    function recompute() {
+      const bigSet = selectedBigParties();
+      state = buildExposure(bigSet);
+      updateScatterSelectors();
+      renderHeatmap(bigSet);
+      renderScatter();
+      renderTable();
+      refreshMeta();
+      postHeight();
+    }
+
+    function applyTopN() {
+      const n = Math.max(3, Math.min(20, Number(topNInput.value || 10)));
+      for (let i = 0; i < bigPartySelect.options.length; i++) {
+        bigPartySelect.options[i].selected = i < n;
+      }
+      recompute();
+    }
+
+    function postHeight() {
+      const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      window.parent && window.parent.postMessage({ type: 'iframe-height', id: 'number-match-frame', height: h }, '*');
+    }
+
+    document.getElementById('btn-topn').addEventListener('click', applyTopN);
+    bigPartySelect.addEventListener('change', recompute);
+    scatterPartySel.addEventListener('change', renderScatter);
+    scatterKSel.addEventListener('change', renderScatter);
+    scatterSmallModeSel.addEventListener('change', () => {
+      smallMode = scatterSmallModeSel.value === 'all_avg' ? 'all_avg' : 'matched';
+      renderScatter();
+      renderTable();
+      refreshMeta();
+    });
+    document.getElementById('btn-y-votes').addEventListener('click', () => { yMode = 'votes'; renderScatter(); });
+    document.getElementById('btn-y-share').addEventListener('click', () => { yMode = 'share'; renderScatter(); });
+    document.getElementById('btn-y-excess').addEventListener('click', () => { yMode = 'excess'; renderScatter(); });
+    document.getElementById('btn-y-z').addEventListener('click', () => { yMode = 'z'; renderScatter(); });
+
+    window.addEventListener('message', (event) => {
+      const data = event && event.data ? event.data : {};
+      if (data.type === 'set-lang') {
+        lang = data.lang === 'en' ? 'en' : 'th';
+        try { localStorage.setItem('lang', lang); } catch (e) {}
+        setTexts();
+        fillBigPartySelect(Number(topNInput.value || 6));
+        recompute();
+      }
+      if (data.type === 'request-resize') {
+        postHeight();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      const heat = document.getElementById('heatmap');
+      const scat = document.getElementById('scatter');
+      if (heat) Plotly.Plots.resize(heat);
+      if (scat) Plotly.Plots.resize(scat);
+      postHeight();
+    });
+
+    setTexts();
+    fillBigPartySelect(6);
+    scatterSmallModeSel.value = 'matched';
+    SMALL_NUMBERS.forEach((k) => {
+      const opt = document.createElement('option');
+      opt.value = String(k);
+      opt.textContent = `${k} → ${partyLabel(SMALL_BY_NO[k])}`;
+      scatterKSel.appendChild(opt);
+    });
+    scatterKSel.value = String(SMALL_NUMBERS[0]);
+    recompute();
+    setTimeout(postHeight, 80);
+  </script>
+</body>
+</html>

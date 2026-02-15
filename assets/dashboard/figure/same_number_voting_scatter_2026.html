@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="plotly.min.js"></script>
+  <script src="../data/election_results_2569_by_dist.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px 6px;
+      font-family: Sarabun, sans-serif;
+    }
+    #controls label { font-weight: 700; font-size: 12px; color: #0f172a; }
+    #partySelect {
+      flex: 1 1 auto;
+      min-width: 220px;
+      max-width: 520px;
+      padding: 8px 10px;
+      border: 1px solid #d7dbe2;
+      border-radius: 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      color: #0f172a;
+    }
+    #stats {
+      flex: 0 0 auto;
+      font-size: 12px;
+      color: #475569;
+      white-space: nowrap;
+    }
+    #plot { width: 100%; height: calc(100% - 48px); }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <label for="partySelect">Candidate party</label>
+    <select id="partySelect" aria-label="Candidate party"></select>
+    <span id="stats"></span>
+  </div>
+  <div id="plot"></div>
+  <script>
+    (() => {
+      const DEFAULT_MIN_NO = 1;
+      const DEFAULT_MAX_NO = 10;
+      const EXCLUDED_NUMBERS = new Set([6, 9]);
+
+      const results = window.__electionResults2569 || {};
+      const byDist = results.byDist || {};
+
+      const isFiniteNumber = (v) => Number.isFinite(Number(v));
+
+      const computeOls = (xs, ys) => {
+        const n = Math.min(xs.length, ys.length);
+        if (n < 2) return null;
+        const x = xs.map(Number);
+        const y = ys.map(Number);
+        const xBar = x.reduce((a, b) => a + b, 0) / n;
+        const yBar = y.reduce((a, b) => a + b, 0) / n;
+
+        let sxx = 0;
+        let sxy = 0;
+        for (let i = 0; i < n; i++) {
+          const dx = x[i] - xBar;
+          sxx += dx * dx;
+          sxy += dx * (y[i] - yBar);
+        }
+        if (sxx === 0) return null;
+
+        const slope = sxy / sxx;
+        const intercept = yBar - slope * xBar;
+
+        let sse = 0;
+        let sst = 0;
+        for (let i = 0; i < n; i++) {
+          const yHat = intercept + slope * x[i];
+          const err = y[i] - yHat;
+          sse += err * err;
+          const dy = y[i] - yBar;
+          sst += dy * dy;
+        }
+        const r2 = sst === 0 ? null : (1 - sse / sst);
+        return { n, slope, intercept, r2 };
+      };
+
+      const getUrlRange = () => {
+        try {
+          const u = new URL(window.location.href);
+          const minNo = Number(u.searchParams.get('minNo') || DEFAULT_MIN_NO);
+          const maxNo = Number(u.searchParams.get('maxNo') || DEFAULT_MAX_NO);
+          if (!isFiniteNumber(minNo) || !isFiniteNumber(maxNo)) return { minNo: DEFAULT_MIN_NO, maxNo: DEFAULT_MAX_NO };
+          return { minNo: Math.max(1, Math.floor(minNo)), maxNo: Math.max(1, Math.floor(maxNo)) };
+        } catch (e) {
+          return { minNo: DEFAULT_MIN_NO, maxNo: DEFAULT_MAX_NO };
+        }
+      };
+
+      const { minNo, maxNo } = getUrlRange();
+
+      const pointsByCandidateParty = new Map();
+      Object.keys(byDist).forEach((distId) => {
+        const row = byDist[distId] || {};
+        const candidates = Array.isArray(row.const_candidates) ? row.const_candidates : [];
+        const plistParties = Array.isArray(row.plist_parties) ? row.plist_parties : [];
+        const winner = candidates.length ? candidates[0] : null;
+
+        const plistByNo = new Map();
+        plistParties.forEach((p) => {
+          if (!p) return;
+          const no = Number(p.party_list_no);
+          if (!isFiniteNumber(no)) return;
+          if (no < minNo || no > maxNo) return;
+          if (EXCLUDED_NUMBERS.has(no)) return;
+          if (!plistByNo.has(no)) plistByNo.set(no, p);
+        });
+
+        for (let s = minNo; s <= maxNo; s++) {
+          if (EXCLUDED_NUMBERS.has(s)) continue;
+          const plist = plistByNo.get(s);
+          if (!plist) continue;
+
+          const matched = candidates
+            .filter((c) => c && Number(c.candidate_no) === s)
+            .sort((a, b) => Number(b.votes || 0) - Number(a.votes || 0))[0];
+          if (!matched) continue; // exclude unmatched (avoids mechanical x=0)
+
+          const candidateParty = matched.party || '—';
+          if (!pointsByCandidateParty.has(candidateParty)) {
+            pointsByCandidateParty.set(candidateParty, { party: candidateParty, win: [], lose: [], ols: null, xMin: null, xMax: null });
+          }
+          const partyEntry = pointsByCandidateParty.get(candidateParty);
+
+          const candVotes = Number(matched.votes || 0);
+          const plistVotes = Number(plist.votes || 0);
+          const isWinner = !!(winner && winner.candidate === matched.candidate && winner.party === matched.party);
+
+          const point = {
+            s,
+            x: candVotes,
+            y: plistVotes,
+            province: row.province || '',
+            district: row.district || '',
+            distId,
+            candName: matched.candidate || '—',
+            candParty: candidateParty,
+            plistParty: plist.party || '—',
+            isWinner,
+          };
+
+          if (isWinner) partyEntry.win.push(point);
+          else partyEntry.lose.push(point);
+
+          if (partyEntry.xMin === null || candVotes < partyEntry.xMin) partyEntry.xMin = candVotes;
+          if (partyEntry.xMax === null || candVotes > partyEntry.xMax) partyEntry.xMax = candVotes;
+        }
+      });
+
+      const candidateParties = Array.from(pointsByCandidateParty.values())
+        .map((e) => ({ party: e.party, n: (e.win.length + e.lose.length) }))
+        .filter((e) => e.n > 0)
+        .sort((a, b) => (b.n - a.n) || String(a.party).localeCompare(String(b.party)));
+
+      if (!candidateParties.length) {
+        const layout = {
+          title: { text: `No matched pairs found for numbers ${minNo}–${maxNo}`, x: 0.02 },
+          margin: { l: 40, r: 20, t: 54, b: 40 },
+          font: { family: 'Sarabun, sans-serif', size: 12 },
+        };
+        Plotly.newPlot('plot', [], layout, { displayModeBar: false, responsive: true });
+        return;
+      }
+
+      candidateParties.forEach(({ party }) => {
+        const entry = pointsByCandidateParty.get(party);
+        if (!entry) return;
+        const all = [...entry.win, ...entry.lose];
+        const xs = all.map((d) => d.x);
+        const ys = all.map((d) => d.y);
+        entry.ols = computeOls(xs, ys);
+      });
+
+      const allPoints = [];
+      pointsByCandidateParty.forEach((entry) => {
+        allPoints.push(...entry.win, ...entry.lose);
+      });
+      const overallOls = computeOls(allPoints.map((d) => d.x), allPoints.map((d) => d.y));
+
+      const hovertemplate =
+        '<b>%{customdata[0]}</b><br>' +
+        'Matched candidate (district ballot # %{customdata[1]}): %{customdata[2]}<br>' +
+        'Candidate party: %{customdata[3]}<br>' +
+        'Candidate votes (x): %{x:,d}<br>' +
+        'Party-list (ballot # %{customdata[1]}): %{customdata[4]}<br>' +
+        'Party-list votes (y): %{y:,d}<extra></extra>';
+
+      const traces = [];
+      const traceMeta = []; // [{party, kind}]
+
+      const addPartyTraces = (party, entry, visible) => {
+        const toCustom = (arr) => arr.map((d) => [`${d.province} ${d.district}`.trim(), d.s, d.candName, d.candParty, d.plistParty]);
+
+        traces.push({
+          type: 'scatter',
+          mode: 'markers',
+          name: 'Winners',
+          x: entry.win.map((d) => d.x),
+          y: entry.win.map((d) => d.y),
+          marker: { color: '#1f4bff', size: 6 },
+          customdata: toCustom(entry.win),
+          hovertemplate,
+          visible,
+          showlegend: false,
+        });
+        traceMeta.push({ party, kind: 'win' });
+
+        traces.push({
+          type: 'scatter',
+          mode: 'markers',
+          name: 'Losers',
+          x: entry.lose.map((d) => d.x),
+          y: entry.lose.map((d) => d.y),
+          marker: { color: '#e03131', size: 6, symbol: 'x' },
+          customdata: toCustom(entry.lose),
+          hovertemplate,
+          visible,
+          showlegend: false,
+        });
+        traceMeta.push({ party, kind: 'lose' });
+
+        const ols = entry.ols;
+        const x0 = entry.xMin === null ? 0 : entry.xMin;
+        const x1 = entry.xMax === null ? 1 : entry.xMax;
+        const y0 = ols ? (ols.intercept + ols.slope * x0) : 0;
+        const y1 = ols ? (ols.intercept + ols.slope * x1) : 0;
+
+        traces.push({
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Fit (OLS)',
+          x: ols ? [x0, x1] : [],
+          y: ols ? [y0, y1] : [],
+          line: { color: '#111', width: 2 },
+          hoverinfo: 'skip',
+          visible: visible && !!ols,
+          showlegend: false,
+        });
+        traceMeta.push({ party, kind: 'ols' });
+      };
+
+      const firstParty = candidateParties[0].party;
+      candidateParties.forEach(({ party }) => addPartyTraces(party, pointsByCandidateParty.get(party), party === firstParty));
+
+      // Add a dedicated "all parties" OLS fit line (shown only in All mode).
+      const allX = allPoints.map((d) => Number(d.x)).filter((v) => Number.isFinite(v));
+      const x0All = allX.length ? Math.min(...allX) : 0;
+      const x1All = allX.length ? Math.max(...allX) : 1;
+      traces.push({
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Fit (OLS, all)',
+        x: overallOls ? [x0All, x1All] : [],
+        y: overallOls ? [overallOls.intercept + overallOls.slope * x0All, overallOls.intercept + overallOls.slope * x1All] : [],
+        line: { color: '#111', width: 2 },
+        hoverinfo: 'skip',
+        visible: false,
+        showlegend: false,
+      });
+      traceMeta.push({ party: '__ALL__', kind: 'ols' });
+
+      const buildTitle = (party) => {
+        const entry = pointsByCandidateParty.get(party);
+        if (!entry) return `Same-number voting diagnostic (2026)`;
+        const ols = entry.ols;
+        const base = `Same-number voting diagnostic (2026): Candidate party = ${party} (numbers ${minNo}–${maxNo}, excl. 6 & 9)`;
+        if (!ols) return `${base}<br><span style="font-size:12px;color:#555">n=${entry.win.length + entry.lose.length} (insufficient variance for fit)</span>`;
+        const r2Text = (ols.r2 === null || !Number.isFinite(ols.r2)) ? '—' : ols.r2.toFixed(3);
+        return `${base}<br><span style="font-size:12px;color:#555">Fit: y = ${ols.intercept.toFixed(1)} + ${ols.slope.toFixed(3)}x, R²=${r2Text}, n=${ols.n}</span>`;
+      };
+
+      const plotEl = document.getElementById('plot');
+      const computeHeight = () => {
+        const rect = plotEl ? plotEl.getBoundingClientRect() : null;
+        const w = rect ? rect.width : 720;
+        const h = rect ? rect.height : 720;
+        // Prefer a near-square plot, but respect the iframe height.
+        const desired = Math.min(Math.max(520, Math.round(w * 0.95)), Math.max(520, Math.round(h)));
+        return desired;
+      };
+
+      const layout = {
+        title: { text: buildTitle(firstParty), x: 0.02, y: 0.98 },
+        xaxis: { title: { text: 'Matched district-candidate votes (same number)', standoff: 8 }, autorange: true, rangemode: 'tozero' },
+        yaxis: { title: { text: 'Party-list votes (same party-list number)', standoff: 8 }, autorange: true, rangemode: 'tozero' },
+        margin: { l: 70, r: 24, t: 86, b: 64 },
+        showlegend: true,
+        legend: { orientation: 'h', x: 0.02, xanchor: 'left', y: -0.16 },
+        font: { family: 'Sarabun, sans-serif', size: 12 },
+        height: computeHeight(),
+        autosize: true,
+      };
+
+      Plotly.newPlot('plot', traces, layout, { displayModeBar: false, responsive: true });
+
+      const statsEl = document.getElementById('stats');
+      const fmtStats = (ols) => {
+        if (!ols) return 'slope=—  R²=—  n=—';
+        const r2Text = (ols.r2 === null || !Number.isFinite(ols.r2)) ? '—' : ols.r2.toFixed(3);
+        return `slope=${ols.slope.toFixed(4)}  R²=${r2Text}  n=${ols.n}`;
+      };
+
+      const buildVisibleAndLegend = (selected) => {
+        const visible = traceMeta.map((m) => {
+          if (selected === '__ALL__') {
+            if (m.party === '__ALL__' && m.kind === 'ols') return !!overallOls;
+            if (m.kind === 'ols') return false; // hide per-party fits in All mode
+            return true;
+          }
+          if (m.party !== selected) return false;
+          if (m.kind === 'ols') return !!(pointsByCandidateParty.get(selected) || {}).ols;
+          return true;
+        });
+
+        const showlegend = traceMeta.map((m, idx) => {
+          if (!visible[idx]) return false;
+          if (selected === '__ALL__') {
+            // Avoid duplicate legend entries from per-party traces; show fit once.
+            if (m.party === '__ALL__' && m.kind === 'ols') return true;
+            return (m.party === firstParty) && (m.kind === 'win' || m.kind === 'lose');
+          }
+          // In single-party mode, show just that party's Winners/Losers (+Fit if present).
+          if (m.party !== selected) return false;
+          if (m.kind === 'ols') return !!(pointsByCandidateParty.get(selected) || {}).ols;
+          return true;
+        });
+
+        return { visible, showlegend };
+      };
+
+      const selectEl = document.getElementById('partySelect');
+      if (selectEl) {
+        const allOpt = document.createElement('option');
+        allOpt.value = '__ALL__';
+        allOpt.textContent = 'All parties';
+        selectEl.appendChild(allOpt);
+        candidateParties.forEach(({ party, n }) => {
+          const opt = document.createElement('option');
+          opt.value = party;
+          opt.textContent = party;
+          selectEl.appendChild(opt);
+        });
+        selectEl.value = '__ALL__';
+        selectEl.addEventListener('change', () => {
+          const party = selectEl.value;
+          if (party === '__ALL__') {
+            const { visible: visibleAll, showlegend } = buildVisibleAndLegend('__ALL__');
+            Plotly.update(
+              'plot',
+              { visible: visibleAll, showlegend },
+              {
+                'title.text': `Same-number voting diagnostic (2026): All candidate parties (numbers ${minNo}–${maxNo}, excl. 6 & 9)`,
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+              }
+            );
+            if (statsEl) statsEl.textContent = fmtStats(overallOls);
+            return;
+          }
+
+          const { visible, showlegend } = buildVisibleAndLegend(party);
+          Plotly.update('plot', { visible, showlegend }, { 'title.text': buildTitle(party), 'xaxis.autorange': true, 'yaxis.autorange': true });
+          if (statsEl) statsEl.textContent = fmtStats((pointsByCandidateParty.get(party) || {}).ols);
+        });
+
+        // Apply initial "All" view (hide OLS lines).
+        const { visible: visibleAll, showlegend } = buildVisibleAndLegend('__ALL__');
+        Plotly.update(
+          'plot',
+          { visible: visibleAll, showlegend },
+          {
+            'title.text': `Same-number voting diagnostic (2026): All candidate parties (numbers ${minNo}–${maxNo}, excl. 6 & 9)`,
+            'xaxis.autorange': true,
+            'yaxis.autorange': true
+          }
+        );
+        if (statsEl) statsEl.textContent = fmtStats(overallOls);
+      }
+
+      window.addEventListener('resize', () => {
+        Plotly.relayout('plot', { height: computeHeight() });
+        Plotly.Plots.resize('plot');
+      });
+    })();
+  </script>
+</body>
+</html>
