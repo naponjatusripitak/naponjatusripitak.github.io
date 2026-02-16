@@ -14,11 +14,57 @@
       font-display: swap;
     }
     html, body { margin: 0; padding: 0; width: 100%; background: #fff; }
+    #wrap { position: relative; width: 100%; background: #fff; }
     #chart { width: 100%; background: #fff; }
+    /* Overlay panel (so it works inside dashboard iframes without requiring extra height/scroll) */
+    #cell-details {
+      display: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(900px, calc(100% - 20px));
+      bottom: 10px;
+      padding: 10px 12px 12px 12px;
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 10px 30px rgba(15,23,42,0.18);
+      backdrop-filter: blur(4px);
+      max-height: min(320px, 46vh);
+      overflow: hidden;
+      z-index: 50;
+    }
+    #cell-title { font-weight: 800; font-size: 13px; color: #111827; margin-bottom: 4px; }
+    #cell-meta { font-size: 12px; color: #4b5563; margin-bottom: 8px; }
+    #cell-list { max-height: 220px; overflow: auto; padding-right: 4px; }
+    .cell-item { display:flex; justify-content:space-between; gap:12px; padding: 6px 6px; border-radius: 10px; cursor: pointer; }
+    .cell-item + .cell-item { border-top: 1px solid rgba(15, 23, 42, 0.06); }
+    .cell-item:hover { background: rgba(15, 23, 42, 0.05); }
+    .cell-left { flex: 1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#1e3a8a; font-size:12px; }
+    .cell-right { flex: 0 0 46%; min-width:0; color:#374151; font-size:12px; text-align:right; display:flex; flex-direction:column; align-items:flex-end; }
+    .cell-cand { min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700; color:#111827; }
+    .cell-mov { font-size:11px; color:#6b7280; font-variant-numeric: tabular-nums; line-height: 1.25; }
+    @media (max-width: 520px) {
+      .cell-item { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .cell-right { flex: 1 1 auto; width: 100%; align-items: flex-start; text-align: left; }
+      .cell-cand { white-space: normal; }
+    }
   </style>
 </head>
 <body>
-  <div id="chart"></div>
+  <div id="wrap">
+    <div id="chart"></div>
+    <div id="cell-details">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+        <div style="min-width:0;">
+          <div id="cell-title"></div>
+          <div id="cell-meta"></div>
+        </div>
+        <button id="cell-close" type="button" aria-label="Close" style="border:1px solid rgba(0,0,0,0.12);background:#fff;border-radius:10px;padding:4px 8px;cursor:pointer;font-weight:800;line-height:1;">✕</button>
+      </div>
+      <div id="cell-list"></div>
+    </div>
+  </div>
   <script>
     const LANG_TEXT = {
       th: {
@@ -52,16 +98,30 @@
     const chooseTextColor = (value, maxValue) => (Number(value || 0) > Number(maxValue || 0) * 0.45 ? 'white' : 'black');
 
     let partyMapFromParent = {};
+    let provinceMapFromParent = {};
     let baseX = [];
     let baseY = [];
     let zMatrix = [];
     let textMatrix = [];
     let textColorMatrix = [];
     let currentLang = 'th';
+    let distIdsByCell = [];
+    let selectedCell = null; // {yi, xi}
+
+    const escapeHtml = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/'/g, '&#39;');
 
     const translateParty = (name, lang) => {
       if (lang !== 'en') return name;
       return partyMapFromParent[name] || FALLBACK_EN[name] || name;
+    };
+    const translateProvince = (name, lang) => {
+      if (lang !== 'en') return name;
+      return provinceMapFromParent[name] || name;
     };
     const shortPartyLabel = (name, lang) => {
       const full = translateParty(name, lang);
@@ -88,6 +148,7 @@
       const cross = {};
       const constWins = {};
       const listWins = {};
+      const distByPair = {};
 
       Object.keys(byDist).forEach((distId) => {
         const row = byDist[distId] || {};
@@ -98,6 +159,9 @@
         listWins[pParty] = (listWins[pParty] || 0) + 1;
         if (!cross[cParty]) cross[cParty] = {};
         cross[cParty][pParty] = (cross[cParty][pParty] || 0) + 1;
+        if (!distByPair[cParty]) distByPair[cParty] = {};
+        if (!distByPair[cParty][pParty]) distByPair[cParty][pParty] = [];
+        distByPair[cParty][pParty].push(distId);
       });
 
       baseY = Object.entries(constWins)
@@ -110,6 +174,9 @@
 
       zMatrix = baseY.map((cParty) => (
         baseX.map((pParty) => Number(((cross[cParty] || {})[pParty] || 0)))
+      ));
+      distIdsByCell = baseY.map((cParty) => (
+        baseX.map((pParty) => ((distByPair[cParty] || {})[pParty] || []).slice())
       ));
 
       const maxValue = Math.max(0, ...zMatrix.flat());
@@ -206,8 +273,128 @@
       applyResponsiveLayout();
 
       Plotly.react('chart', [heatTrace], layout, config).then(() => {
+        renderCellDetails();
         postHeight();
       });
+    };
+
+    const renderCellDetails = () => {
+      const details = document.getElementById('cell-details');
+      const closeBtn = document.getElementById('cell-close');
+      const titleEl = document.getElementById('cell-title');
+      const metaEl = document.getElementById('cell-meta');
+      const listEl = document.getElementById('cell-list');
+      if (!details || !titleEl || !metaEl || !listEl) return;
+      if (closeBtn && !closeBtn.__bound) {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectedCell = null;
+          renderCellDetails();
+        });
+        closeBtn.__bound = true;
+      }
+
+      if (!selectedCell || !distIdsByCell.length) {
+        details.style.display = 'none';
+        listEl.innerHTML = '';
+        return;
+      }
+      const yi = selectedCell.yi;
+      const xi = selectedCell.xi;
+      if (!Number.isFinite(yi) || !Number.isFinite(xi) || !distIdsByCell[yi] || !distIdsByCell[yi][xi]) {
+        details.style.display = 'none';
+        listEl.innerHTML = '';
+        return;
+      }
+      const distIds = distIdsByCell[yi][xi] || [];
+      const cParty = baseY[yi] || '';
+      const pParty = baseX[xi] || '';
+
+      const t = LANG_TEXT[currentLang] || LANG_TEXT.th;
+      const cLabel = translateParty(cParty, currentLang);
+      const pLabel = translateParty(pParty, currentLang);
+
+      titleEl.textContent = currentLang === 'en'
+        ? `${t.y}: ${cLabel} · ${t.x}: ${pLabel}`
+        : `${t.y}: ${cLabel} · ${t.x}: ${pLabel}`;
+      metaEl.textContent = currentLang === 'en'
+        ? `Constituencies: ${distIds.length.toLocaleString()}`
+        : `จำนวนเขต: ${distIds.length.toLocaleString()}`;
+
+      if (!distIds.length) {
+        listEl.innerHTML = `<div style="font-size:12px;color:#6b7280;">${currentLang === 'en' ? 'No constituencies in this cell.' : 'ไม่มีเขตในช่องนี้'}</div>`;
+        details.style.display = 'block';
+        return;
+      }
+
+      const byDist = ((window.__electionResults2569 || {}).byDist) || {};
+      const rows = distIds.map((id) => {
+        const d = byDist[id] || {};
+        const provTh = d.province || String(id).split('_').slice(0, -1).join('_');
+        const distNo = d.district != null ? d.district : String(id).split('_').slice(-1)[0];
+        const cands = Array.isArray(d.const_candidates) ? d.const_candidates : [];
+        let winnerName = '';
+        let bestVotes = -1;
+        let secondVotes = -1;
+        for (let i = 0; i < cands.length; i += 1) {
+          const cc = cands[i] || {};
+          const v = Number(cc.votes || 0) || 0;
+          if (v > bestVotes) {
+            secondVotes = bestVotes;
+            bestVotes = v;
+            winnerName = String(cc.candidate || '');
+          } else if (v > secondVotes) {
+            secondVotes = v;
+          }
+        }
+        const marginVotes = (bestVotes >= 0 && secondVotes >= 0) ? (bestVotes - secondVotes) : null;
+        const totalVotes = Number(d.const_total_votes || 0) || 0;
+        const marginPct = (typeof marginVotes === 'number' && totalVotes > 0)
+          ? (marginVotes / totalVotes) * 100
+          : null;
+        return {
+          distId: id,
+          province: provTh,
+          district: distNo,
+          winnerName,
+          marginVotes,
+          marginPct,
+        };
+      }).sort((a, b) => {
+        if (a.province !== b.province) return String(a.province).localeCompare(String(b.province), 'th');
+        return Number(a.district || 0) - Number(b.district || 0);
+      });
+
+      listEl.innerHTML = rows.map((r) => {
+        const left = `${translateProvince(r.province, currentLang)} — ${currentLang === 'en' ? 'District' : 'เขต'} ${r.district}`;
+        const mv = (typeof r.marginVotes === 'number' && Number.isFinite(r.marginVotes)) ? r.marginVotes : null;
+        const mp = (typeof r.marginPct === 'number' && Number.isFinite(r.marginPct)) ? r.marginPct : null;
+        const movLabel = (currentLang === 'en') ? 'mov' : 'ชนะ';
+        const movLine = (mv == null || mp == null) ? '' : `${movLabel} ${mv.toLocaleString()} · ${mp.toFixed(2)}%`;
+        const cand = r.winnerName ? String(r.winnerName) : '—';
+        return `
+          <div class="cell-item" data-dist-id="${escapeHtml(r.distId)}">
+            <div class="cell-left">${escapeHtml(left)}</div>
+            <div class="cell-right">
+              <div class="cell-cand" title="${escapeHtml(cand)}">${escapeHtml(cand)}</div>
+              ${movLine ? `<div class="cell-mov">${escapeHtml(movLine)}</div>` : ``}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      Array.from(listEl.querySelectorAll('.cell-item[data-dist-id]')).forEach((node) => {
+        node.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const distId = node.getAttribute('data-dist-id');
+          if (!distId) return;
+          if (window.parent) window.parent.postMessage({ type: 'select-dist', distId }, '*');
+        });
+      });
+
+      details.style.display = 'block';
     };
 
     const postHeight = () => {
@@ -218,35 +405,64 @@
         document.body ? document.body.scrollHeight : 0,
         document.documentElement ? document.documentElement.scrollHeight : 0
       );
-      const h = Math.max(200, plotted || docH);
+      // Report only the plot height (panel is an overlay).
+      const h = Math.max(200, plotted || docH || 0);
       if (window.parent) {
         window.parent.postMessage({ type: 'iframe-height', id: 'heatmap-frame', height: h }, '*');
       }
     };
 
-    buildHeatmapData();
-    currentLang = getInitLang();
-    Plotly.newPlot('chart', [heatTrace], layout, config);
-    applyLang(currentLang);
-    // On mobile iframe init, first paint can use stale dimensions.
-    // Re-apply layout after the frame settles to prevent label/legend clipping.
-    requestAnimationFrame(() => applyLang(currentLang));
-    setTimeout(() => applyLang(currentLang), 120);
-    setTimeout(() => applyLang(currentLang), 360);
-    setTimeout(postHeight, 520);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        applyLang(currentLang);
-        const chartEl = document.getElementById('chart');
-        if (chartEl) Plotly.Plots.resize(chartEl);
-        setTimeout(postHeight, 80);
-      }).catch(() => {});
-    }
+    const bindPlotlyClick = (chartNode) => {
+      if (!chartNode || !chartNode.on || chartNode.__heatmapClickBound) return;
+      chartNode.on('plotly_click', (ev) => {
+        const pt = ev && ev.points && ev.points[0] ? ev.points[0] : null;
+        if (!pt || !Array.isArray(pt.pointNumber)) return;
+        const yi = Number(pt.pointNumber[0]);
+        const xi = Number(pt.pointNumber[1]);
+        if (!Number.isFinite(yi) || !Number.isFinite(xi)) return;
+        if (selectedCell && selectedCell.yi === yi && selectedCell.xi === xi) {
+          selectedCell = null;
+        } else {
+          selectedCell = { yi, xi };
+        }
+        renderCellDetails();
+        setTimeout(postHeight, 120);
+      });
+      chartNode.__heatmapClickBound = true;
+    };
 
-    window.addEventListener('resize', () => {
+    const init = async () => {
+      buildHeatmapData();
+      currentLang = getInitLang();
+      const chartNode = document.getElementById('chart');
+      if (!chartNode) return;
+      try {
+        await Plotly.newPlot(chartNode, [heatTrace], layout, config);
+      } catch (e) {
+        return;
+      }
+      bindPlotlyClick(chartNode);
       applyLang(currentLang);
-      setTimeout(postHeight, 120);
-    });
+      // On mobile iframe init, first paint can use stale dimensions.
+      // Re-apply layout after the frame settles to prevent label/legend clipping.
+      requestAnimationFrame(() => applyLang(currentLang));
+      setTimeout(() => applyLang(currentLang), 120);
+      setTimeout(() => applyLang(currentLang), 360);
+      setTimeout(postHeight, 520);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          applyLang(currentLang);
+          const chartEl = document.getElementById('chart');
+          if (chartEl) Plotly.Plots.resize(chartEl);
+          setTimeout(postHeight, 80);
+        }).catch(() => {});
+      }
+      window.addEventListener('resize', () => {
+        applyLang(currentLang);
+        setTimeout(postHeight, 120);
+      });
+    };
+    init();
     window.addEventListener('message', (event) => {
       if (!event || !event.data || event.data.type !== 'set-lang') return;
       if (event.data.partyMap && typeof event.data.partyMap === 'object') {
