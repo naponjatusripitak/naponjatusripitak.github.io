@@ -11,7 +11,7 @@
     #wrap { padding:12px 12px 8px 12px; }
     #title { font-size:14px; font-weight:800; margin:0 0 6px 0; }
     #subtitle { font-size:12px; color:#4b5563; margin:0 0 10px 0; line-height:1.35; }
-    #chart { width:100%; height:520px; }
+    #chart { width:100%; height:auto; min-height:520px; }
     #err { display:none; padding:10px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:12px; background:#fff7ed; color:#7c2d12; font-size:12px; line-height:1.35; }
   </style>
 </head>
@@ -157,32 +157,38 @@
         `Share of the party’s national party-list votes (total): ${fmtInt(total)} votes`
       );
 
+      const isMobile = window.innerWidth <= 520;
+      const chartHeight = isMobile ? 520 : 560;
+      // Use most of the vertical domain (outside labels can otherwise push the pie down/up).
+      const domainY = isMobile ? [0.10, 0.98] : [0.08, 0.98];
       const trace = {
         type: 'pie',
         labels,
         values,
         hole: 0.5,
+        domain: { x: [0, 1], y: domainY },
         sort: false,
         direction: 'clockwise',
         textinfo: 'label+percent',
         textposition: 'outside',
+        textfont: { size: (isMobile ? 11 : 12) },
         hovertemplate:
           '%{label}<br>' +
           i18n('คะแนน: ','Votes: ') + '%{value:,}<br>' +
           i18n('สัดส่วนของพรรค: ','Share of party: ') + '%{customdata:.2f}%<extra></extra>',
         customdata: percentOfParty
       };
-
       const layout = {
-        margin: { l: 10, r: 10, t: 6, b: 10 },
-        height: 520,
+        // Provide enough padding for outside labels (especially on mobile).
+        margin: { l: isMobile ? 64 : 72, r: isMobile ? 64 : 72, t: isMobile ? 6 : 14, b: isMobile ? 6 : 14 },
+        height: chartHeight,
         showlegend: false,
         font: { family: 'Sarabun, sans-serif', size: 12 },
         annotations: [{
           text: i18n(`รวม<br>${fmtInt(total)}`, `Total<br>${fmtInt(total)}`),
           showarrow: false,
           x: 0.5, y: 0.5,
-          font: { size: 12, color: '#111827' }
+          font: { size: (isMobile ? 11 : 12), color: '#111827' }
         }]
       };
 
