@@ -77,7 +77,14 @@
   <script>
     const data = [{"type": "heatmap", "z": [[110, 2, 0, 0], [23, 89, 0, 0], [34, 29, 4, 1], [23, 11, 2, 3], [13, 1, 8, 1], [11, 2, 8, 1], [8, 1, 0, 0], [0, 0, 0, 7], [0, 5, 0, 0], [0, 2, 0, 0], [1, 0, 0, 0]], "x": ["ก้าวไกล", "เพื่อไทย", "รวมไทยสร้างชาติ", "ประชาชาติ"], "y": ["ก้าวไกล", "เพื่อไทย", "ภูมิใจไทย", "พลังประชารัฐ", "รวมไทยสร้างชาติ", "ประชาธิปัตย์", "ชาติไทยพัฒนา", "ประชาชาติ", "ไทยสร้างไทย", "เพื่อไทรวมพลัง", "ชาติพัฒนากล้า"], "colorscale": [[0.0, "#fff5f0"], [0.125, "#fee0d2"], [0.25, "#fcbba1"], [0.375, "#fc9272"], [0.5, "#fb6a4a"], [0.625, "#ef3b2c"], [0.75, "#cb181d"], [1.0, "#99000d"]], "zmin": 0, "showscale": true, "colorbar": {"title": {"text": "จำนวนเขต", "side": "right"}}, "text": [["110", "2", "0", "0"], ["23", "89", "0", "0"], ["34", "29", "4", "1"], ["23", "11", "2", "3"], ["13", "1", "8", "1"], ["11", "2", "8", "1"], ["8", "1", "0", "0"], ["0", "0", "0", "7"], ["0", "5", "0", "0"], ["0", "2", "0", "0"], ["1", "0", "0", "0"]], "texttemplate": "%{text}", "textfont": {"color": [["white", "black", "black", "black"], ["black", "white", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"], ["black", "black", "black", "black"]], "size": 12}, "hovertemplate": "พรรคที่ชนะเขต: %{y}<br>พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด: %{x}<br>จำนวนเขต: %{z}<extra></extra>", "xgap": 1, "ygap": 1}];
     const layout = {"margin": {"l": 140, "r": 30, "t": 40, "b": 140}, "xaxis": {"title": "พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด", "tickangle": 45, "tickfont": {"size": 12}}, "yaxis": {"title": "พรรคที่ชนะเขต", "tickangle": 0, "tickfont": {"size": 12}, "autorange": "reversed"}, "height": 720, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "font": {"family": "Sarabun, Arial, sans-serif", "size": 12}};
-    const config = {displayModeBar:false, responsive:true};
+    const config = {
+      displayModeBar: false,
+      responsive: true,
+      scrollZoom: false,
+      doubleClick: false,
+      showAxisDragHandles: false,
+      showAxisRangeEntryBoxes: false
+    };
     const LANG_TEXT = {
       th: {
         x: 'พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด',
@@ -121,6 +128,9 @@
       data[0].y = baseY.map((p) => translateParty(p, lang));
       layout.xaxis.title = t.x;
       layout.yaxis.title = t.y;
+      layout.dragmode = false;
+      layout.xaxis.fixedrange = true;
+      layout.yaxis.fixedrange = true;
       if (data[0] && data[0].colorbar) data[0].colorbar.title.text = t.cb;
       data[0].hovertemplate = t.hover;
       Plotly.react('chart', data, layout, config);
@@ -202,8 +212,7 @@
     };
 
     const chartEl = document.getElementById('chart');
-    if (chartEl) {
-      chartEl.on('plotly_click', (ev) => {
+    const onChartClick = (ev) => {
         const pt = ev && ev.points && ev.points[0];
         const pn = pt && pt.pointNumber;
         const z = pt && (pt.z != null ? pt.z : null);
@@ -214,12 +223,22 @@
         const pParty = baseX[colIdx];
         if (!cParty || !pParty) return;
         showPopup(cParty, pParty, z);
-      });
+    };
+    const bindClickHandler = () => {
+      if (!chartEl || typeof chartEl.on !== 'function') return;
+      if (typeof chartEl.removeAllListeners === 'function') {
+        chartEl.removeAllListeners('plotly_click');
+      }
+      chartEl.on('plotly_click', onChartClick);
+    };
+    if (chartEl) {
+      bindClickHandler();
     }
 
     window.addEventListener('message', (event) => {
       if (event && event.data && event.data.type === 'set-lang') {
         applyLang(event.data.lang || 'th');
+        bindClickHandler();
       }
     });
 

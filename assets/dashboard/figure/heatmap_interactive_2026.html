@@ -267,11 +267,19 @@
       xaxis: { title: 'พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด', tickangle: 45, tickfont: { size: 12 }, automargin: true },
       yaxis: { title: 'พรรคที่ชนะเขต', tickangle: 0, tickfont: { size: 12 }, autorange: 'reversed', automargin: true },
       height: 720,
+      dragmode: false,
       paper_bgcolor: '#ffffff',
       plot_bgcolor: '#ffffff',
       font: { family: 'Sarabun, Arial, sans-serif', size: 12 },
     };
-    const config = { displayModeBar: false, responsive: true };
+    const config = {
+      displayModeBar: false,
+      responsive: true,
+      scrollZoom: false,
+      doubleClick: false,
+      showAxisDragHandles: false,
+      showAxisRangeEntryBoxes: false,
+    };
     const applyResponsiveLayout = () => {
       const w = window.innerWidth || 1200;
       if (w <= 900) {
@@ -284,6 +292,8 @@
         layout.xaxis.title = '';
         layout.yaxis.title = '';
         layout.height = 640;
+        layout.xaxis.fixedrange = true;
+        layout.yaxis.fixedrange = true;
       } else {
         const mobile = false;
         heatTrace.showscale = true;
@@ -292,6 +302,8 @@
         layout.xaxis.tickfont = { size: 12 };
         layout.yaxis.tickfont = { size: 12 };
         layout.height = 720;
+        layout.xaxis.fixedrange = true;
+        layout.yaxis.fixedrange = true;
       }
     };
 
@@ -321,8 +333,7 @@
     applyLang(currentLang);
 
     const chartEl = document.getElementById('chart');
-    if (chartEl) {
-      chartEl.on('plotly_click', (ev) => {
+    const onChartClick = (ev) => {
         const pt = ev && ev.points && ev.points[0];
         const pn = pt && pt.pointNumber;
         const z = pt && (pt.z != null ? pt.z : null);
@@ -333,11 +344,21 @@
         const pParty = baseX[colIdx];
         if (!cParty || !pParty) return;
         showPopup(cParty, pParty, z);
-      });
+    };
+    const bindClickHandler = () => {
+      if (!chartEl || typeof chartEl.on !== 'function') return;
+      if (typeof chartEl.removeAllListeners === 'function') {
+        chartEl.removeAllListeners('plotly_click');
+      }
+      chartEl.on('plotly_click', onChartClick);
+    };
+    if (chartEl) {
+      bindClickHandler();
     }
 
     window.addEventListener('resize', () => {
       applyLang(currentLang);
+      bindClickHandler();
     });
     window.addEventListener('message', (event) => {
       if (!event || !event.data || event.data.type !== 'set-lang') return;
@@ -345,6 +366,7 @@
         partyMapFromParent = event.data.partyMap;
       }
       applyLang(event.data.lang || currentLang || 'th');
+      bindClickHandler();
     });
   </script>
 </body>
