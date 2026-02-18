@@ -115,21 +115,21 @@
 
       const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
       const layout = {
-        margin: { l: 60, r: 20, t: 50, b: isMobile ? 108 : 74 },
-        xaxis: { title: { text: t.x, standoff: 6 }, range:[minV,maxV], zeroline:false },
+        margin: { l: 60, r: 20, t: 50, b: isMobile ? 132 : 86 },
+        xaxis: { title: t.x, range:[minV,maxV], zeroline:false },
         yaxis: { title: t.y, range:[minV,maxV], zeroline:false },
         legend: isMobile
           ? {
               orientation:'h',
               x: 0,
               xanchor: 'left',
-              y: -0.16,
+              y: -0.24,
               yanchor: 'top',
               entrywidthmode: 'fraction',
               entrywidth: 0.33,
               font: { size: 11 }
             }
-          : { orientation:'h', y:-0.13 },
+          : { orientation:'h', y:-0.2 },
         hovermode: 'closest',
         autosize: true
       };

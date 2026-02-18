@@ -290,6 +290,10 @@
       var swingListByDist = {};
       var swingConstDetailsByDist = {};
       var swingListDetailsByDist = {};
+      var swingConstNowMapByDist = {};
+      var swingConstPrevMapByDist = {};
+      var swingListNowMapByDist = {};
+      var swingListPrevMapByDist = {};
       var changeVs2023ByDist = {};
       var changeListVs2023ByDist = {};
       var changeVs2023MetaByDist = {};
@@ -309,6 +313,8 @@
       var selectedSwingChangeKey = null;
       var selectedSwingValueBin = null;
       var selectedSwingValueMode = null;
+      var selectedSwingParty = "";
+      var selectedSwingPartyValueBin = null;
       var selectedTurnoutBin = null;
       var selectedTurnoutMode = null;
 
@@ -587,25 +593,42 @@
             statusList: statusList
           };
 
-          // Aggregate swing index vs 2023
-          if (dPrev) {
-            var constNow = buildShareMap(Array.isArray(d.const_parties) && d.const_parties.length ? d.const_parties : d.const_candidates, "const_pp");
-            if (!Object.keys(constNow).length) constNow = buildShareMap(d.const_candidates, "share_pp");
-            var constPrev = buildShareMap(dPrev.const_candidates, "share_pp");
-            var constComp = shareDiffDetails(constNow, constPrev);
-            swingConstByDist[distId] = constComp.index;
-            swingConstDetailsByDist[distId] = constComp.top;
+	          // Aggregate swing index vs 2023
+	          if (dPrev) {
+	            var constNow = buildShareMap(Array.isArray(d.const_parties) && d.const_parties.length ? d.const_parties : d.const_candidates, "const_pp");
+	            if (!Object.keys(constNow).length) constNow = buildShareMap(d.const_candidates, "share_pp");
+	            var constPrev = buildShareMap(dPrev.const_candidates, "share_pp");
+	            swingConstNowMapByDist[distId] = constNow;
+	            swingConstPrevMapByDist[distId] = constPrev;
+	            var constComp = shareDiffDetails(constNow, constPrev);
+	            swingConstByDist[distId] = constComp.index;
+	            swingConstDetailsByDist[distId] = constComp.top;
 
-            var listNow = buildShareMap(d.plist_parties, "plist_pp");
-            var listPrev = buildShareMap(dPrev.plist_parties, "plist_pp");
-            var listComp = shareDiffDetails(listNow, listPrev);
-            swingListByDist[distId] = listComp.index;
-            swingListDetailsByDist[distId] = listComp.top;
-          } else {
-            swingConstByDist[distId] = null;
-            swingListByDist[distId] = null;
-            swingConstDetailsByDist[distId] = [];
+	            var hasListNow = Array.isArray(d.plist_parties) && d.plist_parties.length;
+	            var hasListPrev = Array.isArray(dPrev.plist_parties) && dPrev.plist_parties.length;
+	            if (hasListNow && hasListPrev) {
+	              var listNow = buildShareMap(d.plist_parties, "plist_pp");
+	              var listPrev = buildShareMap(dPrev.plist_parties, "plist_pp");
+	              swingListNowMapByDist[distId] = listNow;
+	              swingListPrevMapByDist[distId] = listPrev;
+	              var listComp = shareDiffDetails(listNow, listPrev);
+	              swingListByDist[distId] = listComp.index;
+	              swingListDetailsByDist[distId] = listComp.top;
+	            } else {
+	              swingListByDist[distId] = null;
+	              swingListDetailsByDist[distId] = [];
+	              swingListNowMapByDist[distId] = null;
+	              swingListPrevMapByDist[distId] = null;
+	            }
+	          } else {
+	            swingConstByDist[distId] = null;
+	            swingListByDist[distId] = null;
+	            swingConstDetailsByDist[distId] = [];
             swingListDetailsByDist[distId] = [];
+            swingConstNowMapByDist[distId] = null;
+            swingConstPrevMapByDist[distId] = null;
+            swingListNowMapByDist[distId] = null;
+            swingListPrevMapByDist[distId] = null;
           }
         });
 
@@ -689,17 +712,42 @@
 		        var col = idx >= 0 ? (NTL_COLORS[idx] || NTL_COLORS[NTL_COLORS.length - 1]) : "#d1d5db";
 		        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
 		      }
-	      function styleChange23(distId) {
-	        var statusConst = changeVs2023ByDist[distId] || "unknown";
-	        var statusList = changeListVs2023ByDist[distId] || "unknown";
+		      function styleChange23(distId) {
+		        var statusConst = changeVs2023ByDist[distId] || "unknown";
+		        var statusList = changeListVs2023ByDist[distId] || "unknown";
+		        var col = "#d1d5db";
+	        if (statusConst === "unknown" && statusList === "unknown") col = "#d1d5db";
+	        else if (statusConst === "changed" && statusList === "changed") col = "#7c3aed";
+	        else if (statusConst === "changed") col = "#ef4444";
+	        else if (statusList === "changed") col = "#2563eb";
+	        else col = "#94a3b8";
+	        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+	      }
+	      function swingChangePartyStatus(distId, which) {
+	        if (!selectedSwingParty) return "unknown";
+	        var meta = changeVs2023MetaByDist[distId] || {};
+	        var w23 = which === "list" ? (meta.winnerList2023 || "") : (meta.winner2023 || "");
+	        var w26 = which === "list" ? (meta.winnerList2026 || "") : (meta.winner2026 || "");
+	        if (!w23 || !w26) return "unknown";
+	        if (w23 === selectedSwingParty && w26 === selectedSwingParty) return "retain";
+	        if (w23 !== selectedSwingParty && w26 === selectedSwingParty) return "gain";
+	        if (w23 === selectedSwingParty && w26 !== selectedSwingParty) return "loss";
+	        return "none";
+	      }
+	      function styleChange23Party(distId) {
+	        var which = baseMode === "list" ? "list" : "const";
+	        var st = swingChangePartyStatus(distId, which);
+	        if (selectedSwingChangeKey != null && st !== selectedSwingChangeKey) {
+	          return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: "#e5e7eb", fillOpacity: 1.0 };
+	        }
 	        var col = "#d1d5db";
-        if (statusConst === "unknown" && statusList === "unknown") col = "#d1d5db";
-        else if (statusConst === "changed" && statusList === "changed") col = "#7c3aed";
-        else if (statusConst === "changed") col = "#ef4444";
-        else if (statusList === "changed") col = "#2563eb";
-        else col = "#94a3b8";
-        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
-      }
+	        if (st === "retain") col = "#16a34a";
+	        else if (st === "gain") col = "#2563eb";
+	        else if (st === "loss") col = "#ef4444";
+	        else if (st === "none") col = "#94a3b8";
+	        else col = "#d1d5db";
+	        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+	      }
       function styleSwingIndex(distId, which) {
         var v = (which === "const") ? swingConstByDist[distId] : swingListByDist[distId];
         if (v == null || !isFinite(Number(v))) {
@@ -711,6 +759,63 @@
         var col = rampColor(t, [239, 246, 255], [8, 81, 156]);
         return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
       }
+      function divergingColor(t) {
+        // t in [0,1], map 0->red, 0.5->white, 1->blue
+        t = clamp01(t);
+        var red = [239, 68, 68];
+        var white = [255, 255, 255];
+        var blue = [37, 99, 235];
+        var a, b, u;
+        if (t < 0.5) {
+          a = red; b = white; u = t / 0.5;
+        } else {
+          a = white; b = blue; u = (t - 0.5) / 0.5;
+        }
+        var r = Math.round(a[0] + (b[0] - a[0]) * u);
+        var g = Math.round(a[1] + (b[1] - a[1]) * u);
+        var bb = Math.round(a[2] + (b[2] - a[2]) * u);
+        return "rgb(" + r + "," + g + "," + bb + ")";
+      }
+      function swingPartyDiff(distId, which) {
+        if (!selectedSwingParty) return null;
+        var nowMap = (which === "const") ? swingConstNowMapByDist[distId] : swingListNowMapByDist[distId];
+        var prevMap = (which === "const") ? swingConstPrevMapByDist[distId] : swingListPrevMapByDist[distId];
+        if (!nowMap || !prevMap) return null;
+        var now = Number(nowMap[selectedSwingParty] || 0);
+        var prev = Number(prevMap[selectedSwingParty] || 0);
+        if (!isFinite(now)) now = 0;
+        if (!isFinite(prev)) prev = 0;
+        return now - prev;
+      }
+      function swingPartyBinIndex(v) {
+        var x = Number(v);
+        if (!isFinite(x)) return null;
+        if (x <= -20) return 0;
+        if (x <= -10) return 1;
+        if (x <= -5) return 2;
+        if (x <= 0) return 3;
+        if (x <= 5) return 4;
+        if (x <= 10) return 5;
+        if (x <= 20) return 6;
+        return 7;
+      }
+      function styleSwingPartyDiff(distId, which) {
+        var v = swingPartyDiff(distId, which);
+        if (v == null) {
+          return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: "#d1d5db", fillOpacity: 1.0 };
+        }
+        if (selectedSwingPartyValueBin != null) {
+          var bi = swingPartyBinIndex(v);
+          if (bi == null || bi !== selectedSwingPartyValueBin) {
+            return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: "#e5e7eb", fillOpacity: 1.0 };
+          }
+        }
+        var maxAbs = 25;
+        var x = Math.max(-maxAbs, Math.min(maxAbs, Number(v)));
+        var t = (x + maxAbs) / (2 * maxAbs);
+        var col = divergingColor(t);
+        return { stroke: true, color: "#ffffff", weight: 0.5, opacity: 0.95, fillColor: col, fillOpacity: 1.0 };
+      }
 
 	      function baseStyleFor(distId) {
 	        var mode = currentMode();
@@ -719,14 +824,14 @@
 	        else if (mode === "hhi") s = styleHHI(distId);
 	        else if (mode === "div") s = styleDiv(distId);
 	        else if (mode === "enp") s = styleENP(distId);
-	        else if (mode === "turnout") s = styleTurnout(distId);
-	        else if (mode === "turnout_list") s = styleTurnoutList(distId);
-	        else if (mode === "ntl") s = styleNTL(distId);
-	        else if (mode === "swing_change") s = styleChange23(distId);
-	        else if (mode === "swing_const") s = styleSwingIndex(distId, "const");
-	        else if (mode === "swing_list") s = styleSwingIndex(distId, "list");
-	        else s = styleWinner(distId, mode);
-        return Object.assign({}, s, {
+		        else if (mode === "turnout") s = styleTurnout(distId);
+		        else if (mode === "turnout_list") s = styleTurnoutList(distId);
+		        else if (mode === "ntl") s = styleNTL(distId);
+		        else if (mode === "swing_change") s = selectedSwingParty ? styleChange23Party(distId) : styleChange23(distId);
+		        else if (mode === "swing_const") s = selectedSwingParty ? styleSwingPartyDiff(distId, "const") : styleSwingIndex(distId, "const");
+		        else if (mode === "swing_list") s = selectedSwingParty ? styleSwingPartyDiff(distId, "list") : styleSwingIndex(distId, "list");
+		        else s = styleWinner(distId, mode);
+	        return Object.assign({}, s, {
           stroke: true,
           color: "#ffffff",
           weight: 0.5,
@@ -1050,34 +1155,207 @@
           listRow +
         "</div>";
       }
+      function popupChange23Party(distId) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var meta = changeVs2023MetaByDist[distId] || {};
+        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+        var party = selectedSwingParty || "";
+        var whichPrimary = baseMode === "list" ? "list" : "const";
+        var idx2566 = buildWinners2023Index();
+        var dPrev = idx2566 && idx2566.raw ? (idx2566.raw[normThai(distId)] || null) : null;
+
+        function winnerCandidateFrom(dobj) {
+          if (!dobj) return "";
+          var rows = Array.isArray(dobj.const_candidates) ? dobj.const_candidates : [];
+          var top = rows.length ? rows[0] : null;
+          return top && top.candidate ? String(top.candidate) : "";
+        }
+
+        function outcomeLabel(st) {
+          if (st === "retain") return i18n("รักษาที่นั่ง", "Retained");
+          if (st === "gain") return i18n("ชนะเพิ่ม", "Gained");
+          if (st === "loss") return i18n("เสียที่นั่ง", "Lost");
+          if (st === "none") return i18n("ไม่ได้ที่นั่ง", "Did not win");
+          return i18n("ไม่มีข้อมูล", "No data");
+        }
+        function outcomeChip(st, isPrimary) {
+          var bg = "#e5e7eb";
+          var fg = "#374151";
+          if (st === "retain") { bg = "#dcfce7"; fg = "#166534"; }
+          else if (st === "gain") { bg = "#dbeafe"; fg = "#1e40af"; }
+          else if (st === "loss") { bg = "#fee2e2"; fg = "#b91c1c"; }
+          else if (st === "none") { bg = "#e2e8f0"; fg = "#334155"; }
+          var ring = isPrimary ? "box-shadow:0 0 0 2px rgba(15,23,42,0.10) inset;" : "";
+          return '<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;background:' + bg + ";color:" + fg + ";" + ring + '">' + escapeHtml(outcomeLabel(st)) + "</span>";
+        }
+
+        var stConst = swingChangePartyStatus(distId, "const");
+        var stList = swingChangePartyStatus(distId, "list");
+        var wConst23 = meta.winner2023 ? partyLabel(meta.winner2023) : i18n("ไม่ทราบ", "Unknown");
+        var wConst26 = meta.winner2026 ? partyLabel(meta.winner2026) : i18n("ไม่ทราบ", "Unknown");
+        var wList23 = meta.winnerList2023 ? partyLabel(meta.winnerList2023) : i18n("ไม่ทราบ", "Unknown");
+        var wList26 = meta.winnerList2026 ? partyLabel(meta.winnerList2026) : i18n("ไม่ทราบ", "Unknown");
+        var cConst23 = winnerCandidateFrom(dPrev);
+        var cConst26 = winnerCandidateFrom(d);
+
+        var box = function(head, st, a23, a26, isPrimary, extraHtml) {
+          return '<div style="margin-top:8px;padding:8px;border:1px solid rgba(0,0,0,0.08);border-radius:10px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;">' +
+              '<div style="font-size:12px;color:#475569;font-weight:800;">' + head + "</div>" +
+              outcomeChip(st, isPrimary) +
+            "</div>" +
+            '<div style="font-size:12.5px;line-height:1.35;color:#111827;">' +
+              '<div><span style="color:#6b7280;">2023:</span> ' + escapeHtml(a23) + "</div>" +
+              '<div><span style="color:#6b7280;">2026:</span> ' + escapeHtml(a26) + "</div>" +
+              (extraHtml || "") +
+            "</div></div>";
+        };
+
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+          '<div style="font-size:14px; font-weight:900; margin-bottom:6px;">' + title + "</div>" +
+          '<div style="color:#6b7280; margin-bottom:2px;">' + i18n("พรรค:", "Party:") + " <b>" + escapeHtml(partyLabel(party)) + "</b></div>" +
+          '<div style="color:#6b7280; font-size:12px;">' + (whichPrimary === "const" ? i18n("แผนที่แสดงตามผู้ชนะเขต", "Map colored by constituency winner") : i18n("แผนที่แสดงตามอันดับ 1 บัญชีรายชื่อ", "Map colored by top party-list winner")) + "</div>" +
+          box(
+            i18n("ผลผู้ชนะเขต", "Constituency winner"),
+            stConst,
+            wConst23,
+            wConst26,
+            whichPrimary === "const",
+            '<div style="margin-top:6px;color:#6b7280;font-size:12px;line-height:1.25;">' +
+              i18n("ผู้สมัครผู้ชนะ 2023:", "Winning candidate 2023:") + " <b style=\"color:#111827;\">" + escapeHtml(cConst23 || "—") + "</b>" +
+            "</div>" +
+            '<div style="margin-top:2px;color:#6b7280;font-size:12px;line-height:1.25;">' +
+              i18n("ผู้สมัครผู้ชนะ 2026:", "Winning candidate 2026:") + " <b style=\"color:#111827;\">" + escapeHtml(cConst26 || "—") + "</b>" +
+            "</div>"
+          ) +
+          box(i18n("ผลอันดับ 1 บัญชีรายชื่อ", "Top party-list winner"), stList, wList23, wList26, whichPrimary === "list", "") +
+        "</div>";
+      }
 	      function popupSwingIndex(distId, which) {
 	        var d = results && results.byDist ? results.byDist[distId] : null;
 	        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
-        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
-        var indexVal = which === "const" ? swingConstByDist[distId] : swingListByDist[distId];
-        var rows = which === "const" ? swingConstDetailsByDist[distId] : swingListDetailsByDist[distId];
+	        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+	        var indexVal = which === "const" ? swingConstByDist[distId] : swingListByDist[distId];
+	        var rows = which === "const" ? swingConstDetailsByDist[distId] : swingListDetailsByDist[distId];
         if (indexVal == null || !isFinite(Number(indexVal))) {
           return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
             '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + title + "</div>" +
             '<div style="color:#6b7280;">' + i18n("ไม่มีข้อมูลเทียบปี 2566", "No 2023 comparison data") + "</div></div>";
         }
-        var label = which === "const"
-          ? i18n("ดัชนีสวิงคะแนนแบบแบ่งเขต", "Constituency swing index")
-          : i18n("ดัชนีสวิงคะแนนแบบบัญชีรายชื่อ", "Party-list swing index");
-        var rowsHtml = "";
-        (rows || []).forEach(function(r) {
-          var sign = Number(r.diff || 0) >= 0 ? "+" : "";
-          rowsHtml += "<div style='display:flex;justify-content:space-between;gap:10px;margin-top:4px;'>" +
-            "<div style='min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>" + escapeHtml(partyLabel(r.party)) + "</div>" +
-            "<div style='font-variant-numeric:tabular-nums;color:#374151;'>" + sign + Number(r.diff || 0).toFixed(1) + " pp</div></div>";
-        });
-	        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
-	          '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + title + "</div>" +
-	          '<div style="margin-bottom:8px;color:#374151;">' + label + ': <b style="font-variant-numeric:tabular-nums;">' + Number(indexVal).toFixed(1) + " pp</b></div>" +
-	          '<div style="font-size:12px;color:#6b7280;">' + i18n("พรรคที่เปลี่ยนมากสุด (pp)", "Largest party shifts (pp)") + "</div>" +
-	          rowsHtml +
-	        "</div>";
+	        var label = which === "const"
+	          ? i18n("ดัชนีสวิงคะแนนแบบแบ่งเขต", "Constituency swing index")
+	          : i18n("ดัชนีสวิงคะแนนแบบบัญชีรายชื่อ", "Party-list swing index");
+	        var meta = changeVs2023MetaByDist[distId] || {};
+	        var w23 = which === "const" ? (meta.winner2023 || "") : (meta.winnerList2023 || "");
+	        var w26 = which === "const" ? (meta.winner2026 || "") : (meta.winnerList2026 || "");
+	        var winnerLine =
+	          '<div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;">' +
+	            '<div style="color:#6b7280;">' + i18n("ผู้ชนะ 2023 → 2026", "Winner 2023 → 2026") + "</div>" +
+	            '<div style="font-variant-numeric:tabular-nums;white-space:nowrap;">' + escapeHtml(w23 ? partyLabel(w23) : i18n("ไม่ทราบ", "Unknown")) + " → " + escapeHtml(w26 ? partyLabel(w26) : i18n("ไม่ทราบ", "Unknown")) + "</div>" +
+	          "</div>";
+	        var rowsHtml = "";
+	        (rows || []).forEach(function(r) {
+	          var sign = Number(r.diff || 0) >= 0 ? "+" : "";
+	          rowsHtml += "<div style='display:flex;justify-content:space-between;gap:10px;margin-top:4px;'>" +
+	            "<div style='min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>" + escapeHtml(partyLabel(r.party)) + "</div>" +
+	            "<div style='font-variant-numeric:tabular-nums;color:#374151;'>" + sign + Number(r.diff || 0).toFixed(1) + " pp</div></div>";
+	        });
+		        return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+		          '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + title + "</div>" +
+		          winnerLine +
+		          '<div style="margin-bottom:8px;color:#374151;">' + label + ': <b style="font-variant-numeric:tabular-nums;">' + Number(indexVal).toFixed(1) + " pp</b></div>" +
+		          '<div style="font-size:12px;color:#6b7280;">' + i18n("พรรคที่เปลี่ยนมากสุด (pp)", "Largest party shifts (pp)") + "</div>" +
+		          rowsHtml +
+		        "</div>";
 	      }
+      function popupSwingParty(distId, which) {
+        var d = results && results.byDist ? results.byDist[distId] : null;
+        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
+        var nowMap = (which === "const") ? swingConstNowMapByDist[distId] : swingListNowMapByDist[distId];
+        var prevMap = (which === "const") ? swingConstPrevMapByDist[distId] : swingListPrevMapByDist[distId];
+        if (!nowMap || !prevMap) {
+          return '<div style="font-family:system-ui; font-size:13px; line-height:1.3; min-width:320px;">' +
+            '<div style="font-size:14px; font-weight:800; margin-bottom:6px;">' + escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district) + "</div>" +
+            '<div style="color:#6b7280;">' + i18n("ไม่มีข้อมูลเทียบปี 2566", "No 2023 comparison data") + "</div></div>";
+        }
+        var now = Number(nowMap[selectedSwingParty] || 0);
+        var prev = Number(prevMap[selectedSwingParty] || 0);
+        if (!isFinite(now)) now = 0;
+        if (!isFinite(prev)) prev = 0;
+        var diff = now - prev;
+        var title = escapeHtml(provinceLabel(d.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(d.district);
+        var label = which === "const"
+          ? i18n("สวิงคะแนนแบ่งเขต (พรรค)", "Constituency swing (party)")
+          : i18n("สวิงคะแนนบัญชีรายชื่อ (พรรค)", "Party-list swing (party)");
+        var sign = diff >= 0 ? "+" : "−";
+        var abs = Math.abs(diff);
+
+        var idx2566 = buildWinners2023Index();
+        var dPrev = idx2566 && idx2566.raw ? (idx2566.raw[normThai(distId)] || null) : null;
+
+        function findPartyRow(rows, partyKey) {
+          var arr = Array.isArray(rows) ? rows : [];
+          for (var i = 0; i < arr.length; i++) {
+            var r = arr[i] || {};
+            if (canonicalPartyName(r.party || "") === partyKey) return { row: r, rank: i + 1 };
+          }
+          return { row: null, rank: null };
+        }
+
+        var nowRows = which === "list" ? (d.plist_parties || []) : (d.const_candidates || []);
+        var prevRows = which === "list" ? (dPrev && dPrev.plist_parties ? dPrev.plist_parties : []) : (dPrev && dPrev.const_candidates ? dPrev.const_candidates : []);
+        var nowFound = findPartyRow(nowRows, selectedSwingParty);
+        var prevFound = findPartyRow(prevRows, selectedSwingParty);
+
+	        var votesNow = nowFound.row && nowFound.row.votes != null ? Number(nowFound.row.votes) : null;
+	        var votesPrev = prevFound.row && prevFound.row.votes != null ? Number(prevFound.row.votes) : null;
+	        if (!isFinite(votesNow)) votesNow = null;
+	        if (!isFinite(votesPrev)) votesPrev = null;
+
+	        var candNow = (which === "const" && nowFound.row && nowFound.row.candidate) ? String(nowFound.row.candidate) : "";
+	        var candPrev = (which === "const" && prevFound.row && prevFound.row.candidate) ? String(prevFound.row.candidate) : "";
+
+	        var winnerNow = which === "list" ? canonicalPartyName(d.winner_plist_party || "") : canonicalPartyName(d.winner_const_party || "");
+	        var winnerPrev = "";
+	        if (dPrev) {
+	          winnerPrev = which === "list" ? canonicalPartyName(dPrev.winner_plist_party || "") : canonicalPartyName(dPrev.winner_const_party || "");
+	        }
+        if (!winnerPrev) {
+          var topPrev = prevRows && prevRows.length ? (prevRows[0] || null) : null;
+          winnerPrev = topPrev ? canonicalPartyName(topPrev.party || "") : "";
+        }
+
+        var rankNow = nowFound.rank;
+        var rankPrev = prevFound.rank;
+
+        return '<div style="font-family:system-ui; font-size:13px; line-height:1.25; min-width:340px;">' +
+          '<div style="font-size:14px; font-weight:900; margin-bottom:6px;">' + title + "</div>" +
+          '<div style="color:#6b7280; margin-bottom:8px;">' + escapeHtml(label) + " · <b>" + escapeHtml(partyLabel(selectedSwingParty)) + "</b></div>" +
+          '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:8px;">' +
+            '<div style="padding:8px;border:1px solid rgba(0,0,0,0.08);border-radius:10px;">' +
+	              '<div style="font-size:12px;color:#475569;font-weight:800;margin-bottom:4px;">2023</div>' +
+	              '<div style="display:flex;justify-content:space-between;gap:8px;"><div style="color:#6b7280;">' + i18n("คะแนน", "Share") + "</div><div style=\"font-variant-numeric:tabular-nums;font-weight:800;\">" + prev.toFixed(1) + "%</div></div>" +
+	              ((which === "const") ? ('<div style="margin-top:6px;color:#6b7280;font-size:12px;line-height:1.25;">' + i18n("ผู้สมัคร:", "Candidate:") + " <b style=\"color:#111827;\">" + escapeHtml(candPrev || "—") + "</b></div>") : "") +
+	              '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px;"><div style="color:#6b7280;">' + i18n("อันดับ", "Rank") + "</div><div style=\"font-variant-numeric:tabular-nums;\">" + (rankPrev == null ? "—" : ("#" + rankPrev)) + "</div></div>" +
+	              '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px;"><div style="color:#6b7280;">' + i18n("คะแนนดิบ", "Votes") + "</div><div style=\"font-variant-numeric:tabular-nums;\">" + (votesPrev == null ? "—" : votesPrev.toLocaleString()) + "</div></div>" +
+	              '<div style="margin-top:6px;color:#6b7280;font-size:12px;">' + i18n("ผู้ชนะ:", "Winner:") + " <b style=\"color:#111827;\">" + escapeHtml(winnerPrev ? partyLabel(winnerPrev) : "—") + "</b></div>" +
+	            "</div>" +
+	            '<div style="padding:8px;border:1px solid rgba(0,0,0,0.08);border-radius:10px;">' +
+	              '<div style="font-size:12px;color:#475569;font-weight:800;margin-bottom:4px;">2026</div>' +
+	              '<div style="display:flex;justify-content:space-between;gap:8px;"><div style="color:#6b7280;">' + i18n("คะแนน", "Share") + "</div><div style=\"font-variant-numeric:tabular-nums;font-weight:800;\">" + now.toFixed(1) + "%</div></div>" +
+	              ((which === "const") ? ('<div style="margin-top:6px;color:#6b7280;font-size:12px;line-height:1.25;">' + i18n("ผู้สมัคร:", "Candidate:") + " <b style=\"color:#111827;\">" + escapeHtml(candNow || "—") + "</b></div>") : "") +
+	              '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px;"><div style="color:#6b7280;">' + i18n("อันดับ", "Rank") + "</div><div style=\"font-variant-numeric:tabular-nums;\">" + (rankNow == null ? "—" : ("#" + rankNow)) + "</div></div>" +
+	              '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px;"><div style="color:#6b7280;">' + i18n("คะแนนดิบ", "Votes") + "</div><div style=\"font-variant-numeric:tabular-nums;\">" + (votesNow == null ? "—" : votesNow.toLocaleString()) + "</div></div>" +
+	              '<div style="margin-top:6px;color:#6b7280;font-size:12px;">' + i18n("ผู้ชนะ:", "Winner:") + " <b style=\"color:#111827;\">" + escapeHtml(winnerNow ? partyLabel(winnerNow) : "—") + "</b></div>" +
+	            "</div>" +
+	          "</div>" +
+	          '<div style="display:flex;justify-content:space-between;gap:10px; padding:8px; border:1px solid rgba(0,0,0,0.08); border-radius:10px;">' +
+            '<div style="color:#6b7280;font-weight:800;">' + i18n("สวิง (2026−2023)", "Swing (2026−2023)") + "</div>" +
+            '<div style="font-variant-numeric:tabular-nums;font-weight:900;">' + sign + abs.toFixed(1) + " pp</div>" +
+          "</div>" +
+        "</div>";
+      }
 			      function popupNTL(distId) {
 			        var d = results && results.byDist ? results.byDist[distId] : null;
 			        if (!d) return "<div style='font-family:system-ui;font-size:13px;'>" + i18n("ไม่มีข้อมูล", "No details available") + "</div>";
@@ -1140,20 +1418,20 @@
 			        "</div>";
 			      }
 
-	      function popupFor(distId) {
-	        var mode = currentMode();
-	        if (mode === "mov") return popupMov(distId);
-	        if (mode === "hhi") return popupHHI(distId);
-	        if (mode === "div") return popupDiv(distId);
-	        if (mode === "enp") return popupENP(distId);
-	        if (mode === "turnout") return popupTurnout(distId);
-	        if (mode === "turnout_list") return popupTurnoutList(distId);
-	        if (mode === "ntl") return popupNTL(distId);
-	        if (mode === "swing_change") return popupChange23(distId);
-	        if (mode === "swing_const") return popupSwingIndex(distId, "const");
-	        if (mode === "swing_list") return popupSwingIndex(distId, "list");
-	        return popupWinner(distId, mode);
-	      }
+		      function popupFor(distId) {
+		        var mode = currentMode();
+		        if (mode === "mov") return popupMov(distId);
+		        if (mode === "hhi") return popupHHI(distId);
+		        if (mode === "div") return popupDiv(distId);
+		        if (mode === "enp") return popupENP(distId);
+		        if (mode === "turnout") return popupTurnout(distId);
+		        if (mode === "turnout_list") return popupTurnoutList(distId);
+		        if (mode === "ntl") return popupNTL(distId);
+		        if (mode === "swing_change") return selectedSwingParty ? popupChange23Party(distId) : popupChange23(distId);
+		        if (mode === "swing_const") return selectedSwingParty ? popupSwingParty(distId, "const") : popupSwingIndex(distId, "const");
+		        if (mode === "swing_list") return selectedSwingParty ? popupSwingParty(distId, "list") : popupSwingIndex(distId, "list");
+		        return popupWinner(distId, mode);
+		      }
 
       var layerByDistId = {};
       var geoLayer = null;
@@ -1193,12 +1471,64 @@
           return;
         }
 
-        var mode = currentMode();
-        if (!overlayMode) {
-          if (selectedBaseLegendMode !== baseMode) {
-            selectedBaseLegendMode = baseMode;
-            selectedBaseLegendParty = null;
-          }
+	        var mode = currentMode();
+	        function swingPartySelectHtml() {
+	          return '<div style="margin-bottom:8px;">' +
+	            '<div style="font-size:12px; font-weight:800; color:#334155; margin-bottom:6px;">' + i18n("เลือกพรรค", "Select party") + "</div>" +
+	            '<select id="swing-party-select" style="width:100%; padding:6px 8px; border:1px solid rgba(0,0,0,0.12); border-radius:10px; background:#fff; font-size:12.5px;"></select>' +
+	          "</div>";
+	        }
+	        function swingPartyOptions() {
+	          var map = (results && results.colorMapping && typeof results.colorMapping === "object") ? results.colorMapping : {};
+	          var set = {};
+	          Object.keys(map).forEach(function(p) {
+	            var c = canonicalPartyName(p);
+	            if (c) set[c] = true;
+	          });
+	          // Fallback: include winners if colorMapping is incomplete.
+	          Object.keys(results.byDist || {}).forEach(function(did) {
+	            var dd = results.byDist[did] || {};
+	            var w1 = canonicalPartyName(dd.winner_const_party || "");
+	            var w2 = canonicalPartyName(dd.winner_plist_party || "");
+	            if (w1) set[w1] = true;
+	            if (w2) set[w2] = true;
+	          });
+	          var arr = Object.keys(set);
+	          arr.sort(function(a, b) { return partyLabel(a).localeCompare(partyLabel(b), "th"); });
+	          return arr;
+	        }
+	        function wireSwingPartySelect() {
+	          var sel = document.getElementById("swing-party-select");
+	          if (!sel) return;
+	          sel.innerHTML = "";
+	          var optAll = document.createElement("option");
+	          optAll.value = "";
+	          optAll.textContent = i18n("ทุกพรรค (ดัชนีรวม)", "All parties (overall index)");
+	          sel.appendChild(optAll);
+	          var parties = swingPartyOptions();
+	          parties.forEach(function(p) {
+	            var opt = document.createElement("option");
+	            opt.value = p;
+	            opt.textContent = partyLabel(p);
+	            sel.appendChild(opt);
+	          });
+	          sel.value = selectedSwingParty || "";
+	          sel.addEventListener("change", function() {
+	            selectedSwingParty = canonicalPartyName(sel.value || "");
+	            selectedSwingPartyValueBin = null;
+	            selectedSwingValueBin = null;
+	            selectedSwingChangeKey = null;
+	            try {
+	              if (window.parent && window.parent !== window) window.parent.postMessage({ type: "swing-party-changed", party: selectedSwingParty || "" }, "*");
+	            } catch (e) {}
+	            applyStylesAndPopups();
+	          });
+	        }
+	        if (!overlayMode) {
+	          if (selectedBaseLegendMode !== baseMode) {
+	            selectedBaseLegendMode = baseMode;
+	            selectedBaseLegendParty = null;
+	          }
           title.textContent = i18n("พรรคการเมือง", "Party");
           modeEl.textContent = (baseMode === "list") ? i18n("บัญชีรายชื่อ", "Party-list") : i18n("แบ่งเขต", "Constituency");
           var wins = {};
@@ -1574,89 +1904,253 @@
           return;
         }
 
-        if (mode === "swing_change") {
-          title.textContent = i18n("เปรียบเทียบผู้ชนะกับปี 2566", "Winner change vs 2023");
-          modeEl.textContent = i18n("เทียบผู้ชนะแบ่งเขตและอันดับ 1 บัญชีรายชื่อ ปี 2569 กับ 2566 (กดช่วงเพื่อดูรายชื่อเขต)", "Compare constituency winners and top party-list winners in 2026 vs 2023 (click a bin to list constituencies)");
-          var bothChanged = 0;
-          var constChanged = 0;
-          var listChanged = 0;
-          var same = 0;
-          var unknown = 0;
-          Object.keys(results.byDist || {}).forEach(function(did) {
-            var stConst = changeVs2023ByDist[did] || "unknown";
-            var stList = changeListVs2023ByDist[did] || "unknown";
-            if (stConst === "unknown" && stList === "unknown") unknown += 1;
-            else if (stConst === "changed" && stList === "changed") bothChanged += 1;
-            else if (stConst === "changed") constChanged += 1;
-            else if (stList === "changed") listChanged += 1;
-            else same += 1;
-          });
-          var swingRows = [
-            { key: "both", color: "#7c3aed", name: i18n("ทั้งผู้ชนะเขตและบัญชีรายชื่อเปลี่ยน", "Both constituency and party-list changed"), count: bothChanged },
-            { key: "const", color: "#ef4444", name: i18n("เปลี่ยนเฉพาะผู้ชนะเขต", "Only constituency winner changed"), count: constChanged },
-            { key: "list", color: "#2563eb", name: i18n("เปลี่ยนเฉพาะอันดับ 1 บัญชีรายชื่อ", "Only top party-list winner changed"), count: listChanged },
-            { key: "same", color: "#94a3b8", name: i18n("ผู้ชนะเดิมทั้งสองระบบ", "Same winner in both systems"), count: same },
-            { key: "unknown", color: "#d1d5db", name: i18n("ไม่มีข้อมูลเทียบ", "No 2023 match"), count: unknown }
-          ];
-          var html = "";
-          for (var i = 0; i < swingRows.length; i++) {
-            var row = swingRows[i];
-            var active = selectedSwingChangeKey === row.key;
-            html += '<div class="legend-item">' +
-              '<div class="legend-left swing-change-item" data-key="' + row.key + '" style="cursor:pointer; padding:2px 4px; border-radius:8px; background:' + (active ? "rgba(15,23,42,0.06)" : "transparent") + ';">' +
-              '<span class="legend-swatch" style="background:' + row.color + '"></span><span class="legend-name" style="' + (active ? "font-weight:700;" : "") + '">' + row.name + "</span></div>" +
-              "<span class='legend-count'>" + row.count.toLocaleString() + "</span></div>";
-          }
-          if (selectedSwingChangeKey != null) {
-            var distRows = [];
-            Object.keys(results.byDist || {}).forEach(function(did) {
-              var stConst = changeVs2023ByDist[did] || "unknown";
-              var stList = changeListVs2023ByDist[did] || "unknown";
-              var key = "unknown";
-              if (stConst === "unknown" && stList === "unknown") key = "unknown";
-              else if (stConst === "changed" && stList === "changed") key = "both";
-              else if (stConst === "changed") key = "const";
-              else if (stList === "changed") key = "list";
-              else key = "same";
-              if (key !== selectedSwingChangeKey) return;
-              var dd = results.byDist[did] || {};
-              distRows.push({
-                distId: did,
-                province: dd.province || "",
-                district: dd.district || ""
-              });
-            });
-            distRows.sort(function(a, b) {
-              if (a.province !== b.province) return a.province.localeCompare(b.province, "th");
-              return Number(a.district || 0) - Number(b.district || 0);
-            });
-            var listHtml = "";
-            for (var r = 0; r < distRows.length; r++) {
-              var rr = distRows[r];
-              listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(rr.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
-                '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(rr.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(rr.district) + "</span>" +
-              "</div>";
-            }
-            html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
-              '<div style="font-size:12px; font-weight:700; color:#334155;">' + i18n("รายชื่อเขตในช่วงนี้", "Constituencies in this bin") + " (" + distRows.length.toLocaleString() + ")</div>" +
-              '<div style="max-height:180px; overflow:auto; padding-right:2px;">' + listHtml + "</div>" +
-            "</div>";
-          }
-          body.innerHTML = html;
-          var swingNodes = body.querySelectorAll(".swing-change-item[data-key]");
-          swingNodes.forEach(function(node) {
-            node.addEventListener("click", function() {
-              var key = node.getAttribute("data-key");
-              if (!key) return;
-              selectedSwingChangeKey = (selectedSwingChangeKey === key) ? null : key;
-              buildLegend();
-            });
-          });
-          return;
-        }
+	        if (mode === "swing_change") {
+	          var html = swingPartySelectHtml();
+	          if (selectedSwingParty) {
+	            var which = baseMode === "list" ? "list" : "const";
+	            title.textContent = i18n("ผลการชนะของพรรคเทียบปี 2566", "Party win/loss vs 2023") + " · " + partyLabel(selectedSwingParty);
+	            modeEl.textContent = which === "const"
+	              ? i18n("ดูว่า 'พรรคนี้' รักษาที่นั่ง/ชนะเพิ่ม/เสียที่นั่ง ในระดับแบ่งเขต (กดช่วงเพื่อดูรายชื่อเขต)", "Shows where this party retained/gained/lost constituency seats (click a bin to list constituencies)")
+	              : i18n("ดูว่า 'พรรคนี้' ได้/เสีย อันดับ 1 บัญชีรายชื่อในเขตนี้ (กดช่วงเพื่อดูรายชื่อเขต)", "Shows where this party gained/lost top party-list position (click a bin to list constituencies)");
+	
+	            var retain = 0, gain = 0, loss = 0, none = 0, unknown = 0;
+	            Object.keys(results.byDist || {}).forEach(function(did) {
+	              var st = swingChangePartyStatus(did, which);
+	              if (st === "retain") retain += 1;
+	              else if (st === "gain") gain += 1;
+	              else if (st === "loss") loss += 1;
+	              else if (st === "none") none += 1;
+	              else unknown += 1;
+	            });
+	            var rows = [
+	              { key: "retain", color: "#16a34a", name: i18n("รักษาไว้", "Retained"), count: retain },
+	              { key: "gain", color: "#2563eb", name: i18n("ชนะเพิ่ม", "Gained"), count: gain },
+	              { key: "loss", color: "#ef4444", name: i18n("เสียไป", "Lost"), count: loss },
+	              { key: "none", color: "#94a3b8", name: i18n("ไม่ชนะ", "Did not win"), count: none },
+	              { key: "unknown", color: "#d1d5db", name: i18n("ไม่มีข้อมูลเทียบ", "No data"), count: unknown }
+	            ];
+	            var allowed = { retain:1, gain:1, loss:1, none:1, unknown:1 };
+	            if (selectedSwingChangeKey != null && !allowed[selectedSwingChangeKey]) selectedSwingChangeKey = null;
+	
+	            for (var i = 0; i < rows.length; i++) {
+	              var row = rows[i];
+	              var active = selectedSwingChangeKey === row.key;
+	              html += '<div class="legend-item">' +
+	                '<div class="legend-left swing-change-item" data-key="' + row.key + '" style="cursor:pointer; padding:2px 4px; border-radius:8px; background:' + (active ? "rgba(15,23,42,0.06)" : "transparent") + ';">' +
+	                  '<span class="legend-swatch" style="background:' + row.color + '"></span><span class="legend-name" style="' + (active ? "font-weight:700;" : "") + '">' + row.name + "</span></div>" +
+	                "<span class='legend-count'>" + row.count.toLocaleString() + "</span></div>";
+	            }
+	
+	            if (selectedSwingChangeKey != null) {
+	              var distRows = [];
+	              Object.keys(results.byDist || {}).forEach(function(did) {
+	                var st = swingChangePartyStatus(did, which);
+	                if (st !== selectedSwingChangeKey) return;
+	                var dd = results.byDist[did] || {};
+	                var meta = changeVs2023MetaByDist[did] || {};
+	                var w23 = which === "list" ? (meta.winnerList2023 || "") : (meta.winner2023 || "");
+	                var w26 = which === "list" ? (meta.winnerList2026 || "") : (meta.winner2026 || "");
+	                distRows.push({
+	                  distId: did,
+	                  province: dd.province || "",
+	                  district: dd.district || "",
+	                  w23: w23,
+	                  w26: w26
+	                });
+	              });
+	              distRows.sort(function(a, b) {
+	                if (a.province !== b.province) return a.province.localeCompare(b.province, "th");
+	                return Number(a.district || 0) - Number(b.district || 0);
+	              });
+	              var listHtml = "";
+	              for (var r = 0; r < distRows.length; r++) {
+	                var rr = distRows[r];
+	                listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(rr.distId) + '" style="display:flex;justify-content:space-between;gap:10px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+	                  '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(rr.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(rr.district) + "</span>" +
+	                  '<span style="font-variant-numeric:tabular-nums;color:#4b5563;white-space:nowrap;">' + escapeHtml(partyLabel(rr.w23 || "—")) + " → " + escapeHtml(partyLabel(rr.w26 || "—")) + "</span>" +
+	                "</div>";
+	              }
+	              html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
+	                '<div style="font-size:12px; font-weight:700; color:#334155;">' + i18n("รายชื่อเขตในช่วงนี้", "Constituencies in this bin") + " (" + distRows.length.toLocaleString() + ")</div>" +
+	                '<div style="max-height:180px; overflow:auto; padding-right:2px;">' + listHtml + "</div>" +
+	              "</div>";
+	            }
+	          } else {
+	            title.textContent = i18n("เปรียบเทียบผู้ชนะกับปี 2566", "Winner change vs 2023");
+	            modeEl.textContent = i18n("เทียบผู้ชนะแบ่งเขตและอันดับ 1 บัญชีรายชื่อ ปี 2569 กับ 2566 (กดช่วงเพื่อดูรายชื่อเขต)", "Compare constituency winners and top party-list winners in 2026 vs 2023 (click a bin to list constituencies)");
+	            var bothChanged = 0;
+	            var constChanged = 0;
+	            var listChanged = 0;
+	            var same = 0;
+	            var unknown = 0;
+	            Object.keys(results.byDist || {}).forEach(function(did) {
+	              var stConst = changeVs2023ByDist[did] || "unknown";
+	              var stList = changeListVs2023ByDist[did] || "unknown";
+	              if (stConst === "unknown" && stList === "unknown") unknown += 1;
+	              else if (stConst === "changed" && stList === "changed") bothChanged += 1;
+	              else if (stConst === "changed") constChanged += 1;
+	              else if (stList === "changed") listChanged += 1;
+	              else same += 1;
+	            });
+	            var swingRows = [
+	              { key: "both", color: "#7c3aed", name: i18n("ทั้งผู้ชนะเขตและบัญชีรายชื่อเปลี่ยน", "Both constituency and party-list changed"), count: bothChanged },
+	              { key: "const", color: "#ef4444", name: i18n("เปลี่ยนเฉพาะผู้ชนะเขต", "Only constituency winner changed"), count: constChanged },
+	              { key: "list", color: "#2563eb", name: i18n("เปลี่ยนเฉพาะอันดับ 1 บัญชีรายชื่อ", "Only top party-list winner changed"), count: listChanged },
+	              { key: "same", color: "#94a3b8", name: i18n("ผู้ชนะเดิมทั้งสองระบบ", "Same winner in both systems"), count: same },
+	              { key: "unknown", color: "#d1d5db", name: i18n("ไม่มีข้อมูลเทียบ", "No 2023 match"), count: unknown }
+	            ];
+	            for (var i = 0; i < swingRows.length; i++) {
+	              var row = swingRows[i];
+	              var active = selectedSwingChangeKey === row.key;
+	              html += '<div class="legend-item">' +
+	                '<div class="legend-left swing-change-item" data-key="' + row.key + '" style="cursor:pointer; padding:2px 4px; border-radius:8px; background:' + (active ? "rgba(15,23,42,0.06)" : "transparent") + ';">' +
+	                  '<span class="legend-swatch" style="background:' + row.color + '"></span><span class="legend-name" style="' + (active ? "font-weight:700;" : "") + '">' + row.name + "</span></div>" +
+	                "<span class='legend-count'>" + row.count.toLocaleString() + "</span></div>";
+	            }
+	            if (selectedSwingChangeKey != null) {
+	              var distRows = [];
+	              Object.keys(results.byDist || {}).forEach(function(did) {
+	                var stConst = changeVs2023ByDist[did] || "unknown";
+	                var stList = changeListVs2023ByDist[did] || "unknown";
+	                var key = "unknown";
+	                if (stConst === "unknown" && stList === "unknown") key = "unknown";
+	                else if (stConst === "changed" && stList === "changed") key = "both";
+	                else if (stConst === "changed") key = "const";
+	                else if (stList === "changed") key = "list";
+	                else key = "same";
+	                if (key !== selectedSwingChangeKey) return;
+	                var dd = results.byDist[did] || {};
+	                distRows.push({
+	                  distId: did,
+	                  province: dd.province || "",
+	                  district: dd.district || ""
+	                });
+	              });
+	              distRows.sort(function(a, b) {
+	                if (a.province !== b.province) return a.province.localeCompare(b.province, "th");
+	                return Number(a.district || 0) - Number(b.district || 0);
+	              });
+	              var listHtml = "";
+	              for (var r = 0; r < distRows.length; r++) {
+	                var rr = distRows[r];
+	                listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(rr.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+	                  '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(rr.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(rr.district) + "</span>" +
+	                "</div>";
+	              }
+	              html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
+	                '<div style="font-size:12px; font-weight:700; color:#334155;">' + i18n("รายชื่อเขตในช่วงนี้", "Constituencies in this bin") + " (" + distRows.length.toLocaleString() + ")</div>" +
+	                '<div style="max-height:180px; overflow:auto; padding-right:2px;">' + listHtml + "</div>" +
+	              "</div>";
+	            }
+	          }
+	
+	          body.innerHTML = html;
+	          wireSwingPartySelect();
+	          var swingNodes = body.querySelectorAll(".swing-change-item[data-key]");
+	          swingNodes.forEach(function(node) {
+	            node.addEventListener("click", function() {
+	              var key = node.getAttribute("data-key");
+	              if (!key) return;
+	              selectedSwingChangeKey = (selectedSwingChangeKey === key) ? null : key;
+	              applyStylesAndPopups();
+	            });
+	          });
+	          return;
+	        }
 
         if (mode === "swing_const" || mode === "swing_list") {
           var isConstSwing = mode === "swing_const";
+          if (selectedSwingParty) {
+            var which = isConstSwing ? "const" : "list";
+            var maxAbs = 25;
+            title.textContent = (isConstSwing ? i18n("สวิงคะแนนแบบแบ่งเขต", "Constituency swing") : i18n("สวิงคะแนนบัญชีรายชื่อ", "Party-list swing")) +
+              " · " + partyLabel(selectedSwingParty) + i18n(" (2569 เทียบ 2566)", " (2026 vs 2023)");
+            modeEl.textContent = i18n(
+              "Δคะแนนพรรค (pp) = สัดส่วนคะแนนพรรคในเขตนี้ (2569) − (2566) (กดช่วงเพื่อดูรายชื่อเขต)",
+              "Party swing (pp) = party vote share in this constituency (2026) − (2023) (click a bin to list constituencies)"
+            );
+
+            var labelsTh = ["≤ -20", "-20–-10", "-10–-5", "-5–0", "0–5", "5–10", "10–20", "20+"];
+            var labelsEn = ["≤ -20", "-20–-10", "-10–-5", "-5–0", "0–5", "5–10", "10–20", "20+"];
+            var sampleVals = [-25, -15, -7.5, -2.5, 2.5, 7.5, 15, 25];
+            var counts = [0, 0, 0, 0, 0, 0, 0, 0];
+            var noData = 0;
+            Object.keys(results.byDist || {}).forEach(function(did) {
+              var v = swingPartyDiff(did, which);
+              if (v == null) { noData += 1; return; }
+              var bi = swingPartyBinIndex(v);
+              if (bi == null) { noData += 1; return; }
+              counts[bi] += 1;
+            });
+
+	            var html = swingPartySelectHtml() + '<div style="font-size:12.5px;color:#444;margin-bottom:8px;font-weight:800;">' + i18n("ช่วงค่า Swing (pp)", "Swing bins (pp)") + "</div>";
+            for (var i = 0; i < 8; i++) {
+              var isActive = selectedSwingPartyValueBin === i;
+              var sv = sampleVals[i];
+              var x = Math.max(-maxAbs, Math.min(maxAbs, Number(sv)));
+              var t = (x + maxAbs) / (2 * maxAbs);
+              var col = divergingColor(t);
+              var label = i18n(labelsTh[i], labelsEn[i]);
+              html += '<div class="legend-item">' +
+                '<div class="legend-left swing-party-bin-item" data-bin="' + i + '" style="cursor:pointer; padding:2px 4px; border-radius:8px; background:' + (isActive ? "rgba(15,23,42,0.06)" : "transparent") + ';">' +
+                '<span class="legend-swatch" style="background:' + col + '"></span><span class="legend-name" style="' + (isActive ? "font-weight:700;" : "") + '">' + label + "</span></div>" +
+                '<span class="legend-count">' + (counts[i] || 0).toLocaleString() + " " + i18n("เขต", "constituencies") + "</span>" +
+              "</div>";
+            }
+            if (noData > 0) {
+              html += '<div class="legend-item">' +
+                '<div class="legend-left" style="padding:2px 4px;">' +
+                '<span class="legend-swatch" style="background:#d1d5db"></span><span class="legend-name">' + i18n("ไม่มีข้อมูลเทียบปี 2566", "No 2023 comparison data") + "</span></div>" +
+                '<span class="legend-count">' + noData.toLocaleString() + " " + i18n("เขต", "constituencies") + "</span>" +
+              "</div>";
+            }
+
+            if (selectedSwingPartyValueBin != null) {
+              var distRows = [];
+              Object.keys(results.byDist || {}).forEach(function(did) {
+                var v = swingPartyDiff(did, which);
+                if (v == null) return;
+                if (swingPartyBinIndex(v) !== selectedSwingPartyValueBin) return;
+                var dd = results.byDist[did] || {};
+                distRows.push({
+                  distId: did,
+                  province: dd.province || "",
+                  district: dd.district || "",
+                  value: Number(v)
+                });
+              });
+              distRows.sort(function(a, b) {
+                if (a.value !== b.value) return a.value - b.value;
+                if (a.province !== b.province) return a.province.localeCompare(b.province, "th");
+                return Number(a.district || 0) - Number(b.district || 0);
+              });
+              var listHtml = "";
+              for (var r = 0; r < distRows.length; r++) {
+                var row = distRows[r];
+                listHtml += '<div class="legend-dist-item" data-dist-id="' + escapeHtml(row.distId) + '" style="display:flex;justify-content:space-between;gap:8px;margin-top:3px;font-size:12px;cursor:pointer;">' +
+                  '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1e3a8a;">' + escapeHtml(provinceLabel(row.province)) + " — " + i18n("เขต ", "District ") + escapeHtml(row.district) + "</span>" +
+                  '<span style="font-variant-numeric:tabular-nums;color:#4b5563;">' + (row.value >= 0 ? "+" : "") + row.value.toFixed(1) + " pp</span>" +
+                "</div>";
+              }
+              html += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">' +
+                '<div style="font-size:12px; font-weight:700; color:#334155;">' + i18n("รายชื่อเขต", "Constituencies") + " (" + distRows.length.toLocaleString() + ")</div>" +
+                '<div style="max-height:180px; overflow:auto; padding-right:2px;">' + listHtml + "</div>" +
+              "</div>";
+            }
+
+	            body.innerHTML = html;
+	            wireSwingPartySelect();
+	            var swingPartyNodes = body.querySelectorAll(".swing-party-bin-item[data-bin]");
+	            swingPartyNodes.forEach(function(node) {
+	              node.addEventListener("click", function() {
+	                var idx = Number(node.getAttribute("data-bin"));
+	                if (!isFinite(idx)) return;
+	                selectedSwingPartyValueBin = (selectedSwingPartyValueBin === idx) ? null : idx;
+	                applyStylesAndPopups();
+	              });
+	            });
+	            return;
+	          }
           if (selectedSwingValueMode !== mode) {
             selectedSwingValueMode = mode;
             selectedSwingValueBin = null;
@@ -1671,10 +2165,11 @@
             var vv = Number(src[did]);
             if (isFinite(vv) && vv >= 0) values.push(vv);
           });
-          if (!values.length) {
-            body.innerHTML = '<div style="font-size:12.5px;color:#6b7280;">' + i18n("ไม่มีข้อมูลเทียบปี 2566", "No 2023 comparison data") + "</div>";
-            return;
-          }
+	          if (!values.length) {
+	            body.innerHTML = swingPartySelectHtml() + '<div style="font-size:12.5px;color:#6b7280;">' + i18n("ไม่มีข้อมูลเทียบปี 2566", "No 2023 comparison data") + "</div>";
+	            wireSwingPartySelect();
+	            return;
+	          }
           values.sort(function(a, b) { return a - b; });
           var q = function(p) { return values[Math.min(values.length - 1, Math.max(0, Math.floor((values.length - 1) * p)))]; };
           var cuts = [q(0.0), q(1/6), q(2/6), q(3/6), q(4/6), q(5/6), q(1.0)];
@@ -1692,7 +2187,7 @@
             if (!isFinite(vv) || vv < 0) return;
             counts[binIndex(vv)] += 1;
           });
-          var html = '<div style="font-size:12.5px;color:#444;margin-bottom:8px;font-weight:800;">' + i18n("ช่วงค่า Swing (pp)", "Swing bins (pp)") + "</div>";
+	          var html = swingPartySelectHtml() + '<div style="font-size:12.5px;color:#444;margin-bottom:8px;font-weight:800;">' + i18n("ช่วงค่า Swing (pp)", "Swing bins (pp)") + "</div>";
           for (var i = 0; i < 6; i++) {
             var lo = cuts[i];
             var hi = cuts[i + 1];
@@ -1737,18 +2232,19 @@
               '<div style="max-height:180px; overflow:auto; padding-right:2px;">' + listHtml + "</div>" +
             "</div>";
           }
-          body.innerHTML = html;
-          var swingValueNodes = body.querySelectorAll(".swing-value-bin-item[data-bin]");
-          swingValueNodes.forEach(function(node) {
-            node.addEventListener("click", function() {
-              var idx = Number(node.getAttribute("data-bin"));
-              if (!isFinite(idx)) return;
-              selectedSwingValueBin = (selectedSwingValueBin === idx) ? null : idx;
-              buildLegend();
-            });
-          });
-          return;
-        }
+	          body.innerHTML = html;
+	          wireSwingPartySelect();
+	          var swingValueNodes = body.querySelectorAll(".swing-value-bin-item[data-bin]");
+	          swingValueNodes.forEach(function(node) {
+	            node.addEventListener("click", function() {
+	              var idx = Number(node.getAttribute("data-bin"));
+	              if (!isFinite(idx)) return;
+	              selectedSwingValueBin = (selectedSwingValueBin === idx) ? null : idx;
+	              buildLegend();
+	            });
+	          });
+	          return;
+	        }
 
         if (mode === "hhi") {
           title.textContent = i18n("คะแนนกระจุกตัวแค่ไหน (HHI)", "Vote Concentration (HHI)");
@@ -2024,6 +2520,14 @@
         if (d.type === "set-ntl-party") {
           selectedNtlParty = (d.party || "");
           buildLegend();
+          return;
+        }
+        if (d.type === "set-swing-party") {
+          selectedSwingParty = canonicalPartyName(d.party || "");
+          selectedSwingPartyValueBin = null;
+          selectedSwingValueBin = null;
+          selectedSwingChangeKey = null;
+          applyStylesAndPopups();
           return;
         }
         if (d.type === "set-mode") { setMapMode(d.mode); return; }

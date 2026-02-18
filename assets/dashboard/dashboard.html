@@ -890,13 +890,152 @@
       border: none;
       overflow: hidden;
     }
-    .iframe-tall { height: 860px; }
-    .iframe-mid { height: 660px; }
-    .heatmap-card .iframe-mid { height: 760px; }
-    .same-number-card .iframe-mid { height: 760px; }
-  .iframe-region { height: 55vh; min-height: 420px; max-height: 700px; }
-    .iframe-short { height: 720px; }
-    .iframe-xlong { height: 2700px; }
+	    .iframe-tall { height: 860px; }
+	    .iframe-mid { height: 660px; }
+	    .heatmap-card .iframe-mid { height: 760px; }
+	    .same-number-card .iframe-mid { height: 760px; }
+	  .iframe-region { height: 55vh; min-height: 420px; max-height: 700px; }
+	    .iframe-short { height: 720px; }
+	    .iframe-xlong { height: 2700px; }
+
+	    .switch-card .controls {
+	      display: flex;
+	      flex-wrap: wrap;
+	      gap: 10px;
+	      align-items: flex-end;
+	      margin-bottom: 12px;
+	    }
+	    .switch-card label {
+	      font-size: 12px;
+	      color: #475569;
+	      font-weight: 700;
+	      display: block;
+	      margin-bottom: 4px;
+	    }
+	    .switch-card select, .switch-card input[type="checkbox"] { font-family: inherit; }
+	    .switch-card select {
+	      padding: 8px 10px;
+	      border-radius: 12px;
+	      border: 1px solid rgba(0,0,0,0.14);
+	      background: #fff;
+	      min-width: 220px;
+	    }
+	    .switch-card .check {
+	      display: flex;
+	      align-items: center;
+	      gap: 8px;
+	      padding: 8px 10px;
+	      border-radius: 12px;
+	      border: 1px solid rgba(0,0,0,0.10);
+	      background: rgba(15,23,42,0.03);
+	      font-size: 12.5px;
+	      color: #334155;
+	      font-weight: 700;
+	    }
+	    .switch-matrix {
+	      display: grid;
+	      grid-template-columns: 120px repeat(2, minmax(140px, 1fr));
+	      gap: 8px;
+	      margin: 10px 0 14px 0;
+	    }
+	    .switch-matrix .cell {
+	      padding: 10px 10px;
+	      border-radius: 14px;
+	      border: 1px solid rgba(0,0,0,0.10);
+	      background: #fff;
+	    }
+	    .switch-matrix .hdr {
+	      background: #f1f5f9;
+	      border: 1px solid rgba(0,0,0,0.08);
+	      font-weight: 800;
+	      color: #334155;
+	      font-size: 12.5px;
+	      display: flex;
+	      align-items: center;
+	      justify-content: center;
+	      text-align: center;
+	    }
+	    .switch-matrix .hdr.blank {
+	      background: transparent;
+	      border-color: transparent;
+	    }
+	    .switch-matrix .metric {
+	      font-variant-numeric: tabular-nums;
+	      font-weight: 900;
+	      font-size: 16px;
+	      color: #0f172a;
+	      margin-top: 2px;
+	    }
+	    .switch-matrix .sub {
+	      font-size: 12px;
+	      color: #64748b;
+	      margin-top: 2px;
+	    }
+	    .switch-table {
+	      border: 1px solid rgba(0,0,0,0.10);
+	      border-radius: 14px;
+	      overflow: hidden;
+	    }
+	    .switch-table table {
+	      width: 100%;
+	      border-collapse: collapse;
+	      font-size: 12.5px;
+	    }
+	    .switch-table thead th {
+	      background: #f1f5f9;
+	      opacity: 1;
+	      color: #334155;
+	      text-align: left;
+	      padding: 10px 10px;
+	      border-bottom: 1px solid rgba(0,0,0,0.08);
+	      font-weight: 900;
+	    }
+	    .switch-table thead th.sortable {
+	      cursor: pointer;
+	      user-select: none;
+	      padding-right: 26px;
+	      position: relative;
+	    }
+	    .switch-table thead th.sortable:hover {
+	      background: #e9eff7;
+	    }
+	    .switch-table thead th.sortable::after {
+	      content: attr(data-sort-indicator);
+	      position: absolute;
+	      right: 10px;
+	      top: 50%;
+	      transform: translateY(-50%);
+	      font-size: 11px;
+	      opacity: 0.7;
+	    }
+	    .switch-table thead th.sortable[aria-sort="ascending"]::after { opacity: 0.9; }
+	    .switch-table thead th.sortable[aria-sort="descending"]::after { opacity: 0.9; }
+	    .switch-table tbody td {
+	      padding: 9px 10px;
+	      border-bottom: 1px solid rgba(0,0,0,0.06);
+	      vertical-align: top;
+	    }
+	    .switch-table tbody tr:hover td { background: rgba(37,99,235,0.05); }
+	    .switch-table .mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
+	    .switch-table .tag {
+	      display: inline-block;
+	      padding: 2px 8px;
+	      border-radius: 999px;
+	      font-size: 11px;
+	      font-weight: 900;
+	      white-space: nowrap;
+	      border: 1px solid rgba(0,0,0,0.06);
+	    }
+	    .switch-table .tag.win { background: #dcfce7; color: #166534; }
+	    .switch-table .tag.lose { background: #fee2e2; color: #b91c1c; }
+	    .switch-table .tag.inc { background: #e0e7ff; color: #3730a3; }
+	    .switch-table .tag.noninc { background: #e2e8f0; color: #334155; }
+	    .switch-note {
+	      font-size: 12.5px;
+	      color: #64748b;
+	      line-height: 1.35;
+	      margin-top: 6px;
+	    }
     .footer {
       margin: 30px auto 40px;
       text-align: center;
@@ -949,12 +1088,14 @@
     .highlight-row {
       animation: highlight-pulse 0.6s ease-in-out 3;
     }
-    thead th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: #f0f3f7;
-    }
+	    thead th {
+	      position: sticky;
+	      top: 0;
+	      z-index: 2;
+	      background: #f0f3f7;
+	      background-color: #f0f3f7;
+	      opacity: 1;
+	    }
     th, td {
       padding: 8px 10px;
       border-bottom: 1px solid #e4e7ec;
@@ -1349,6 +1490,9 @@
             <option value="swing_const" data-i18n="mapMetricSwingConst">Swing: คะแนนแบ่งเขต</option>
             <option value="swing_list" data-i18n="mapMetricSwingList">Swing: คะแนนบัญชีรายชื่อ</option>
           </select>
+          <select id="map-mobile-swing-party" style="display:none;">
+            <option value="" data-i18n="mapSwingPartyAll">ทุกพรรค (ดัชนีรวม)</option>
+          </select>
         </div>
 		        <div class="map-actions" id="map-actions">
 		          <button type="button" class="map-btn" id="map-btn-turnout" data-tip="See turnout in that constituency (votes cast / eligible voters)">ใช้สิทธิ (แบ่งเขต)</button>
@@ -1365,6 +1509,9 @@
               <option value="swing_const" data-i18n="mapMetricSwingConst">Swing: คะแนนแบ่งเขต</option>
               <option value="swing_list" data-i18n="mapMetricSwingList">Swing: คะแนนบัญชีรายชื่อ</option>
             </select>
+            <select id="map-swing-party" style="display:none;">
+              <option value="" data-i18n="mapSwingPartyAll">ทุกพรรค (ดัชนีรวม)</option>
+            </select>
           </div>
           <div id="map-btn-pop" class="map-btn-pop" role="status" aria-live="polite"></div>
         </div>
@@ -1376,9 +1523,9 @@
       </div>
     </section>
 
-    <section id="turnout-compare-section" style="display:none;">
-      <h2 class="section-title" data-i18n="turnoutCompare">Turnout Comparison (Constituency vs Party-list)</h2>
-      <div class="grid-1">
+	    <section id="turnout-compare-section" style="display:none;">
+	      <h2 class="section-title" data-i18n="turnoutCompare">Turnout Comparison (Constituency vs Party-list)</h2>
+	      <div class="grid-1">
         <div class="card">
           <iframe class="iframe-mid" src="figure/turnout_compare_2026.html?v=tc27" scrolling="no" id="turnout-compare-frame"></iframe>
         </div>
@@ -1807,22 +1954,69 @@
         </div>
       </div>
     </section>
-    <section>
-      <h2 class="section-title" data-i18n="heatmapTitle">Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด</h2>
-      <div class="grid-1">
-        <div class="card heatmap-card">
-          <iframe class="iframe-mid" src="figure/heatmap_interactive_2026.html?v=hm38" scrolling="no" id="heatmap-frame"></iframe>
-        </div>
-      </div>
-    </section>
-    <section id="same-number-2026-section">
-      <h2 class="section-title" data-i18n="sameNumberTitle">Same-number voting: คะแนนผู้สมัครหมายเลขเดียวกัน vs คะแนนบัญชีรายชื่อหมายเลขเดียวกัน (1–10 ยกเว้น 6, 9)</h2>
-      <div class="grid-1">
-        <div class="card scatter-card same-number-card">
-          <iframe class="iframe-mid" src="figure/same_number_voting_scatter_2026.html?v=sn1" scrolling="no" id="same-number-scatter-frame"></iframe>
-        </div>
-      </div>
-    </section>
+	    <section>
+	      <h2 class="section-title" data-i18n="heatmapTitle">Heatmap: พรรคชนะเขต vs พรรคที่ได้คะแนนบัญชีรายชื่อสูงสุด</h2>
+	      <div class="grid-1">
+	        <div class="card heatmap-card">
+	          <iframe class="iframe-mid" src="figure/heatmap_interactive_2026.html?v=hm38" scrolling="no" id="heatmap-frame"></iframe>
+	        </div>
+	      </div>
+	    </section>
+	    <section id="candidate-switch-section">
+	      <h2 class="section-title" data-i18n="candidateSwitchTitle">Candidate Party Switching (2026 vs 2023)</h2>
+	      <div class="grid-1">
+	        <div class="card switch-card">
+		          <div class="controls">
+		            <div>
+		              <label for="switch-from-party" data-i18n="switchFromParty">From party (2023)</label>
+		              <select id="switch-from-party">
+		                <option value="" data-i18n="allParties">ทั้งหมด</option>
+		              </select>
+		            </div>
+		            <div>
+		              <label for="switch-to-party" data-i18n="switchToParty">To party (2026)</label>
+		              <select id="switch-to-party">
+		                <option value="" data-i18n="allParties">ทั้งหมด</option>
+		              </select>
+		            </div>
+		            <div class="check">
+		              <input type="checkbox" id="switch-same-district-only" checked />
+		              <label for="switch-same-district-only" style="margin:0;" data-i18n="switchSameDistrictOnly">Match only within same constituency</label>
+		            </div>
+		          </div>
+	
+		          <div id="switch-matrix" class="switch-matrix" aria-label="Incumbent x Win/Lose matrix"></div>
+		          <div class="switch-note" data-i18n="switchDefinitionNote">
+		            ผู้ชนะเดิม = ผู้ชนะเลือกตั้งแบบแบ่งเขตในปี 2566 ในเขตเดียวกัน · ชนะ/แพ้ = ผู้สมัครชนะ/แพ้ในปี 2569 · ตรวจจับ “ย้ายพรรค” จากการจับคู่ชื่อผู้สมัครระหว่างปี 2566 และ 2569
+		          </div>
+	
+		          <div class="switch-table" style="margin-top:12px;">
+		            <div style="max-height: 420px; overflow:auto;">
+		              <table>
+		                <thead>
+		                  <tr>
+		                    <th class="sortable" data-sort="candidate" data-i18n="switchColCandidate">Candidate</th>
+		                    <th class="sortable" data-sort="district" data-i18n="switchColDistrict">District</th>
+		                    <th class="sortable" data-sort="switch" data-i18n="switchColSwitch">Switch</th>
+		                    <th class="sortable" data-sort="status" data-i18n="switchColIncWin">Incumbent / Result</th>
+		                    <th class="sortable mono" data-sort="diff" data-i18n="switchColShares">Shares</th>
+		                  </tr>
+		                </thead>
+		                <tbody id="switch-table-body"></tbody>
+		              </table>
+		            </div>
+		          </div>
+	        </div>
+	      </div>
+	    </section>
+	    <section id="same-number-2026-section">
+	      <h2 class="section-title" data-i18n="sameNumberTitle">Same-number voting: คะแนนผู้สมัครหมายเลขเดียวกัน vs คะแนนบัญชีรายชื่อหมายเลขเดียวกัน (1–10 ยกเว้น 6, 9)</h2>
+	      <div class="grid-1">
+	        <div class="card scatter-card same-number-card">
+	          <iframe class="iframe-mid" src="figure/same_number_voting_scatter_2026.html?v=sn1" scrolling="no" id="same-number-scatter-frame"></iframe>
+	        </div>
+	      </div>
+	    </section>
     <section id="lift-conc-2026-section">
       <h2 class="section-title" data-i18n="liftConcTitle">Same-number: Top constituencies by party-list vote share (2026)</h2>
       <div class="grid-1">
@@ -1891,13 +2085,15 @@
 </script>
 <script id="top-const-data" type="application/json">
 {"กรีน": {"const": [{"constituency": "ตรัง 3", "share": 0.49, "votes": 418, "total": 85914}, {"constituency": "ตรัง 1", "share": 0.46, "votes": 447, "total": 96267}, {"constituency": "ตรัง 2", "share": 0.46, "votes": 458, "total": 98666}, {"constituency": "ชุมพร 1", "share": 0.27, "votes": 274, "total": 102510}], "list": [{"constituency": "กรุงเทพมหานคร 18", "share": 0.34, "votes": 293, "total": 86516}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.3, "votes": 216, "total": 71569}, {"constituency": "ชุมพร 3", "share": 0.28, "votes": 267, "total": 95711}, {"constituency": "สุราษฎร์ธานี 6", "share": 0.28, "votes": 251, "total": 91012}, {"constituency": "เชียงใหม่ 10", "share": 0.26, "votes": 243, "total": 92812}, {"constituency": "ตรัง 2", "share": 0.24, "votes": 236, "total": 98643}, {"constituency": "ตาก 3", "share": 0.23, "votes": 208, "total": 90977}, {"constituency": "สระแก้ว 1", "share": 0.22, "votes": 224, "total": 101418}, {"constituency": "สกลนคร 4", "share": 0.22, "votes": 186, "total": 84520}, {"constituency": "ตรัง 1", "share": 0.14, "votes": 135, "total": 96504}]}, "ก้าวไกล": {"const": [{"constituency": "เชียงใหม่ 4", "share": 57.31, "votes": 62009, "total": 108205}, {"constituency": "สมุทรปราการ 5", "share": 52.7, "votes": 60282, "total": 114386}, {"constituency": "กรุงเทพมหานคร 27", "share": 51.19, "votes": 50035, "total": 97753}, {"constituency": "นนทบุรี 5", "share": 50.91, "votes": 48055, "total": 94393}, {"constituency": "สมุทรปราการ 4", "share": 50.72, "votes": 49043, "total": 96700}, {"constituency": "กรุงเทพมหานคร 30", "share": 49.88, "votes": 49770, "total": 99788}, {"constituency": "สมุทรปราการ 3", "share": 49.63, "votes": 50177, "total": 101108}, {"constituency": "กรุงเทพมหานคร 5", "share": 49.59, "votes": 47147, "total": 95078}, {"constituency": "กรุงเทพมหานคร 24", "share": 49.39, "votes": 48317, "total": 97818}, {"constituency": "กรุงเทพมหานคร 9", "share": 49.19, "votes": 50132, "total": 101921}], "list": [{"constituency": "ชลบุรี 7", "share": 58.41, "votes": 52304, "total": 89548}, {"constituency": "สมุทรปราการ 5", "share": 57.53, "votes": 66797, "total": 116109}, {"constituency": "สมุทรปราการ 4", "share": 56.52, "votes": 55649, "total": 98461}, {"constituency": "สมุทรปราการ 2", "share": 55.45, "votes": 53062, "total": 95701}, {"constituency": "สมุทรปราการ 8", "share": 55.44, "votes": 60288, "total": 108741}, {"constituency": "กรุงเทพมหานคร 27", "share": 55.12, "votes": 54268, "total": 98462}, {"constituency": "ปทุมธานี 3", "share": 54.97, "votes": 53444, "total": 97225}, {"constituency": "ระยอง 5", "share": 54.94, "votes": 47681, "total": 86789}, {"constituency": "ระยอง 1", "share": 54.92, "votes": 48836, "total": 88915}, {"constituency": "ระยอง 4", "share": 54.3, "votes": 47615, "total": 87692}]}, "ครูไทยเพื่อประชาชน": {"const": [{"constituency": "ตาก 1", "share": 0.85, "votes": 876, "total": 103556}, {"constituency": "กาญจนบุรี 4", "share": 0.7, "votes": 673, "total": 96256}, {"constituency": "ชัยภูมิ 6", "share": 0.69, "votes": 632, "total": 92261}, {"constituency": "อุตรดิตถ์ 2", "share": 0.65, "votes": 535, "total": 82656}, {"constituency": "อุดรธานี 5", "share": 0.57, "votes": 422, "total": 74315}, {"constituency": "ขอนแก่น 10", "share": 0.57, "votes": 498, "total": 87904}, {"constituency": "นครสวรรค์ 6", "share": 0.39, "votes": 357, "total": 91500}, {"constituency": "ชัยภูมิ 7", "share": 0.36, "votes": 310, "total": 85479}, {"constituency": "นครสวรรค์ 1", "share": 0.16, "votes": 161, "total": 99045}], "list": [{"constituency": "บุรีรัมย์ 3", "share": 3.88, "votes": 3056, "total": 78807}, {"constituency": "บุรีรัมย์ 5", "share": 3.81, "votes": 3242, "total": 85063}, {"constituency": "สุรินทร์ 6", "share": 3.31, "votes": 2798, "total": 84420}, {"constituency": "พิจิตร 1", "share": 3.05, "votes": 3139, "total": 103083}, {"constituency": "ปัตตานี 5", "share": 2.82, "votes": 2082, "total": 73882}, {"constituency": "สุพรรณบุรี 4", "share": 2.8, "votes": 2865, "total": 102481}, {"constituency": "ชัยภูมิ 2", "share": 2.72, "votes": 2500, "total": 91999}, {"constituency": "กำแพงเพชร 1", "share": 2.68, "votes": 2612, "total": 97632}, {"constituency": "ตรัง 2", "share": 2.65, "votes": 2616, "total": 98643}, {"constituency": "ชัยภูมิ 5", "share": 2.45, "votes": 2172, "total": 88504}]}, "คลองไทย": {"const": [{"constituency": "ปัตตานี 5", "share": 4.35, "votes": 3239, "total": 74495}, {"constituency": "น่าน 1", "share": 1.33, "votes": 1363, "total": 102815}, {"constituency": "สุรินทร์ 4", "share": 0.92, "votes": 811, "total": 88110}, {"constituency": "ร้อยเอ็ด 3", "share": 0.85, "votes": 745, "total": 87513}, {"constituency": "สุโขทัย 1", "share": 0.8, "votes": 656, "total": 82373}, {"constituency": "สุรินทร์ 7", "share": 0.79, "votes": 724, "total": 91499}, {"constituency": "สตูล 2", "share": 0.77, "votes": 772, "total": 99761}, {"constituency": "เลย 3", "share": 0.74, "votes": 690, "total": 93190}, {"constituency": "อุบลราชธานี 8", "share": 0.72, "votes": 662, "total": 92056}, {"constituency": "ศรีสะเกษ 8", "share": 0.68, "votes": 627, "total": 92860}], "list": [{"constituency": "พัทลุง 1", "share": 0.16, "votes": 178, "total": 108434}, {"constituency": "ตรัง 1", "share": 0.09, "votes": 91, "total": 96504}, {"constituency": "ร้อยเอ็ด 3", "share": 0.09, "votes": 81, "total": 86839}, {"constituency": "อุดรธานี 6", "share": 0.09, "votes": 72, "total": 81139}, {"constituency": "ประจวบคีรีขันธ์ 3", "share": 0.08, "votes": 77, "total": 96808}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.08, "votes": 56, "total": 71569}, {"constituency": "บึงกาฬ 2", "share": 0.08, "votes": 57, "total": 73359}, {"constituency": "สกลนคร 1", "share": 0.07, "votes": 63, "total": 92244}, {"constituency": "นครศรีธรรมราช 10", "share": 0.07, "votes": 60, "total": 90139}, {"constituency": "กรุงเทพมหานคร 21", "share": 0.06, "votes": 57, "total": 96321}]}, "ความหวังใหม่": {"const": [{"constituency": "ชุมพร 2", "share": 0.49, "votes": 499, "total": 101759}, {"constituency": "สกลนคร 7", "share": 0.49, "votes": 387, "total": 79233}, {"constituency": "สุราษฎร์ธานี 1", "share": 0.13, "votes": 110, "total": 82701}, {"constituency": "สุราษฎร์ธานี 6", "share": 0.13, "votes": 115, "total": 90991}, {"constituency": "อุบลราชธานี 11", "share": 0.09, "votes": 85, "total": 89953}], "list": [{"constituency": "กาฬสินธุ์ 6", "share": 0.25, "votes": 225, "total": 90531}, {"constituency": "อุบลราชธานี 2", "share": 0.14, "votes": 134, "total": 94954}, {"constituency": "สุราษฎร์ธานี 4", "share": 0.13, "votes": 105, "total": 83809}, {"constituency": "เพชรบูรณ์ 3", "share": 0.11, "votes": 100, "total": 91103}, {"constituency": "สงขลา 4", "share": 0.11, "votes": 101, "total": 96117}, {"constituency": "นครศรีธรรมราช 5", "share": 0.09, "votes": 83, "total": 89437}, {"constituency": "สกลนคร 7", "share": 0.09, "votes": 72, "total": 79636}, {"constituency": "พิจิตร 2", "share": 0.09, "votes": 85, "total": 95011}, {"constituency": "สงขลา 7", "share": 0.08, "votes": 77, "total": 93163}, {"constituency": "สงขลา 5", "share": 0.08, "votes": 78, "total": 95396}]}, "ชาติพัฒนากล้า": {"const": [{"constituency": "นครราชสีมา 4", "share": 32.43, "votes": 31216, "total": 96267}, {"constituency": "นครราชสีมา 3", "share": 32.14, "votes": 31768, "total": 98837}, {"constituency": "นครราชสีมา 1", "share": 30.99, "votes": 29142, "total": 94025}, {"constituency": "นครราชสีมา 2", "share": 30.09, "votes": 30062, "total": 99896}, {"constituency": "นครสวรรค์ 6", "share": 26.33, "votes": 24089, "total": 91500}, {"constituency": "นครศรีธรรมราช 4", "share": 21.27, "votes": 18196, "total": 85540}, {"constituency": "ภูเก็ต 3", "share": 21.04, "votes": 16469, "total": 78282}, {"constituency": "สงขลา 2", "share": 18.67, "votes": 15368, "total": 82316}, {"constituency": "ภูเก็ต 2", "share": 10.74, "votes": 7540, "total": 70176}, {"constituency": "กรุงเทพมหานคร 29", "share": 5.57, "votes": 5772, "total": 103561}], "list": [{"constituency": "นครราชสีมา 1", "share": 14.74, "votes": 14112, "total": 95753}, {"constituency": "นครราชสีมา 3", "share": 8.75, "votes": 8735, "total": 99814}, {"constituency": "นครราชสีมา 4", "share": 8.53, "votes": 8350, "total": 97863}, {"constituency": "นครราชสีมา 2", "share": 7.27, "votes": 7397, "total": 101797}, {"constituency": "ภูเก็ต 3", "share": 4.47, "votes": 3565, "total": 79798}, {"constituency": "นครศรีธรรมราช 4", "share": 4.45, "votes": 3914, "total": 87975}, {"constituency": "สงขลา 2", "share": 4.03, "votes": 3336, "total": 82763}, {"constituency": "สงขลา 3", "share": 3.52, "votes": 3597, "total": 102169}, {"constituency": "สงขลา 9", "share": 3.18, "votes": 3234, "total": 101589}, {"constituency": "สงขลา 1", "share": 2.97, "votes": 2866, "total": 96535}]}, "ชาติรุ่งเรือง": {"const": [{"constituency": "แม่ฮ่องสอน 2", "share": 0.34, "votes": 239, "total": 69933}, {"constituency": "อุดรธานี 5", "share": 0.17, "votes": 129, "total": 74315}, {"constituency": "นครราชสีมา 15", "share": 0.07, "votes": 68, "total": 101264}], "list": [{"constituency": "สุพรรณบุรี 5", "share": 0.24, "votes": 263, "total": 108363}, {"constituency": "สุพรรณบุรี 3", "share": 0.22, "votes": 217, "total": 99216}, {"constituency": "สุพรรณบุรี 1", "share": 0.19, "votes": 188, "total": 96748}, {"constituency": "สุพรรณบุรี 2", "share": 0.13, "votes": 125, "total": 93653}, {"constituency": "สุพรรณบุรี 4", "share": 0.13, "votes": 134, "total": 102481}, {"constituency": "นราธิวาส 2", "share": 0.08, "votes": 59, "total": 76050}, {"constituency": "เชียงใหม่ 10", "share": 0.05, "votes": 42, "total": 92812}, {"constituency": "สงขลา 9", "share": 0.04, "votes": 40, "total": 101589}, {"constituency": "นครพนม 4", "share": 0.03, "votes": 32, "total": 95186}, {"constituency": "ขอนแก่น 3", "share": 0.03, "votes": 31, "total": 92380}]}, "ชาติไทยพัฒนา": {"const": [{"constituency": "สุพรรณบุรี 5", "share": 53.48, "votes": 55877, "total": 104473}, {"constituency": "สุพรรณบุรี 1", "share": 50.49, "votes": 46324, "total": 91750}, {"constituency": "สุพรรณบุรี 2", "share": 48.83, "votes": 43795, "total": 89686}, {"constituency": "นครปฐม 3", "share": 47.08, "votes": 42825, "total": 90960}, {"constituency": "ร้อยเอ็ด 1", "share": 43.08, "votes": 40436, "total": 93870}, {"constituency": "สุพรรณบุรี 4", "share": 42.06, "votes": 42639, "total": 101388}, {"constituency": "สุพรรณบุรี 3", "share": 40.53, "votes": 39348, "total": 97074}, {"constituency": "นครปฐม 1", "share": 39.03, "votes": 39899, "total": 102216}, {"constituency": "นครปฐม 5", "share": 35.54, "votes": 36422, "total": 102473}, {"constituency": "ขอนแก่น 3", "share": 32.27, "votes": 30085, "total": 93239}], "list": [{"constituency": "สุพรรณบุรี 2", "share": 27.93, "votes": 26156, "total": 93653}, {"constituency": "สุพรรณบุรี 1", "share": 26.14, "votes": 25288, "total": 96748}, {"constituency": "สุพรรณบุรี 3", "share": 24.07, "votes": 23880, "total": 99216}, {"constituency": "สุพรรณบุรี 5", "share": 19.77, "votes": 21426, "total": 108363}, {"constituency": "สุพรรณบุรี 4", "share": 12.97, "votes": 13296, "total": 102481}, {"constituency": "นครปฐม 1", "share": 3.7, "votes": 3770, "total": 102027}, {"constituency": "นครปฐม 5", "share": 3.43, "votes": 3551, "total": 103393}, {"constituency": "เพชรบุรี 1", "share": 3.22, "votes": 3195, "total": 99165}, {"constituency": "ร้อยเอ็ด 1", "share": 3.13, "votes": 2932, "total": 93819}, {"constituency": "ยโสธร 1", "share": 2.56, "votes": 2722, "total": 106467}]}, "ช่วยชาติ": {"const": [{"constituency": "หนองบัวลำภู 3", "share": 0.57, "votes": 475, "total": 83043}, {"constituency": "มุกดาหาร 2", "share": 0.47, "votes": 458, "total": 97661}, {"constituency": "อุบลราชธานี 9", "share": 0.44, "votes": 364, "total": 81849}, {"constituency": "สกลนคร 2", "share": 0.43, "votes": 374, "total": 87077}, {"constituency": "หนองคาย 2", "share": 0.42, "votes": 342, "total": 82084}, {"constituency": "สกลนคร 5", "share": 0.31, "votes": 257, "total": 81702}, {"constituency": "มหาสารคาม 5", "share": 0.3, "votes": 275, "total": 92029}, {"constituency": "หนองคาย 3", "share": 0.3, "votes": 259, "total": 87345}, {"constituency": "นครปฐม 1", "share": 0.27, "votes": 279, "total": 102216}, {"constituency": "หนองคาย 1", "share": 0.27, "votes": 243, "total": 91626}], "list": [{"constituency": "นครพนม 4", "share": 0.1, "votes": 93, "total": 95186}, {"constituency": "อุบลราชธานี 11", "share": 0.09, "votes": 80, "total": 89348}, {"constituency": "มุกดาหาร 2", "share": 0.08, "votes": 80, "total": 97677}, {"constituency": "สกลนคร 2", "share": 0.08, "votes": 68, "total": 87406}, {"constituency": "น่าน 1", "share": 0.06, "votes": 67, "total": 106173}, {"constituency": "หนองคาย 3", "share": 0.06, "votes": 52, "total": 87706}, {"constituency": "อุบลราชธานี 9", "share": 0.06, "votes": 47, "total": 81993}, {"constituency": "ศรีสะเกษ 7", "share": 0.06, "votes": 47, "total": 83104}, {"constituency": "แพร่ 3", "share": 0.05, "votes": 48, "total": 88304}, {"constituency": "อุบลราชธานี 7", "share": 0.05, "votes": 47, "total": 87658}]}, "ถิ่นกาขาวชาววิไล": {"const": [{"constituency": "ลพบุรี 4", "share": 0.76, "votes": 629, "total": 83193}, {"constituency": "ลพบุรี 1", "share": 0.28, "votes": 247, "total": 87126}], "list": [{"constituency": "นครราชสีมา 8", "share": 0.12, "votes": 108, "total": 93095}, {"constituency": "ชุมพร 2", "share": 0.07, "votes": 75, "total": 101893}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.06, "votes": 44, "total": 71569}, {"constituency": "ลพบุรี 4", "share": 0.05, "votes": 45, "total": 83045}, {"constituency": "เชียงใหม่ 6", "share": 0.05, "votes": 47, "total": 90959}, {"constituency": "ยะลา 1", "share": 0.05, "votes": 46, "total": 92742}, {"constituency": "เชียงใหม่ 10", "share": 0.04, "votes": 39, "total": 92812}, {"constituency": "ชุมพร 1", "share": 0.04, "votes": 42, "total": 102149}, {"constituency": "อุบลราชธานี 9", "share": 0.04, "votes": 33, "total": 81993}, {"constituency": "พังงา 1", "share": 0.04, "votes": 28, "total": 72872}]}, "ทางเลือกใหม่": {"const": [{"constituency": "อุบลราชธานี 10", "share": 0.74, "votes": 724, "total": 97428}, {"constituency": "ขอนแก่น 4", "share": 0.61, "votes": 580, "total": 94639}, {"constituency": "อุบลราชธานี 9", "share": 0.6, "votes": 492, "total": 81849}, {"constituency": "กรุงเทพมหานคร 18", "share": 0.45, "votes": 379, "total": 85070}, {"constituency": "สุพรรณบุรี 4", "share": 0.44, "votes": 442, "total": 101388}, {"constituency": "กรุงเทพมหานคร 17", "share": 0.38, "votes": 312, "total": 81898}, {"constituency": "สุราษฎร์ธานี 7", "share": 0.38, "votes": 315, "total": 83524}, {"constituency": "นนทบุรี 3", "share": 0.37, "votes": 367, "total": 100312}, {"constituency": "นครศรีธรรมราช 6", "share": 0.36, "votes": 289, "total": 80408}, {"constituency": "กรุงเทพมหานคร 32", "share": 0.35, "votes": 335, "total": 96402}], "list": [{"constituency": "เลย 1", "share": 0.86, "votes": 788, "total": 91927}, {"constituency": "นครราชสีมา 1", "share": 0.82, "votes": 786, "total": 95753}, {"constituency": "นนทบุรี 6", "share": 0.74, "votes": 768, "total": 103108}, {"constituency": "สุรินทร์ 3", "share": 0.72, "votes": 645, "total": 90174}, {"constituency": "ตาก 3", "share": 0.66, "votes": 599, "total": 90977}, {"constituency": "สตูล 2", "share": 0.65, "votes": 648, "total": 99587}, {"constituency": "สุโขทัย 2", "share": 0.64, "votes": 511, "total": 79345}, {"constituency": "พิจิตร 3", "share": 0.62, "votes": 623, "total": 99972}, {"constituency": "เชียงใหม่ 10", "share": 0.61, "votes": 567, "total": 92812}, {"constituency": "อุบลราชธานี 4", "share": 0.6, "votes": 628, "total": 104074}]}, "ท้องที่ไทย": {"const": [{"constituency": "นครสวรรค์ 5", "share": 0.45, "votes": 445, "total": 98476}, {"constituency": "กำแพงเพชร 3", "share": 0.45, "votes": 395, "total": 87629}, {"constituency": "เชียงราย 2", "share": 0.38, "votes": 362, "total": 96192}], "list": [{"constituency": "นครสวรรค์ 4", "share": 3.52, "votes": 3426, "total": 97226}, {"constituency": "เพชรบูรณ์ 1", "share": 3.42, "votes": 3106, "total": 90710}, {"constituency": "เพชรบูรณ์ 2", "share": 3.21, "votes": 3000, "total": 93516}, {"constituency": "สระแก้ว 1", "share": 3.17, "votes": 3219, "total": 101418}, {"constituency": "ศรีสะเกษ 5", "share": 2.99, "votes": 2450, "total": 82031}, {"constituency": "ราชบุรี 3", "share": 2.97, "votes": 3302, "total": 111267}, {"constituency": "บุรีรัมย์ 7", "share": 2.76, "votes": 2274, "total": 82428}, {"constituency": "อุบลราชธานี 11", "share": 2.56, "votes": 2290, "total": 89348}, {"constituency": "ศรีสะเกษ 4", "share": 2.5, "votes": 2045, "total": 81829}, {"constituency": "กระบี่ 2", "share": 2.42, "votes": 2107, "total": 87076}]}, "ประชากรไทย": {"const": [{"constituency": "นครราชสีมา 3", "share": 0.97, "votes": 955, "total": 98837}, {"constituency": "นครราชสีมา 2", "share": 0.65, "votes": 646, "total": 99896}, {"constituency": "สงขลา 5", "share": 0.59, "votes": 547, "total": 92196}, {"constituency": "เชียงราย 1", "share": 0.49, "votes": 499, "total": 102861}, {"constituency": "เชียงราย 7", "share": 0.31, "votes": 286, "total": 93009}, {"constituency": "นครราชสีมา 1", "share": 0.28, "votes": 261, "total": 94025}, {"constituency": "เชียงราย 6", "share": 0.21, "votes": 172, "total": 80461}, {"constituency": "นครราชสีมา 5", "share": 0.17, "votes": 158, "total": 95662}, {"constituency": "อุดรธานี 7", "share": 0.16, "votes": 127, "total": 80244}, {"constituency": "กรุงเทพมหานคร 14", "share": 0.11, "votes": 112, "total": 97891}], "list": [{"constituency": "มหาสารคาม 4", "share": 0.49, "votes": 417, "total": 85282}, {"constituency": "ขอนแก่น 10", "share": 0.46, "votes": 407, "total": 87939}, {"constituency": "มหาสารคาม 3", "share": 0.45, "votes": 400, "total": 88620}, {"constituency": "ศรีสะเกษ 7", "share": 0.45, "votes": 373, "total": 83104}, {"constituency": "นครพนม 1", "share": 0.44, "votes": 421, "total": 96040}, {"constituency": "ขอนแก่น 5", "share": 0.43, "votes": 357, "total": 82886}, {"constituency": "ศรีสะเกษ 6", "share": 0.43, "votes": 360, "total": 84369}, {"constituency": "ร้อยเอ็ด 6", "share": 0.42, "votes": 354, "total": 85210}, {"constituency": "สุรินทร์ 5", "share": 0.4, "votes": 336, "total": 83399}, {"constituency": "กาฬสินธุ์ 4", "share": 0.4, "votes": 364, "total": 90565}]}, "ประชาชาติ": {"const": [{"constituency": "ยะลา 2", "share": 55.65, "votes": 51946, "total": 93349}, {"constituency": "ปัตตานี 5", "share": 49.76, "votes": 37068, "total": 74495}, {"constituency": "นราธิวาส 3", "share": 41.59, "votes": 29951, "total": 72022}, {"constituency": "นราธิวาส 5", "share": 35.55, "votes": 31457, "total": 88486}, {"constituency": "ยะลา 3", "share": 34.91, "votes": 31741, "total": 90913}, {"constituency": "ปัตตานี 3", "share": 34.91, "votes": 23636, "total": 67707}, {"constituency": "นราธิวาส 4", "share": 34.71, "votes": 27166, "total": 78257}, {"constituency": "ยะลา 1", "share": 25.83, "votes": 23682, "total": 91672}, {"constituency": "ปัตตานี 1", "share": 20.55, "votes": 14452, "total": 70318}, {"constituency": "นราธิวาส 1", "share": 19.3, "votes": 17413, "total": 90225}], "list": [{"constituency": "ยะลา 2", "share": 59.76, "votes": 55426, "total": 92745}, {"constituency": "ปัตตานี 5", "share": 59.25, "votes": 43773, "total": 73882}, {"constituency": "ปัตตานี 3", "share": 57.18, "votes": 38383, "total": 67130}, {"constituency": "นราธิวาส 5", "share": 52.99, "votes": 47279, "total": 89229}, {"constituency": "ปัตตานี 4", "share": 52.46, "votes": 41464, "total": 79041}, {"constituency": "นราธิวาส 3", "share": 50.46, "votes": 37850, "total": 75013}, {"constituency": "นราธิวาส 4", "share": 49.11, "votes": 39147, "total": 79713}, {"constituency": "ยะลา 3", "share": 44.74, "votes": 40863, "total": 91342}, {"constituency": "นราธิวาส 1", "share": 41.57, "votes": 38405, "total": 92391}, {"constituency": "ปัตตานี 2", "share": 38.71, "votes": 30608, "total": 79068}]}, "ประชาธิปัตย์": {"const": [{"constituency": "สงขลา 5", "share": 58.94, "votes": 54343, "total": 92196}, {"constituency": "นครศรีธรรมราช 5", "share": 54.04, "votes": 48403, "total": 89576}, {"constituency": "สงขลา 8", "share": 47.47, "votes": 42932, "total": 90444}, {"constituency": "พัทลุง 1", "share": 45.56, "votes": 49471, "total": 108573}, {"constituency": "พัทลุง 3", "share": 44.84, "votes": 47848, "total": 106699}, {"constituency": "สงขลา 1", "share": 42.21, "votes": 40521, "total": 95993}, {"constituency": "นครศรีธรรมราช 9", "share": 42.2, "votes": 35976, "total": 85254}, {"constituency": "อุบลราชธานี 2", "share": 41.33, "votes": 38164, "total": 92346}, {"constituency": "ประจวบคีรีขันธ์ 2", "share": 41.02, "votes": 42736, "total": 104193}, {"constituency": "สงขลา 6", "share": 39.6, "votes": 34835, "total": 87971}], "list": [{"constituency": "สงขลา 6", "share": 18.07, "votes": 15871, "total": 87814}, {"constituency": "สงขลา 5", "share": 17.15, "votes": 16364, "total": 95396}, {"constituency": "สงขลา 3", "share": 17.09, "votes": 17456, "total": 102169}, {"constituency": "นครศรีธรรมราช 5", "share": 16.91, "votes": 15128, "total": 89437}, {"constituency": "สงขลา 8", "share": 14.85, "votes": 13524, "total": 91075}, {"constituency": "สงขลา 7", "share": 14.66, "votes": 13657, "total": 93163}, {"constituency": "ประจวบคีรีขันธ์ 2", "share": 14.65, "votes": 15327, "total": 104594}, {"constituency": "พัทลุง 3", "share": 14.49, "votes": 15844, "total": 109343}, {"constituency": "ตรัง 2", "share": 14.47, "votes": 14276, "total": 98643}, {"constituency": "กระบี่ 1", "share": 13.48, "votes": 13056, "total": 96881}]}, "ประชาธิปไตยใหม่": {"const": [{"constituency": "ปัตตานี 4", "share": 3.45, "votes": 2764, "total": 80181}, {"constituency": "ปัตตานี 2", "share": 2.67, "votes": 2134, "total": 79936}, {"constituency": "สุรินทร์ 5", "share": 0.73, "votes": 613, "total": 84087}, {"constituency": "ร้อยเอ็ด 3", "share": 0.6, "votes": 528, "total": 87513}, {"constituency": "ปทุมธานี 7", "share": 0.57, "votes": 617, "total": 107343}, {"constituency": "ยโสธร 3", "share": 0.48, "votes": 483, "total": 100298}, {"constituency": "ศรีสะเกษ 9", "share": 0.48, "votes": 446, "total": 92818}, {"constituency": "ศรีสะเกษ 2", "share": 0.47, "votes": 386, "total": 82157}, {"constituency": "ศรีสะเกษ 6", "share": 0.45, "votes": 370, "total": 83105}, {"constituency": "อุบลราชธานี 6", "share": 0.4, "votes": 338, "total": 84825}], "list": [{"constituency": "บุรีรัมย์ 10", "share": 4.08, "votes": 3165, "total": 77550}, {"constituency": "เลย 3", "share": 3.97, "votes": 3711, "total": 93380}, {"constituency": "เพชรบูรณ์ 3", "share": 3.75, "votes": 3419, "total": 91103}, {"constituency": "สุรินทร์ 7", "share": 3.56, "votes": 3263, "total": 91742}, {"constituency": "กระบี่ 1", "share": 3.39, "votes": 3289, "total": 96881}, {"constituency": "ตรัง 4", "share": 3.22, "votes": 3098, "total": 96148}, {"constituency": "สงขลา 7", "share": 3.19, "votes": 2969, "total": 93163}, {"constituency": "ตรัง 3", "share": 3.09, "votes": 2720, "total": 88158}, {"constituency": "สุราษฎร์ธานี 3", "share": 3.01, "votes": 2621, "total": 87170}, {"constituency": "ประจวบคีรีขันธ์ 2", "share": 2.98, "votes": 3115, "total": 104594}]}, "ประชาภิวัฒน์": {"const": [{"constituency": "นครสวรรค์ 2", "share": 0.41, "votes": 406, "total": 99976}, {"constituency": "นครสวรรค์ 3", "share": 0.36, "votes": 372, "total": 102038}, {"constituency": "นครสวรรค์ 5", "share": 0.36, "votes": 351, "total": 98476}, {"constituency": "นครสวรรค์ 1", "share": 0.18, "votes": 178, "total": 99045}], "list": [{"constituency": "บุรีรัมย์ 5", "share": 0.27, "votes": 231, "total": 85063}, {"constituency": "บุรีรัมย์ 3", "share": 0.22, "votes": 177, "total": 78807}, {"constituency": "พิจิตร 1", "share": 0.22, "votes": 230, "total": 103083}, {"constituency": "สุรินทร์ 6", "share": 0.22, "votes": 185, "total": 84420}, {"constituency": "กำแพงเพชร 1", "share": 0.22, "votes": 213, "total": 97632}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.22, "votes": 155, "total": 71569}, {"constituency": "นครสวรรค์ 3", "share": 0.21, "votes": 219, "total": 101960}, {"constituency": "ชัยภูมิ 2", "share": 0.2, "votes": 183, "total": 91999}, {"constituency": "สุพรรณบุรี 4", "share": 0.19, "votes": 197, "total": 102481}, {"constituency": "ชัยภูมิ 5", "share": 0.19, "votes": 170, "total": 88504}]}, "ประชาสามัคคี": {"const": [{"constituency": "เพชรบูรณ์ 4", "share": 0.08, "votes": 65, "total": 80372}], "list": []}, "ประชาไทย": {"const": [{"constituency": "สงขลา 8", "share": 0.83, "votes": 749, "total": 90444}, {"constituency": "ขอนแก่น 2", "share": 0.45, "votes": 457, "total": 100727}, {"constituency": "บุรีรัมย์ 3", "share": 0.37, "votes": 291, "total": 78061}, {"constituency": "เชียงใหม่ 10", "share": 0.32, "votes": 292, "total": 91720}, {"constituency": "ขอนแก่น 11", "share": 0.23, "votes": 209, "total": 90944}, {"constituency": "แม่ฮ่องสอน 1", "share": 0.18, "votes": 119, "total": 65774}, {"constituency": "เชียงใหม่ 5", "share": 0.17, "votes": 172, "total": 100408}, {"constituency": "นครราชสีมา 5", "share": 0.17, "votes": 159, "total": 95662}, {"constituency": "ขอนแก่น 1", "share": 0.14, "votes": 126, "total": 91799}, {"constituency": "กรุงเทพมหานคร 20", "share": 0.13, "votes": 114, "total": 86092}], "list": [{"constituency": "นครศรีธรรมราช 3", "share": 0.43, "votes": 383, "total": 88723}, {"constituency": "ชุมพร 2", "share": 0.41, "votes": 416, "total": 101893}, {"constituency": "นครศรีธรรมราช 4", "share": 0.41, "votes": 357, "total": 87975}, {"constituency": "ชุมพร 1", "share": 0.4, "votes": 407, "total": 102149}, {"constituency": "นครศรีธรรมราช 10", "share": 0.37, "votes": 334, "total": 90139}, {"constituency": "สงขลา 4", "share": 0.34, "votes": 329, "total": 96117}, {"constituency": "นครศรีธรรมราช 2", "share": 0.33, "votes": 306, "total": 92410}, {"constituency": "ตรัง 3", "share": 0.31, "votes": 272, "total": 88158}, {"constituency": "พิษณุโลก 5", "share": 0.3, "votes": 282, "total": 92563}, {"constituency": "สงขลา 5", "share": 0.29, "votes": 274, "total": 95396}]}, "พลัง": {"const": [{"constituency": "เชียงใหม่ 2", "share": 0.85, "votes": 920, "total": 108017}, {"constituency": "เชียงใหม่ 9", "share": 0.81, "votes": 837, "total": 103315}, {"constituency": "เชียงใหม่ 10", "share": 0.54, "votes": 492, "total": 91720}, {"constituency": "หนองบัวลำภู 3", "share": 0.43, "votes": 360, "total": 83043}, {"constituency": "หนองบัวลำภู 2", "share": 0.23, "votes": 198, "total": 85316}], "list": [{"constituency": "ขอนแก่น 4", "share": 3.36, "votes": 3159, "total": 93910}, {"constituency": "ชัยนาท 2", "share": 3.3, "votes": 3179, "total": 96196}, {"constituency": "กาฬสินธุ์ 3", "share": 3.1, "votes": 2522, "total": 81268}, {"constituency": "สุรินทร์ 3", "share": 2.98, "votes": 2689, "total": 90174}, {"constituency": "ศรีสะเกษ 9", "share": 2.88, "votes": 2721, "total": 94336}, {"constituency": "กาฬสินธุ์ 1", "share": 2.63, "votes": 2387, "total": 90803}, {"constituency": "ชัยนาท 1", "share": 2.56, "votes": 2462, "total": 96040}, {"constituency": "ศรีสะเกษ 3", "share": 2.46, "votes": 2090, "total": 84792}, {"constituency": "ขอนแก่น 10", "share": 2.4, "votes": 2113, "total": 87939}, {"constituency": "สุราษฎร์ธานี 6", "share": 2.27, "votes": 2070, "total": 91012}]}, "พลังธรรมใหม่": {"const": [{"constituency": "ตรัง 3", "share": 1.09, "votes": 934, "total": 85914}, {"constituency": "มุกดาหาร 2", "share": 0.51, "votes": 496, "total": 97661}, {"constituency": "กระบี่ 2", "share": 0.19, "votes": 163, "total": 87158}], "list": [{"constituency": "เพชรบูรณ์ 4", "share": 0.44, "votes": 356, "total": 81268}, {"constituency": "เพชรบูรณ์ 5", "share": 0.43, "votes": 371, "total": 85757}, {"constituency": "ชัยภูมิ 4", "share": 0.4, "votes": 308, "total": 77438}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.38, "votes": 272, "total": 71569}, {"constituency": "ลำปาง 2", "share": 0.35, "votes": 399, "total": 112901}, {"constituency": "เชียงใหม่ 10", "share": 0.31, "votes": 285, "total": 92812}, {"constituency": "แพร่ 2", "share": 0.29, "votes": 260, "total": 89211}, {"constituency": "กาฬสินธุ์ 3", "share": 0.29, "votes": 234, "total": 81268}, {"constituency": "กำแพงเพชร 2", "share": 0.28, "votes": 275, "total": 97285}, {"constituency": "กระบี่ 3", "share": 0.28, "votes": 262, "total": 94309}]}, "พลังบูรพา": {"const": [{"constituency": "เชียงใหม่ 7", "share": 0.49, "votes": 465, "total": 93968}, {"constituency": "เชียงใหม่ 6", "share": 0.47, "votes": 424, "total": 90433}], "list": []}, "พลังประชาธิปไตย": {"const": [{"constituency": "นครพนม 4", "share": 0.31, "votes": 296, "total": 95673}], "list": [{"constituency": "อุบลราชธานี 9", "share": 0.16, "votes": 135, "total": 81993}, {"constituency": "อุบลราชธานี 6", "share": 0.13, "votes": 107, "total": 84520}, {"constituency": "อุดรธานี 4", "share": 0.11, "votes": 84, "total": 77060}, {"constituency": "หนองบัวลำภู 2", "share": 0.09, "votes": 81, "total": 85519}, {"constituency": "นครพนม 4", "share": 0.08, "votes": 74, "total": 95186}, {"constituency": "ตาก 3", "share": 0.08, "votes": 70, "total": 90977}, {"constituency": "ยโสธร 1", "share": 0.08, "votes": 81, "total": 106467}, {"constituency": "กระบี่ 2", "share": 0.08, "votes": 66, "total": 87076}, {"constituency": "สงขลา 8", "share": 0.07, "votes": 63, "total": 91075}, {"constituency": "สุราษฎร์ธานี 4", "share": 0.06, "votes": 54, "total": 83809}]}, "พลังประชารัฐ": {"const": [{"constituency": "ตรัง 2", "share": 64.04, "votes": 63182, "total": 98666}, {"constituency": "พะเยา 1", "share": 57.31, "votes": 53963, "total": 94159}, {"constituency": "เพชรบูรณ์ 6", "share": 53.75, "votes": 47118, "total": 87668}, {"constituency": "เพชรบูรณ์ 4", "share": 51.06, "votes": 41039, "total": 80372}, {"constituency": "สระแก้ว 2", "share": 48.35, "votes": 47173, "total": 97570}, {"constituency": "นราธิวาส 3", "share": 47.78, "votes": 34411, "total": 72022}, {"constituency": "กาฬสินธุ์ 3", "share": 45.81, "votes": 37044, "total": 80871}, {"constituency": "ชัยภูมิ 7", "share": 45.04, "votes": 38498, "total": 85479}, {"constituency": "ร้อยเอ็ด 3", "share": 44.77, "votes": 39181, "total": 87513}, {"constituency": "ราชบุรี 3", "share": 43.9, "votes": 49262, "total": 112219}], "list": [{"constituency": "พะเยา 1", "share": 10.54, "votes": 10215, "total": 96878}, {"constituency": "นราธิวาส 2", "share": 10.47, "votes": 7959, "total": 76050}, {"constituency": "นราธิวาส 3", "share": 10.43, "votes": 7827, "total": 75013}, {"constituency": "เพชรบูรณ์ 4", "share": 8.88, "votes": 7217, "total": 81268}, {"constituency": "กำแพงเพชร 4", "share": 8.25, "votes": 7500, "total": 90926}, {"constituency": "สระแก้ว 2", "share": 7.22, "votes": 7031, "total": 97339}, {"constituency": "สิงห์บุรี 1", "share": 6.5, "votes": 7979, "total": 122720}, {"constituency": "สระแก้ว 1", "share": 6.46, "votes": 6554, "total": 101418}, {"constituency": "สระแก้ว 3", "share": 5.98, "votes": 6211, "total": 103875}, {"constituency": "สงขลา 4", "share": 5.63, "votes": 5413, "total": 96117}]}, "พลังปวงชนไทย": {"const": [{"constituency": "กำแพงเพชร 3", "share": 1.29, "votes": 1127, "total": 87629}, {"constituency": "เพชรบูรณ์ 3", "share": 1.04, "votes": 940, "total": 90365}, {"constituency": "อุดรธานี 9", "share": 0.78, "votes": 633, "total": 81226}, {"constituency": "ลำพูน 2", "share": 0.77, "votes": 1017, "total": 131375}, {"constituency": "เลย 2", "share": 0.77, "votes": 669, "total": 86945}, {"constituency": "หนองบัวลำภู 2", "share": 0.71, "votes": 602, "total": 85316}, {"constituency": "พิษณุโลก 5", "share": 0.67, "votes": 618, "total": 92371}, {"constituency": "ศรีสะเกษ 5", "share": 0.6, "votes": 488, "total": 81433}, {"constituency": "อุบลราชธานี 11", "share": 0.58, "votes": 520, "total": 89953}, {"constituency": "ร้อยเอ็ด 8", "share": 0.54, "votes": 491, "total": 90499}], "list": [{"constituency": "กำแพงเพชร 3", "share": 0.2, "votes": 176, "total": 87050}, {"constituency": "เพชรบูรณ์ 3", "share": 0.12, "votes": 108, "total": 91103}, {"constituency": "อุดรธานี 9", "share": 0.09, "votes": 74, "total": 82178}, {"constituency": "อุบลราชธานี 5", "share": 0.08, "votes": 69, "total": 89254}, {"constituency": "อุบลราชธานี 6", "share": 0.05, "votes": 44, "total": 84520}, {"constituency": "อุบลราชธานี 7", "share": 0.05, "votes": 42, "total": 87658}, {"constituency": "ยะลา 3", "share": 0.04, "votes": 41, "total": 91342}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.04, "votes": 31, "total": 71569}, {"constituency": "ตรัง 3", "share": 0.04, "votes": 36, "total": 88158}, {"constituency": "นครศรีธรรมราช 7", "share": 0.04, "votes": 33, "total": 84800}]}, "พลังสยาม": {"const": [{"constituency": "สกลนคร 2", "share": 0.25, "votes": 220, "total": 87077}, {"constituency": "ลำพูน 2", "share": 0.18, "votes": 235, "total": 131375}], "list": [{"constituency": "แม่ฮ่องสอน 2", "share": 0.99, "votes": 705, "total": 71569}, {"constituency": "กาญจนบุรี 5", "share": 0.75, "votes": 613, "total": 81778}, {"constituency": "เชียงใหม่ 10", "share": 0.71, "votes": 663, "total": 92812}, {"constituency": "เชียงใหม่ 9", "share": 0.44, "votes": 455, "total": 103981}, {"constituency": "สกลนคร 2", "share": 0.38, "votes": 336, "total": 87406}, {"constituency": "แม่ฮ่องสอน 1", "share": 0.38, "votes": 256, "total": 67485}, {"constituency": "เชียงใหม่ 5", "share": 0.34, "votes": 351, "total": 102471}, {"constituency": "ตาก 3", "share": 0.34, "votes": 311, "total": 90977}, {"constituency": "ชุมพร 2", "share": 0.25, "votes": 250, "total": 101893}, {"constituency": "เชียงใหม่ 6", "share": 0.19, "votes": 172, "total": 90959}]}, "พลังสหกรณ์": {"const": [{"constituency": "กำแพงเพชร 4", "share": 0.24, "votes": 216, "total": 90372}], "list": [{"constituency": "ตาก 1", "share": 0.46, "votes": 480, "total": 103451}, {"constituency": "กำแพงเพชร 3", "share": 0.3, "votes": 257, "total": 87050}, {"constituency": "กำแพงเพชร 4", "share": 0.26, "votes": 237, "total": 90926}, {"constituency": "สุรินทร์ 3", "share": 0.19, "votes": 173, "total": 90174}, {"constituency": "ชัยนาท 2", "share": 0.19, "votes": 179, "total": 96196}, {"constituency": "ศรีสะเกษ 9", "share": 0.18, "votes": 167, "total": 94336}, {"constituency": "ศรีสะเกษ 3", "share": 0.15, "votes": 128, "total": 84792}, {"constituency": "ขอนแก่น 10", "share": 0.14, "votes": 125, "total": 87939}, {"constituency": "กาฬสินธุ์ 3", "share": 0.14, "votes": 110, "total": 81268}, {"constituency": "ขอนแก่น 4", "share": 0.14, "votes": 127, "total": 93910}]}, "พลังสังคม": {"const": [{"constituency": "พิษณุโลก 1", "share": 0.16, "votes": 154, "total": 98763}, {"constituency": "กรุงเทพมหานคร 32", "share": 0.12, "votes": 114, "total": 96402}, {"constituency": "นนทบุรี 3", "share": 0.09, "votes": 88, "total": 100312}], "list": [{"constituency": "พิษณุโลก 1", "share": 0.15, "votes": 148, "total": 99661}, {"constituency": "เชียงใหม่ 10", "share": 0.06, "votes": 60, "total": 92812}, {"constituency": "อ่างทอง 2", "share": 0.06, "votes": 53, "total": 86519}, {"constituency": "ตาก 3", "share": 0.05, "votes": 47, "total": 90977}, {"constituency": "ศรีสะเกษ 9", "share": 0.05, "votes": 47, "total": 94336}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.05, "votes": 34, "total": 71569}, {"constituency": "น่าน 2", "share": 0.05, "votes": 46, "total": 97930}, {"constituency": "ลพบุรี 4", "share": 0.04, "votes": 37, "total": 83045}, {"constituency": "นครสวรรค์ 4", "share": 0.04, "votes": 43, "total": 97226}, {"constituency": "สุรินทร์ 8", "share": 0.04, "votes": 37, "total": 86299}]}, "พลังสังคมใหม่": {"const": [{"constituency": "แม่ฮ่องสอน 2", "share": 1.04, "votes": 724, "total": 69933}, {"constituency": "อุดรธานี 7", "share": 0.93, "votes": 744, "total": 80244}, {"constituency": "ลำพูน 2", "share": 0.79, "votes": 1032, "total": 131375}, {"constituency": "สกลนคร 6", "share": 0.69, "votes": 551, "total": 80143}, {"constituency": "ลำปาง 3", "share": 0.67, "votes": 748, "total": 111311}, {"constituency": "หนองคาย 3", "share": 0.66, "votes": 574, "total": 87345}, {"constituency": "อุตรดิตถ์ 2", "share": 0.6, "votes": 493, "total": 82656}, {"constituency": "สุรินทร์ 4", "share": 0.59, "votes": 523, "total": 88110}, {"constituency": "เชียงใหม่ 10", "share": 0.59, "votes": 540, "total": 91720}, {"constituency": "สุพรรณบุรี 1", "share": 0.55, "votes": 501, "total": 91750}], "list": [{"constituency": "ตาก 3", "share": 4.32, "votes": 3931, "total": 90977}, {"constituency": "ลพบุรี 4", "share": 3.99, "votes": 3310, "total": 83045}, {"constituency": "แม่ฮ่องสอน 2", "share": 3.42, "votes": 2445, "total": 71569}, {"constituency": "นราธิวาส 4", "share": 3.3, "votes": 2631, "total": 79713}, {"constituency": "บุรีรัมย์ 9", "share": 3.2, "votes": 2667, "total": 83379}, {"constituency": "นครสวรรค์ 5", "share": 3.09, "votes": 3022, "total": 97671}, {"constituency": "ชัยภูมิ 3", "share": 2.97, "votes": 2487, "total": 83766}, {"constituency": "นครนายก 2", "share": 2.95, "votes": 2467, "total": 83728}, {"constituency": "ยะลา 2", "share": 2.66, "votes": 2470, "total": 92745}, {"constituency": "สระบุรี 3", "share": 2.65, "votes": 2592, "total": 97841}]}, "พลังเพื่อไทย": {"const": [{"constituency": "เชียงใหม่ 5", "share": 0.33, "votes": 333, "total": 100408}], "list": [{"constituency": "ชัยภูมิ 4", "share": 0.31, "votes": 243, "total": 77438}, {"constituency": "อุดรธานี 3", "share": 0.28, "votes": 220, "total": 79084}, {"constituency": "ชัยภูมิ 5", "share": 0.27, "votes": 236, "total": 88504}, {"constituency": "ขอนแก่น 7", "share": 0.26, "votes": 244, "total": 93513}, {"constituency": "นครสวรรค์ 3", "share": 0.26, "votes": 260, "total": 101960}, {"constituency": "เลย 4", "share": 0.25, "votes": 225, "total": 88412}, {"constituency": "ศรีสะเกษ 2", "share": 0.25, "votes": 210, "total": 83619}, {"constituency": "เพชรบูรณ์ 2", "share": 0.25, "votes": 230, "total": 93516}, {"constituency": "ขอนแก่น 8", "share": 0.25, "votes": 239, "total": 97349}, {"constituency": "ศรีสะเกษ 9", "share": 0.24, "votes": 231, "total": 94336}]}, "พลังไทยรักชาติ": {"const": [{"constituency": "เชียงใหม่ 2", "share": 0.12, "votes": 132, "total": 108017}], "list": [{"constituency": "เพชรบุรี 3", "share": 0.08, "votes": 87, "total": 103602}, {"constituency": "เชียงใหม่ 10", "share": 0.08, "votes": 71, "total": 92812}, {"constituency": "น่าน 3", "share": 0.07, "votes": 59, "total": 88076}, {"constituency": "ราชบุรี 2", "share": 0.06, "votes": 59, "total": 97853}, {"constituency": "ตาก 2", "share": 0.06, "votes": 51, "total": 87466}, {"constituency": "ตาก 3", "share": 0.06, "votes": 53, "total": 90977}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.06, "votes": 41, "total": 71569}, {"constituency": "เพชรบุรี 1", "share": 0.06, "votes": 56, "total": 99165}, {"constituency": "ตาก 1", "share": 0.05, "votes": 56, "total": 103451}, {"constituency": "นครสวรรค์ 3", "share": 0.05, "votes": 54, "total": 101960}]}, "ภราดรภาพ": {"const": [{"constituency": "กรุงเทพมหานคร 17", "share": 0.4, "votes": 326, "total": 81898}, {"constituency": "กรุงเทพมหานคร 28", "share": 0.31, "votes": 311, "total": 101245}], "list": [{"constituency": "สงขลา 8", "share": 0.29, "votes": 265, "total": 91075}, {"constituency": "สงขลา 3", "share": 0.16, "votes": 165, "total": 102169}, {"constituency": "สงขลา 5", "share": 0.07, "votes": 64, "total": 95396}, {"constituency": "สตูล 1", "share": 0.07, "votes": 55, "total": 82407}, {"constituency": "สงขลา 7", "share": 0.06, "votes": 54, "total": 93163}, {"constituency": "เชียงราย 3", "share": 0.06, "votes": 58, "total": 103964}, {"constituency": "สงขลา 9", "share": 0.05, "votes": 48, "total": 101589}, {"constituency": "เชียงราย 5", "share": 0.04, "votes": 44, "total": 98948}, {"constituency": "นราธิวาส 3", "share": 0.04, "votes": 33, "total": 75013}, {"constituency": "สงขลา 6", "share": 0.04, "votes": 33, "total": 87814}]}, "ภาคีเครือข่ายไทย": {"const": [{"constituency": "นครนายก 2", "share": 0.13, "votes": 107, "total": 84123}], "list": [{"constituency": "เชียงใหม่ 10", "share": 0.84, "votes": 781, "total": 92812}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.71, "votes": 507, "total": 71569}, {"constituency": "ตาก 3", "share": 0.61, "votes": 556, "total": 90977}, {"constituency": "ศรีสะเกษ 3", "share": 0.58, "votes": 496, "total": 84792}, {"constituency": "กาฬสินธุ์ 6", "share": 0.58, "votes": 521, "total": 90531}, {"constituency": "ศรีสะเกษ 9", "share": 0.53, "votes": 504, "total": 94336}, {"constituency": "ขอนแก่น 10", "share": 0.51, "votes": 450, "total": 87939}, {"constituency": "เลย 3", "share": 0.47, "votes": 441, "total": 93380}, {"constituency": "เชียงราย 7", "share": 0.46, "votes": 443, "total": 95460}, {"constituency": "ศรีสะเกษ 7", "share": 0.45, "votes": 377, "total": 83104}]}, "ภูมิใจไทย": {"const": [{"constituency": "อุทัยธานี 1", "share": 58.38, "votes": 49525, "total": 84828}, {"constituency": "บุรีรัมย์ 2", "share": 56.79, "votes": 46729, "total": 82284}, {"constituency": "บุรีรัมย์ 5", "share": 56.62, "votes": 47746, "total": 84322}, {"constituency": "กระบี่ 3", "share": 55.85, "votes": 52499, "total": 94001}, {"constituency": "สตูล 2", "share": 55.75, "votes": 55621, "total": 99761}, {"constituency": "อ่างทอง 2", "share": 55.59, "votes": 47887, "total": 86144}, {"constituency": "ชัยนาท 2", "share": 54.36, "votes": 52205, "total": 96042}, {"constituency": "บุรีรัมย์ 9", "share": 54.28, "votes": 45059, "total": 83019}, {"constituency": "อ่างทอง 1", "share": 52.93, "votes": 44780, "total": 84595}, {"constituency": "กระบี่ 2", "share": 50.92, "votes": 44378, "total": 87158}], "list": [{"constituency": "บุรีรัมย์ 2", "share": 29.87, "votes": 24630, "total": 82451}, {"constituency": "บุรีรัมย์ 3", "share": 26.24, "votes": 20679, "total": 78807}, {"constituency": "บุรีรัมย์ 1", "share": 26.09, "votes": 22142, "total": 84863}, {"constituency": "บุรีรัมย์ 5", "share": 22.5, "votes": 19142, "total": 85063}, {"constituency": "บุรีรัมย์ 6", "share": 20.21, "votes": 16639, "total": 82332}, {"constituency": "บุรีรัมย์ 8", "share": 18.28, "votes": 15939, "total": 87176}, {"constituency": "บุรีรัมย์ 10", "share": 17.07, "votes": 13241, "total": 77550}, {"constituency": "บุรีรัมย์ 4", "share": 16.16, "votes": 12487, "total": 77287}, {"constituency": "อุทัยธานี 1", "share": 15.99, "votes": 13866, "total": 86718}, {"constituency": "กระบี่ 3", "share": 15.38, "votes": 14507, "total": 94309}]}, "มิติใหม่": {"const": [{"constituency": "พังงา 2", "share": 0.72, "votes": 543, "total": 75493}, {"constituency": "นครสวรรค์ 3", "share": 0.58, "votes": 590, "total": 102038}, {"constituency": "ชลบุรี 7", "share": 0.43, "votes": 385, "total": 89027}, {"constituency": "นนทบุรี 2", "share": 0.37, "votes": 333, "total": 90006}, {"constituency": "กำแพงเพชร 3", "share": 0.25, "votes": 220, "total": 87629}], "list": [{"constituency": "พิจิตร 1", "share": 0.93, "votes": 958, "total": 103083}, {"constituency": "ตาก 3", "share": 0.39, "votes": 355, "total": 90977}, {"constituency": "ลพบุรี 4", "share": 0.34, "votes": 285, "total": 83045}, {"constituency": "พิจิตร 2", "share": 0.32, "votes": 306, "total": 95011}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.32, "votes": 228, "total": 71569}, {"constituency": "สุรินทร์ 8", "share": 0.31, "votes": 266, "total": 86299}, {"constituency": "บุรีรัมย์ 9", "share": 0.3, "votes": 250, "total": 83379}, {"constituency": "เลย 2", "share": 0.28, "votes": 243, "total": 87782}, {"constituency": "พิจิตร 3", "share": 0.27, "votes": 273, "total": 99972}, {"constituency": "สุโขทัย 2", "share": 0.27, "votes": 216, "total": 79345}]}, "รวมพลัง": {"const": [{"constituency": "พระนครศรีอยุธยา 3", "share": 0.89, "votes": 911, "total": 102673}, {"constituency": "สงขลา 9", "share": 0.34, "votes": 337, "total": 100430}, {"constituency": "พิษณุโลก 1", "share": 0.21, "votes": 209, "total": 98763}, {"constituency": "ศรีสะเกษ 3", "share": 0.11, "votes": 96, "total": 84363}], "list": [{"constituency": "อุบลราชธานี 10", "share": 0.48, "votes": 466, "total": 96251}, {"constituency": "เชียงใหม่ 10", "share": 0.43, "votes": 395, "total": 92812}, {"constituency": "น่าน 3", "share": 0.39, "votes": 345, "total": 88076}, {"constituency": "บุรีรัมย์ 2", "share": 0.33, "votes": 272, "total": 82451}, {"constituency": "กำแพงเพชร 3", "share": 0.33, "votes": 287, "total": 87050}, {"constituency": "นครสวรรค์ 4", "share": 0.33, "votes": 320, "total": 97226}, {"constituency": "สระแก้ว 2", "share": 0.32, "votes": 310, "total": 97339}, {"constituency": "อุบลราชธานี 5", "share": 0.3, "votes": 269, "total": 89254}, {"constituency": "นครราชสีมา 9", "share": 0.28, "votes": 269, "total": 94818}, {"constituency": "น่าน 2", "share": 0.28, "votes": 273, "total": 97930}]}, "รวมแผ่นดิน": {"const": [{"constituency": "เชียงใหม่ 6", "share": 24.26, "votes": 21937, "total": 90433}, {"constituency": "ชัยภูมิ 1", "share": 16.22, "votes": 14775, "total": 91107}, {"constituency": "ลำพูน 1", "share": 12.69, "votes": 17464, "total": 137569}, {"constituency": "เชียงใหม่ 7", "share": 5.89, "votes": 5531, "total": 93968}, {"constituency": "เชียงใหม่ 3", "share": 2.28, "votes": 2443, "total": 107061}, {"constituency": "ยโสธร 2", "share": 1.43, "votes": 1353, "total": 94418}, {"constituency": "สกลนคร 2", "share": 1.39, "votes": 1210, "total": 87077}, {"constituency": "อุดรธานี 9", "share": 1.36, "votes": 1103, "total": 81226}, {"constituency": "เชียงใหม่ 8", "share": 1.35, "votes": 1509, "total": 112000}, {"constituency": "สกลนคร 5", "share": 1.3, "votes": 1061, "total": 81702}], "list": [{"constituency": "เชียงใหม่ 6", "share": 2.94, "votes": 2671, "total": 90959}, {"constituency": "เชียงใหม่ 1", "share": 0.28, "votes": 296, "total": 104406}, {"constituency": "ชัยภูมิ 1", "share": 0.25, "votes": 227, "total": 91992}, {"constituency": "เชียงใหม่ 3", "share": 0.16, "votes": 173, "total": 108999}, {"constituency": "ขอนแก่น 3", "share": 0.14, "votes": 130, "total": 92380}, {"constituency": "เชียงใหม่ 8", "share": 0.13, "votes": 144, "total": 113448}, {"constituency": "ลำพูน 1", "share": 0.12, "votes": 174, "total": 139639}, {"constituency": "ราชบุรี 3", "share": 0.12, "votes": 137, "total": 111267}, {"constituency": "เชียงใหม่ 2", "share": 0.11, "votes": 124, "total": 110301}, {"constituency": "เชียงใหม่ 7", "share": 0.11, "votes": 104, "total": 96204}]}, "รวมใจไทย": {"const": [{"constituency": "ยะลา 1", "share": 0.25, "votes": 233, "total": 91672}, {"constituency": "ขอนแก่น 4", "share": 0.21, "votes": 198, "total": 94639}], "list": [{"constituency": "หนองบัวลำภู 2", "share": 0.66, "votes": 567, "total": 85519}, {"constituency": "อุดรธานี 4", "share": 0.59, "votes": 458, "total": 77060}, {"constituency": "อุบลราชธานี 9", "share": 0.58, "votes": 478, "total": 81993}, {"constituency": "อุบลราชธานี 6", "share": 0.52, "votes": 440, "total": 84520}, {"constituency": "ยโสธร 1", "share": 0.51, "votes": 547, "total": 106467}, {"constituency": "สกลนคร 1", "share": 0.49, "votes": 451, "total": 92244}, {"constituency": "พิษณุโลก 5", "share": 0.47, "votes": 439, "total": 92563}, {"constituency": "อุดรธานี 6", "share": 0.45, "votes": 367, "total": 81139}, {"constituency": "หนองบัวลำภู 3", "share": 0.45, "votes": 377, "total": 83709}, {"constituency": "สุราษฎร์ธานี 5", "share": 0.42, "votes": 343, "total": 81216}]}, "รวมไทยสร้างชาติ": {"const": [{"constituency": "สุราษฎร์ธานี 3", "share": 53.79, "votes": 46456, "total": 86371}, {"constituency": "ราชบุรี 1", "share": 51.94, "votes": 52941, "total": 101935}, {"constituency": "ราชบุรี 4", "share": 49.43, "votes": 54815, "total": 110903}, {"constituency": "นครศรีธรรมราช 10", "share": 48.73, "votes": 44233, "total": 90772}, {"constituency": "ชัยนาท 1", "share": 46.25, "votes": 43935, "total": 94988}, {"constituency": "เพชรบุรี 3", "share": 46.2, "votes": 48107, "total": 104138}, {"constituency": "ชุมพร 3", "share": 43.55, "votes": 41231, "total": 94678}, {"constituency": "ชลบุรี 4", "share": 40.89, "votes": 36128, "total": 88355}, {"constituency": "เพชรบุรี 1", "share": 40.38, "votes": 40235, "total": 99652}, {"constituency": "สุราษฎร์ธานี 7", "share": 36.35, "votes": 30359, "total": 83524}], "list": [{"constituency": "ชุมพร 1", "share": 48.85, "votes": 49903, "total": 102149}, {"constituency": "นครศรีธรรมราช 3", "share": 47.54, "votes": 42181, "total": 88723}, {"constituency": "ชุมพร 2", "share": 44.15, "votes": 44989, "total": 101893}, {"constituency": "นครศรีธรรมราช 2", "share": 41.0, "votes": 37891, "total": 92410}, {"constituency": "นครศรีธรรมราช 1", "share": 40.18, "votes": 34578, "total": 86058}, {"constituency": "นครศรีธรรมราช 10", "share": 39.87, "votes": 35939, "total": 90139}, {"constituency": "ชุมพร 3", "share": 39.83, "votes": 38123, "total": 95711}, {"constituency": "นครศรีธรรมราช 4", "share": 39.57, "votes": 34814, "total": 87975}, {"constituency": "ระนอง 1", "share": 39.13, "votes": 39075, "total": 99867}, {"constituency": "สุราษฎร์ธานี 3", "share": 37.33, "votes": 32543, "total": 87170}]}, "รักษ์ธรรม": {"const": [{"constituency": "นครราชสีมา 1", "share": 0.25, "votes": 232, "total": 94025}], "list": []}, "รักษ์ผืนป่าประเทศไทย": {"const": [{"constituency": "ขอนแก่น 5", "share": 1.19, "votes": 988, "total": 83050}, {"constituency": "กระบี่ 2", "share": 0.65, "votes": 563, "total": 87158}, {"constituency": "ฉะเชิงเทรา 1", "share": 0.06, "votes": 70, "total": 116536}], "list": [{"constituency": "นครนายก 1", "share": 0.08, "votes": 67, "total": 79334}, {"constituency": "ขอนแก่น 5", "share": 0.08, "votes": 67, "total": 82886}, {"constituency": "กระบี่ 2", "share": 0.08, "votes": 67, "total": 87076}, {"constituency": "กรุงเทพมหานคร 16", "share": 0.07, "votes": 67, "total": 99423}, {"constituency": "ระยอง 2", "share": 0.06, "votes": 51, "total": 80177}, {"constituency": "สงขลา 6", "share": 0.06, "votes": 55, "total": 87814}, {"constituency": "มุกดาหาร 2", "share": 0.06, "votes": 61, "total": 97677}, {"constituency": "ระยอง 3", "share": 0.06, "votes": 56, "total": 89821}, {"constituency": "เลย 2", "share": 0.06, "votes": 53, "total": 87782}, {"constituency": "พะเยา 2", "share": 0.06, "votes": 56, "total": 94577}]}, "ราษฎร์วิถี": {"const": [{"constituency": "ขอนแก่น 4", "share": 0.95, "votes": 899, "total": 94639}, {"constituency": "อุดรธานี 4", "share": 0.57, "votes": 445, "total": 77462}, {"constituency": "ราชบุรี 2", "share": 0.54, "votes": 522, "total": 95993}, {"constituency": "สระแก้ว 2", "share": 0.42, "votes": 413, "total": 97570}, {"constituency": "สมุทรปราการ 8", "share": 0.34, "votes": 367, "total": 107511}, {"constituency": "ปทุมธานี 2", "share": 0.33, "votes": 338, "total": 102344}, {"constituency": "กรุงเทพมหานคร 19", "share": 0.26, "votes": 250, "total": 96535}, {"constituency": "บึงกาฬ 3", "share": 0.18, "votes": 137, "total": 75394}, {"constituency": "เชียงใหม่ 2", "share": 0.17, "votes": 189, "total": 108017}, {"constituency": "สระแก้ว 3", "share": 0.14, "votes": 145, "total": 103426}], "list": [{"constituency": "แม่ฮ่องสอน 2", "share": 0.17, "votes": 119, "total": 71569}, {"constituency": "ยะลา 3", "share": 0.14, "votes": 128, "total": 91342}, {"constituency": "อุบลราชธานี 9", "share": 0.14, "votes": 114, "total": 81993}, {"constituency": "อุบลราชธานี 7", "share": 0.14, "votes": 121, "total": 87658}, {"constituency": "อำนาจเจริญ 2", "share": 0.13, "votes": 141, "total": 106961}, {"constituency": "บุรีรัมย์ 7", "share": 0.13, "votes": 107, "total": 82428}, {"constituency": "เชียงใหม่ 6", "share": 0.13, "votes": 116, "total": 90959}, {"constituency": "นครสวรรค์ 2", "share": 0.12, "votes": 124, "total": 100142}, {"constituency": "สุพรรณบุรี 4", "share": 0.12, "votes": 118, "total": 102481}, {"constituency": "บึงกาฬ 2", "share": 0.11, "votes": 84, "total": 73359}]}, "สังคมประชาธิปไตยไทย": {"const": [{"constituency": "ชลบุรี 7", "share": 0.46, "votes": 410, "total": 89027}, {"constituency": "นครศรีธรรมราช 2", "share": 0.23, "votes": 212, "total": 91267}, {"constituency": "ชลบุรี 6", "share": 0.13, "votes": 122, "total": 97578}, {"constituency": "ชลบุรี 2", "share": 0.12, "votes": 103, "total": 84875}, {"constituency": "ชลบุรี 3", "share": 0.09, "votes": 87, "total": 94699}], "list": [{"constituency": "ชลบุรี 7", "share": 0.11, "votes": 96, "total": 89548}, {"constituency": "นครศรีธรรมราช 6", "share": 0.11, "votes": 86, "total": 80505}, {"constituency": "พัทลุง 1", "share": 0.1, "votes": 105, "total": 108434}, {"constituency": "ปราจีนบุรี 2", "share": 0.07, "votes": 76, "total": 104832}, {"constituency": "ชุมพร 1", "share": 0.07, "votes": 74, "total": 102149}, {"constituency": "กรุงเทพมหานคร 8", "share": 0.07, "votes": 75, "total": 104916}, {"constituency": "สงขลา 2", "share": 0.07, "votes": 59, "total": 82763}, {"constituency": "นครสวรรค์ 2", "share": 0.07, "votes": 71, "total": 100142}, {"constituency": "ระยอง 4", "share": 0.07, "votes": 62, "total": 87692}, {"constituency": "ชลบุรี 3", "share": 0.07, "votes": 64, "total": 94583}]}, "สามัญชน": {"const": [], "list": [{"constituency": "หนองบัวลำภู 3", "share": 0.13, "votes": 105, "total": 83709}, {"constituency": "เลย 3", "share": 0.08, "votes": 78, "total": 93380}, {"constituency": "กาฬสินธุ์ 6", "share": 0.08, "votes": 68, "total": 90531}, {"constituency": "สกลนคร 7", "share": 0.06, "votes": 50, "total": 79636}, {"constituency": "กรุงเทพมหานคร 8", "share": 0.05, "votes": 57, "total": 104916}, {"constituency": "กรุงเทพมหานคร 1", "share": 0.05, "votes": 46, "total": 91053}, {"constituency": "ปทุมธานี 3", "share": 0.05, "votes": 47, "total": 97225}, {"constituency": "เชียงใหม่ 1", "share": 0.05, "votes": 50, "total": 104406}, {"constituency": "กรุงเทพมหานคร 9", "share": 0.05, "votes": 49, "total": 104648}, {"constituency": "กรุงเทพมหานคร 2", "share": 0.05, "votes": 43, "total": 93546}]}, "อนาคตไทย": {"const": [{"constituency": "กรุงเทพมหานคร 25", "share": 0.56, "votes": 502, "total": 88869}, {"constituency": "พิษณุโลก 5", "share": 0.55, "votes": 506, "total": 92371}, {"constituency": "กรุงเทพมหานคร 21", "share": 0.37, "votes": 358, "total": 95539}, {"constituency": "กรุงเทพมหานคร 23", "share": 0.31, "votes": 311, "total": 101343}, {"constituency": "กรุงเทพมหานคร 24", "share": 0.26, "votes": 252, "total": 97818}, {"constituency": "กรุงเทพมหานคร 12", "share": 0.23, "votes": 232, "total": 101975}, {"constituency": "กรุงเทพมหานคร 11", "share": 0.18, "votes": 181, "total": 99116}], "list": [{"constituency": "ยะลา 3", "share": 2.84, "votes": 2598, "total": 91342}, {"constituency": "อุบลราชธานี 7", "share": 2.7, "votes": 2370, "total": 87658}, {"constituency": "แม่ฮ่องสอน 2", "share": 2.46, "votes": 1762, "total": 71569}, {"constituency": "อุบลราชธานี 9", "share": 2.44, "votes": 1999, "total": 81993}, {"constituency": "บุรีรัมย์ 7", "share": 2.37, "votes": 1952, "total": 82428}, {"constituency": "อำนาจเจริญ 2", "share": 2.2, "votes": 2354, "total": 106961}, {"constituency": "เชียงใหม่ 6", "share": 2.12, "votes": 1926, "total": 90959}, {"constituency": "นครสวรรค์ 2", "share": 2.05, "votes": 2056, "total": 100142}, {"constituency": "บึงกาฬ 2", "share": 1.82, "votes": 1334, "total": 73359}, {"constituency": "สุพรรณบุรี 4", "share": 1.76, "votes": 1800, "total": 102481}]}, "เปลี่ยน": {"const": [{"constituency": "สระบุรี 4", "share": 0.82, "votes": 797, "total": 96817}, {"constituency": "ลพบุรี 3", "share": 0.59, "votes": 540, "total": 91298}, {"constituency": "ภูเก็ต 1", "share": 0.46, "votes": 323, "total": 70733}, {"constituency": "ตรัง 3", "share": 0.44, "votes": 382, "total": 85914}, {"constituency": "กาญจนบุรี 2", "share": 0.41, "votes": 417, "total": 102428}, {"constituency": "ปัตตานี 2", "share": 0.32, "votes": 252, "total": 79936}, {"constituency": "กาญจนบุรี 1", "share": 0.29, "votes": 289, "total": 98623}, {"constituency": "ตรัง 4", "share": 0.29, "votes": 282, "total": 96660}, {"constituency": "ตรัง 1", "share": 0.27, "votes": 257, "total": 96267}, {"constituency": "ลพบุรี 2", "share": 0.26, "votes": 229, "total": 87922}], "list": [{"constituency": "ตรัง 3", "share": 0.5, "votes": 442, "total": 88158}, {"constituency": "จันทบุรี 1", "share": 0.42, "votes": 449, "total": 107781}, {"constituency": "สระบุรี 4", "share": 0.35, "votes": 345, "total": 97217}, {"constituency": "เพชรบุรี 1", "share": 0.33, "votes": 329, "total": 99165}, {"constituency": "ลพบุรี 1", "share": 0.33, "votes": 289, "total": 88321}, {"constituency": "ราชบุรี 1", "share": 0.33, "votes": 336, "total": 102699}, {"constituency": "ภูเก็ต 1", "share": 0.32, "votes": 234, "total": 72881}, {"constituency": "จันทบุรี 2", "share": 0.31, "votes": 310, "total": 99846}, {"constituency": "สระบุรี 1", "share": 0.3, "votes": 296, "total": 97920}, {"constituency": "ลพบุรี 2", "share": 0.29, "votes": 256, "total": 88936}]}, "เปลี่ยนอนาคต": {"const": [{"constituency": "สุราษฎร์ธานี 5", "share": 0.65, "votes": 513, "total": 79136}, {"constituency": "ขอนแก่น 5", "share": 0.47, "votes": 393, "total": 83050}, {"constituency": "สุราษฎร์ธานี 4", "share": 0.25, "votes": 207, "total": 81814}, {"constituency": "นครสวรรค์ 5", "share": 0.14, "votes": 136, "total": 98476}, {"constituency": "กรุงเทพมหานคร 7", "share": 0.11, "votes": 106, "total": 94976}], "list": [{"constituency": "กำแพงเพชร 2", "share": 0.23, "votes": 220, "total": 97285}, {"constituency": "น่าน 3", "share": 0.2, "votes": 175, "total": 88076}, {"constituency": "แม่ฮ่องสอน 1", "share": 0.18, "votes": 121, "total": 67485}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.16, "votes": 117, "total": 71569}, {"constituency": "เชียงใหม่ 10", "share": 0.16, "votes": 147, "total": 92812}, {"constituency": "ตาก 3", "share": 0.16, "votes": 144, "total": 90977}, {"constituency": "พิษณุโลก 5", "share": 0.16, "votes": 144, "total": 92563}, {"constituency": "น่าน 2", "share": 0.15, "votes": 150, "total": 97930}, {"constituency": "ลำปาง 2", "share": 0.15, "votes": 171, "total": 112901}, {"constituency": "เชียงใหม่ 7", "share": 0.15, "votes": 140, "total": 96204}]}, "เป็นธรรม": {"const": [{"constituency": "ยะลา 1", "share": 3.41, "votes": 3125, "total": 91672}, {"constituency": "ยะลา 3", "share": 1.21, "votes": 1098, "total": 90913}, {"constituency": "ปัตตานี 3", "share": 1.11, "votes": 750, "total": 67707}, {"constituency": "ยะลา 2", "share": 1.06, "votes": 987, "total": 93349}, {"constituency": "ปัตตานี 4", "share": 1.05, "votes": 838, "total": 80181}, {"constituency": "ปัตตานี 1", "share": 1.02, "votes": 719, "total": 70318}, {"constituency": "นราธิวาส 3", "share": 0.85, "votes": 613, "total": 72022}, {"constituency": "ปัตตานี 2", "share": 0.59, "votes": 472, "total": 79936}, {"constituency": "กรุงเทพมหานคร 32", "share": 0.46, "votes": 448, "total": 96402}, {"constituency": "กรุงเทพมหานคร 19", "share": 0.37, "votes": 356, "total": 96535}], "list": [{"constituency": "เพชรบูรณ์ 6", "share": 3.84, "votes": 3379, "total": 87920}, {"constituency": "นราธิวาส 3", "share": 3.77, "votes": 2830, "total": 75013}, {"constituency": "บุรีรัมย์ 4", "share": 3.52, "votes": 2722, "total": 77287}, {"constituency": "เพชรบูรณ์ 4", "share": 3.4, "votes": 2765, "total": 81268}, {"constituency": "กำแพงเพชร 3", "share": 3.37, "votes": 2933, "total": 87050}, {"constituency": "สุรินทร์ 8", "share": 3.2, "votes": 2762, "total": 86299}, {"constituency": "เพชรบูรณ์ 5", "share": 3.02, "votes": 2588, "total": 85757}, {"constituency": "กำแพงเพชร 4", "share": 2.93, "votes": 2660, "total": 90926}, {"constituency": "บุรีรัมย์ 6", "share": 2.7, "votes": 2222, "total": 82332}, {"constituency": "ศรีสะเกษ 7", "share": 2.67, "votes": 2218, "total": 83104}]}, "เพื่อชาติ": {"const": [{"constituency": "ตาก 2", "share": 18.24, "votes": 15621, "total": 85630}, {"constituency": "สุโขทัย 4", "share": 6.22, "votes": 5165, "total": 83056}, {"constituency": "เชียงใหม่ 7", "share": 4.58, "votes": 4304, "total": 93968}, {"constituency": "หนองบัวลำภู 2", "share": 3.1, "votes": 2649, "total": 85316}, {"constituency": "นครศรีธรรมราช 10", "share": 1.53, "votes": 1385, "total": 90772}, {"constituency": "ตาก 3", "share": 1.25, "votes": 1103, "total": 88114}, {"constituency": "สกลนคร 4", "share": 1.12, "votes": 941, "total": 84157}, {"constituency": "ชุมพร 1", "share": 0.99, "votes": 1017, "total": 102510}, {"constituency": "พังงา 1", "share": 0.7, "votes": 507, "total": 72616}, {"constituency": "ตาก 1", "share": 0.56, "votes": 583, "total": 103556}], "list": [{"constituency": "ตาก 2", "share": 3.11, "votes": 2718, "total": 87466}, {"constituency": "สุโขทัย 4", "share": 0.92, "votes": 774, "total": 84182}, {"constituency": "ตรัง 4", "share": 0.7, "votes": 677, "total": 96148}, {"constituency": "เชียงราย 2", "share": 0.45, "votes": 446, "total": 98388}, {"constituency": "มหาสารคาม 4", "share": 0.41, "votes": 348, "total": 85282}, {"constituency": "เชียงใหม่ 7", "share": 0.41, "votes": 390, "total": 96204}, {"constituency": "กาฬสินธุ์ 2", "share": 0.4, "votes": 346, "total": 87287}, {"constituency": "นครราชสีมา 11", "share": 0.34, "votes": 331, "total": 97289}, {"constituency": "นครราชสีมา 5", "share": 0.34, "votes": 325, "total": 96231}, {"constituency": "หนองบัวลำภู 2", "share": 0.34, "votes": 287, "total": 85519}]}, "เพื่อชาติไทย": {"const": [{"constituency": "ขอนแก่น 4", "share": 1.04, "votes": 988, "total": 94639}, {"constituency": "นครราชสีมา 3", "share": 0.76, "votes": 748, "total": 98837}, {"constituency": "เชียงใหม่ 10", "share": 0.64, "votes": 585, "total": 91720}, {"constituency": "อุบลราชธานี 8", "share": 0.61, "votes": 560, "total": 92056}, {"constituency": "สกลนคร 2", "share": 0.58, "votes": 505, "total": 87077}, {"constituency": "เชียงใหม่ 9", "share": 0.56, "votes": 583, "total": 103315}, {"constituency": "นครราชสีมา 2", "share": 0.53, "votes": 534, "total": 99896}, {"constituency": "ลำปาง 1", "share": 0.52, "votes": 587, "total": 111945}, {"constituency": "ขอนแก่น 5", "share": 0.5, "votes": 418, "total": 83050}, {"constituency": "ลพบุรี 2", "share": 0.49, "votes": 430, "total": 87922}], "list": [{"constituency": "อำนาจเจริญ 1", "share": 0.94, "votes": 949, "total": 101353}, {"constituency": "เลย 3", "share": 0.85, "votes": 797, "total": 93380}, {"constituency": "นครสวรรค์ 6", "share": 0.83, "votes": 749, "total": 90168}, {"constituency": "เลย 4", "share": 0.83, "votes": 733, "total": 88412}, {"constituency": "สุพรรณบุรี 4", "share": 0.8, "votes": 817, "total": 102481}, {"constituency": "สุพรรณบุรี 3", "share": 0.75, "votes": 743, "total": 99216}, {"constituency": "ชัยภูมิ 1", "share": 0.75, "votes": 686, "total": 91992}, {"constituency": "ชัยภูมิ 5", "share": 0.72, "votes": 640, "total": 88504}, {"constituency": "เพชรบูรณ์ 3", "share": 0.72, "votes": 655, "total": 91103}, {"constituency": "สุรินทร์ 7", "share": 0.69, "votes": 636, "total": 91742}]}, "เพื่ออนาคตไทย": {"const": [{"constituency": "บุรีรัมย์ 8", "share": 0.5, "votes": 435, "total": 86139}, {"constituency": "ยโสธร 2", "share": 0.32, "votes": 301, "total": 94418}, {"constituency": "ชัยภูมิ 3", "share": 0.12, "votes": 102, "total": 84249}, {"constituency": "ชัยภูมิ 6", "share": 0.06, "votes": 59, "total": 92261}], "list": [{"constituency": "บุรีรัมย์ 4", "share": 0.22, "votes": 167, "total": 77287}, {"constituency": "นครราชสีมา 4", "share": 0.1, "votes": 100, "total": 97863}, {"constituency": "นครราชสีมา 3", "share": 0.09, "votes": 93, "total": 99814}, {"constituency": "กาฬสินธุ์ 4", "share": 0.07, "votes": 64, "total": 90565}, {"constituency": "กาฬสินธุ์ 1", "share": 0.07, "votes": 62, "total": 90803}, {"constituency": "นครราชสีมา 2", "share": 0.06, "votes": 65, "total": 101797}, {"constituency": "ชัยภูมิ 2", "share": 0.06, "votes": 58, "total": 91999}, {"constituency": "มหาสารคาม 2", "share": 0.06, "votes": 53, "total": 86177}, {"constituency": "ขอนแก่น 7", "share": 0.06, "votes": 57, "total": 93513}, {"constituency": "กาฬสินธุ์ 6", "share": 0.06, "votes": 55, "total": 90531}]}, "เพื่อไทย": {"const": [{"constituency": "ร้อยเอ็ด 5", "share": 72.95, "votes": 61288, "total": 84013}, {"constituency": "ชัยภูมิ 2", "share": 67.43, "votes": 61414, "total": 91083}, {"constituency": "ศรีสะเกษ 7", "share": 65.49, "votes": 52952, "total": 80860}, {"constituency": "กาฬสินธุ์ 1", "share": 62.95, "votes": 56569, "total": 89863}, {"constituency": "นครราชสีมา 11", "share": 62.18, "votes": 60326, "total": 97011}, {"constituency": "อุดรธานี 10", "share": 60.76, "votes": 47763, "total": 78604}, {"constituency": "ขอนแก่น 5", "share": 60.72, "votes": 50429, "total": 83050}, {"constituency": "น่าน 2", "share": 59.43, "votes": 56746, "total": 95483}, {"constituency": "นครราชสีมา 7", "share": 59.0, "votes": 51348, "total": 87029}, {"constituency": "เลย 2", "share": 57.99, "votes": 50421, "total": 86945}], "list": [{"constituency": "สกลนคร 3", "share": 56.86, "votes": 50610, "total": 89007}, {"constituency": "ร้อยเอ็ด 6", "share": 56.77, "votes": 48371, "total": 85210}, {"constituency": "ศรีสะเกษ 7", "share": 56.01, "votes": 46546, "total": 83104}, {"constituency": "ร้อยเอ็ด 5", "share": 55.88, "votes": 47433, "total": 84879}, {"constituency": "กาฬสินธุ์ 2", "share": 55.6, "votes": 48534, "total": 87287}, {"constituency": "ร้อยเอ็ด 8", "share": 55.33, "votes": 49965, "total": 90302}, {"constituency": "ยโสธร 2", "share": 55.25, "votes": 52600, "total": 95205}, {"constituency": "ร้อยเอ็ด 7", "share": 54.88, "votes": 49144, "total": 89541}, {"constituency": "กาฬสินธุ์ 5", "share": 54.16, "votes": 50454, "total": 93158}, {"constituency": "ขอนแก่น 10", "share": 53.74, "votes": 47259, "total": 87939}]}, "เพื่อไทรวมพลัง": {"const": [{"constituency": "อุบลราชธานี 10", "share": 64.79, "votes": 63127, "total": 97428}, {"constituency": "อุบลราชธานี 3", "share": 31.35, "votes": 31218, "total": 99574}], "list": [{"constituency": "อุบลราชธานี 10", "share": 4.12, "votes": 3964, "total": 96251}, {"constituency": "อุบลราชธานี 3", "share": 3.81, "votes": 3747, "total": 98383}, {"constituency": "อุบลราชธานี 11", "share": 1.71, "votes": 1526, "total": 89348}, {"constituency": "อุบลราชธานี 5", "share": 1.19, "votes": 1065, "total": 89254}, {"constituency": "อุบลราชธานี 9", "share": 1.02, "votes": 837, "total": 81993}, {"constituency": "อุบลราชธานี 7", "share": 0.97, "votes": 851, "total": 87658}, {"constituency": "อุบลราชธานี 6", "share": 0.75, "votes": 634, "total": 84520}, {"constituency": "อุบลราชธานี 8", "share": 0.71, "votes": 652, "total": 91597}, {"constituency": "ศรีสะเกษ 3", "share": 0.68, "votes": 579, "total": 84792}, {"constituency": "อำนาจเจริญ 2", "share": 0.61, "votes": 649, "total": 106961}]}, "เสมอภาค": {"const": [{"constituency": "พังงา 1", "share": 0.59, "votes": 428, "total": 72616}, {"constituency": "พังงา 2", "share": 0.56, "votes": 426, "total": 75493}, {"constituency": "กรุงเทพมหานคร 12", "share": 0.3, "votes": 309, "total": 101975}, {"constituency": "กรุงเทพมหานคร 30", "share": 0.28, "votes": 282, "total": 99788}, {"constituency": "กรุงเทพมหานคร 27", "share": 0.14, "votes": 132, "total": 97753}], "list": [{"constituency": "แม่ฮ่องสอน 2", "share": 0.27, "votes": 193, "total": 71569}, {"constituency": "พะเยา 2", "share": 0.19, "votes": 178, "total": 94577}, {"constituency": "เชียงใหม่ 10", "share": 0.16, "votes": 153, "total": 92812}, {"constituency": "ตาก 3", "share": 0.16, "votes": 146, "total": 90977}, {"constituency": "สุพรรณบุรี 5", "share": 0.14, "votes": 151, "total": 108363}, {"constituency": "พังงา 1", "share": 0.12, "votes": 91, "total": 72872}, {"constituency": "แม่ฮ่องสอน 1", "share": 0.11, "votes": 73, "total": 67485}, {"constituency": "กำแพงเพชร 2", "share": 0.1, "votes": 99, "total": 97285}, {"constituency": "กาฬสินธุ์ 3", "share": 0.1, "votes": 80, "total": 81268}, {"constituency": "พะเยา 1", "share": 0.09, "votes": 91, "total": 96878}]}, "เสรีรวมไทย": {"const": [{"constituency": "อุดรธานี 4", "share": 23.42, "votes": 18145, "total": 77462}, {"constituency": "นครพนม 4", "share": 21.78, "votes": 20840, "total": 95673}, {"constituency": "ระยอง 3", "share": 3.08, "votes": 2755, "total": 89470}, {"constituency": "มุกดาหาร 2", "share": 2.73, "votes": 2669, "total": 97661}, {"constituency": "ศรีสะเกษ 2", "share": 2.65, "votes": 2180, "total": 82157}, {"constituency": "อุดรธานี 2", "share": 2.36, "votes": 2015, "total": 85226}, {"constituency": "ขอนแก่น 5", "share": 2.16, "votes": 1797, "total": 83050}, {"constituency": "มุกดาหาร 1", "share": 2.02, "votes": 2034, "total": 100842}, {"constituency": "นครศรีธรรมราช 7", "share": 1.93, "votes": 1632, "total": 84747}, {"constituency": "กรุงเทพมหานคร 31", "share": 1.86, "votes": 1964, "total": 105309}], "list": [{"constituency": "นครพนม 4", "share": 6.65, "votes": 6331, "total": 95186}, {"constituency": "อุดรธานี 1", "share": 2.06, "votes": 1786, "total": 86820}, {"constituency": "ขอนแก่น 1", "share": 2.0, "votes": 1864, "total": 92981}, {"constituency": "สุราษฎร์ธานี 1", "share": 1.97, "votes": 1665, "total": 84526}, {"constituency": "อุดรธานี 2", "share": 1.92, "votes": 1658, "total": 86426}, {"constituency": "กรุงเทพมหานคร 31", "share": 1.91, "votes": 2042, "total": 106855}, {"constituency": "ระยอง 3", "share": 1.9, "votes": 1706, "total": 89821}, {"constituency": "นครปฐม 5", "share": 1.9, "votes": 1960, "total": 103393}, {"constituency": "มุกดาหาร 1", "share": 1.84, "votes": 1873, "total": 101533}, {"constituency": "ขอนแก่น 2", "share": 1.76, "votes": 1795, "total": 101911}]}, "เส้นด้าย": {"const": [{"constituency": "กรุงเทพมหานคร 6", "share": 2.49, "votes": 2574, "total": 103314}, {"constituency": "กรุงเทพมหานคร 2", "share": 0.72, "votes": 665, "total": 92198}, {"constituency": "กรุงเทพมหานคร 9", "share": 0.58, "votes": 594, "total": 101921}, {"constituency": "กรุงเทพมหานคร 22", "share": 0.51, "votes": 475, "total": 92651}, {"constituency": "กรุงเทพมหานคร 8", "share": 0.5, "votes": 516, "total": 103549}, {"constituency": "กรุงเทพมหานคร 17", "share": 0.46, "votes": 376, "total": 81898}, {"constituency": "กรุงเทพมหานคร 32", "share": 0.35, "votes": 336, "total": 96402}, {"constituency": "กรุงเทพมหานคร 23", "share": 0.34, "votes": 348, "total": 101343}, {"constituency": "กรุงเทพมหานคร 15", "share": 0.33, "votes": 302, "total": 92172}, {"constituency": "กรุงเทพมหานคร 5", "share": 0.32, "votes": 305, "total": 95078}], "list": [{"constituency": "กรุงเทพมหานคร 6", "share": 0.61, "votes": 636, "total": 104815}, {"constituency": "กรุงเทพมหานคร 2", "share": 0.17, "votes": 161, "total": 93546}, {"constituency": "กรุงเทพมหานคร 8", "share": 0.15, "votes": 159, "total": 104916}, {"constituency": "กรุงเทพมหานคร 5", "share": 0.14, "votes": 135, "total": 96436}, {"constituency": "กรุงเทพมหานคร 9", "share": 0.13, "votes": 132, "total": 104648}, {"constituency": "กรุงเทพมหานคร 1", "share": 0.11, "votes": 103, "total": 91053}, {"constituency": "กรุงเทพมหานคร 7", "share": 0.11, "votes": 108, "total": 96465}, {"constituency": "กรุงเทพมหานคร 23", "share": 0.11, "votes": 114, "total": 102901}, {"constituency": "กรุงเทพมหานคร 15", "share": 0.11, "votes": 98, "total": 93117}, {"constituency": "กรุงเทพมหานคร 22", "share": 0.1, "votes": 91, "total": 94010}]}, "แนวทางใหม่": {"const": [{"constituency": "บุรีรัมย์ 7", "share": 1.42, "votes": 1164, "total": 81882}, {"constituency": "นครราชสีมา 1", "share": 1.27, "votes": 1197, "total": 94025}, {"constituency": "ขอนแก่น 3", "share": 0.89, "votes": 832, "total": 93239}, {"constituency": "อุดรธานี 10", "share": 0.89, "votes": 700, "total": 78604}, {"constituency": "สุรินทร์ 5", "share": 0.84, "votes": 706, "total": 84087}, {"constituency": "บุรีรัมย์ 1", "share": 0.51, "votes": 427, "total": 83708}, {"constituency": "ศรีสะเกษ 2", "share": 0.51, "votes": 418, "total": 82157}, {"constituency": "เชียงใหม่ 6", "share": 0.5, "votes": 456, "total": 90433}, {"constituency": "นครพนม 3", "share": 0.5, "votes": 473, "total": 93958}, {"constituency": "บุรีรัมย์ 6", "share": 0.47, "votes": 384, "total": 81612}], "list": [{"constituency": "ยะลา 2", "share": 0.76, "votes": 705, "total": 92745}, {"constituency": "ปัตตานี 5", "share": 0.47, "votes": 350, "total": 73882}, {"constituency": "นราธิวาส 5", "share": 0.44, "votes": 391, "total": 89229}, {"constituency": "ปัตตานี 3", "share": 0.43, "votes": 287, "total": 67130}, {"constituency": "นราธิวาส 4", "share": 0.39, "votes": 313, "total": 79713}, {"constituency": "ปัตตานี 4", "share": 0.39, "votes": 306, "total": 79041}, {"constituency": "นราธิวาส 3", "share": 0.39, "votes": 290, "total": 75013}, {"constituency": "ปัตตานี 2", "share": 0.35, "votes": 280, "total": 79068}, {"constituency": "นราธิวาส 1", "share": 0.33, "votes": 301, "total": 92391}, {"constituency": "ยะลา 3", "share": 0.32, "votes": 291, "total": 91342}]}, "แผ่นดินธรรม": {"const": [{"constituency": "อุบลราชธานี 7", "share": 0.42, "votes": 369, "total": 88473}, {"constituency": "บุรีรัมย์ 7", "share": 0.41, "votes": 338, "total": 81882}], "list": [{"constituency": "เชียงใหม่ 10", "share": 0.2, "votes": 189, "total": 92812}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.17, "votes": 123, "total": 71569}, {"constituency": "น่าน 3", "share": 0.14, "votes": 123, "total": 88076}, {"constituency": "เชียงใหม่ 7", "share": 0.1, "votes": 94, "total": 96204}, {"constituency": "ตาก 2", "share": 0.09, "votes": 83, "total": 87466}, {"constituency": "ตาก 3", "share": 0.09, "votes": 86, "total": 90977}, {"constituency": "เชียงใหม่ 6", "share": 0.09, "votes": 79, "total": 90959}, {"constituency": "กำแพงเพชร 4", "share": 0.09, "votes": 78, "total": 90926}, {"constituency": "เชียงราย 6", "share": 0.08, "votes": 68, "total": 81939}, {"constituency": "เชียงราย 3", "share": 0.08, "votes": 85, "total": 103964}]}, "แรงงานสร้างชาติ": {"const": [{"constituency": "ระยอง 2", "share": 0.58, "votes": 457, "total": 79281}, {"constituency": "บึงกาฬ 2", "share": 0.48, "votes": 353, "total": 73052}, {"constituency": "ตรัง 3", "share": 0.3, "votes": 262, "total": 85914}, {"constituency": "หนองบัวลำภู 2", "share": 0.15, "votes": 128, "total": 85316}], "list": [{"constituency": "บุรีรัมย์ 1", "share": 3.5, "votes": 2969, "total": 84863}, {"constituency": "เชียงใหม่ 10", "share": 2.98, "votes": 2763, "total": 92812}, {"constituency": "อุดรธานี 3", "share": 2.67, "votes": 2111, "total": 79084}, {"constituency": "สุพรรณบุรี 5", "share": 2.65, "votes": 2867, "total": 108363}, {"constituency": "สุรินทร์ 2", "share": 2.47, "votes": 2374, "total": 95925}, {"constituency": "อ่างทอง 2", "share": 2.47, "votes": 2139, "total": 86519}, {"constituency": "อุตรดิตถ์ 2", "share": 2.32, "votes": 1958, "total": 84474}, {"constituency": "น่าน 3", "share": 2.3, "votes": 2029, "total": 88076}, {"constituency": "ศรีสะเกษ 6", "share": 2.25, "votes": 1895, "total": 84369}, {"constituency": "พระนครศรีอยุธยา 1", "share": 2.25, "votes": 2343, "total": 104364}]}, "ใหม่": {"const": [{"constituency": "กำแพงเพชร 3", "share": 0.59, "votes": 513, "total": 87629}, {"constituency": "นครนายก 2", "share": 0.47, "votes": 399, "total": 84123}, {"constituency": "นครนายก 1", "share": 0.36, "votes": 289, "total": 79785}, {"constituency": "กำแพงเพชร 4", "share": 0.18, "votes": 164, "total": 90372}], "list": [{"constituency": "อุบลราชธานี 10", "share": 4.78, "votes": 4598, "total": 96251}, {"constituency": "บุรีรัมย์ 2", "share": 4.13, "votes": 3409, "total": 82451}, {"constituency": "เชียงใหม่ 10", "share": 3.95, "votes": 3663, "total": 92812}, {"constituency": "นครราชสีมา 9", "share": 3.35, "votes": 3177, "total": 94818}, {"constituency": "สระแก้ว 2", "share": 3.29, "votes": 3202, "total": 97339}, {"constituency": "อุบลราชธานี 5", "share": 3.06, "votes": 2732, "total": 89254}, {"constituency": "นครสวรรค์ 4", "share": 3.01, "votes": 2924, "total": 97226}, {"constituency": "เลย 4", "share": 2.97, "votes": 2630, "total": 88412}, {"constituency": "นครนายก 2", "share": 2.94, "votes": 2461, "total": 83728}, {"constituency": "น่าน 3", "share": 2.87, "votes": 2529, "total": 88076}]}, "ไทยก้าวหน้า": {"const": [{"constituency": "สุรินทร์ 2", "share": 0.54, "votes": 521, "total": 95922}, {"constituency": "สุรินทร์ 1", "share": 0.53, "votes": 505, "total": 94612}, {"constituency": "สุรินทร์ 3", "share": 0.23, "votes": 208, "total": 89833}, {"constituency": "อุบลราชธานี 11", "share": 0.19, "votes": 168, "total": 89953}, {"constituency": "สุรินทร์ 4", "share": 0.17, "votes": 154, "total": 88110}], "list": [{"constituency": "กาฬสินธุ์ 6", "share": 0.33, "votes": 303, "total": 90531}, {"constituency": "ปัตตานี 4", "share": 0.27, "votes": 212, "total": 79041}, {"constituency": "ปราจีนบุรี 3", "share": 0.18, "votes": 170, "total": 95441}, {"constituency": "เพชรบุรี 2", "share": 0.17, "votes": 180, "total": 106717}, {"constituency": "ระยอง 3", "share": 0.16, "votes": 146, "total": 89821}, {"constituency": "กาฬสินธุ์ 3", "share": 0.16, "votes": 131, "total": 81268}, {"constituency": "นครปฐม 1", "share": 0.16, "votes": 163, "total": 102027}, {"constituency": "ชัยภูมิ 4", "share": 0.16, "votes": 122, "total": 77438}, {"constituency": "ราชบุรี 5", "share": 0.15, "votes": 168, "total": 108474}, {"constituency": "นครปฐม 3", "share": 0.15, "votes": 140, "total": 92164}]}, "ไทยชนะ": {"const": [{"constituency": "ขอนแก่น 8", "share": 0.64, "votes": 615, "total": 96554}, {"constituency": "ขอนแก่น 4", "share": 0.42, "votes": 394, "total": 94639}, {"constituency": "หนองคาย 3", "share": 0.38, "votes": 331, "total": 87345}, {"constituency": "ขอนแก่น 9", "share": 0.32, "votes": 268, "total": 83036}, {"constituency": "มหาสารคาม 2", "share": 0.26, "votes": 225, "total": 85707}, {"constituency": "กรุงเทพมหานคร 3", "share": 0.19, "votes": 158, "total": 84283}, {"constituency": "ขอนแก่น 1", "share": 0.15, "votes": 138, "total": 91799}, {"constituency": "ขอนแก่น 2", "share": 0.15, "votes": 147, "total": 100727}, {"constituency": "ขอนแก่น 7", "share": 0.11, "votes": 107, "total": 93393}, {"constituency": "ขอนแก่น 3", "share": 0.06, "votes": 60, "total": 93239}], "list": [{"constituency": "ขอนแก่น 3", "share": 2.25, "votes": 2079, "total": 92380}, {"constituency": "มหาสารคาม 2", "share": 0.69, "votes": 596, "total": 86177}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.69, "votes": 494, "total": 71569}, {"constituency": "เชียงใหม่ 10", "share": 0.55, "votes": 506, "total": 92812}, {"constituency": "กรุงเทพมหานคร 17", "share": 0.54, "votes": 446, "total": 82499}, {"constituency": "ตาก 3", "share": 0.49, "votes": 450, "total": 90977}, {"constituency": "ตรัง 3", "share": 0.37, "votes": 328, "total": 88158}, {"constituency": "น่าน 3", "share": 0.37, "votes": 323, "total": 88076}, {"constituency": "กำแพงเพชร 2", "share": 0.35, "votes": 343, "total": 97285}, {"constituency": "ตาก 2", "share": 0.33, "votes": 291, "total": 87466}]}, "ไทยธรรม": {"const": [{"constituency": "บุรีรัมย์ 6", "share": 0.65, "votes": 532, "total": 81612}, {"constituency": "กรุงเทพมหานคร 16", "share": 0.12, "votes": 118, "total": 97752}, {"constituency": "นครราชสีมา 16", "share": 0.07, "votes": 61, "total": 93136}, {"constituency": "นครราชสีมา 7", "share": 0.06, "votes": 54, "total": 87029}], "list": [{"constituency": "บุรีรัมย์ 3", "share": 0.45, "votes": 356, "total": 78807}, {"constituency": "บุรีรัมย์ 2", "share": 0.43, "votes": 353, "total": 82451}, {"constituency": "บุรีรัมย์ 8", "share": 0.38, "votes": 331, "total": 87176}, {"constituency": "บุรีรัมย์ 1", "share": 0.37, "votes": 310, "total": 84863}, {"constituency": "บุรีรัมย์ 5", "share": 0.35, "votes": 297, "total": 85063}, {"constituency": "ฉะเชิงเทรา 2", "share": 0.33, "votes": 368, "total": 112155}, {"constituency": "บุรีรัมย์ 6", "share": 0.3, "votes": 250, "total": 82332}, {"constituency": "กำแพงเพชร 2", "share": 0.3, "votes": 290, "total": 97285}, {"constituency": "ศรีสะเกษ 3", "share": 0.29, "votes": 249, "total": 84792}, {"constituency": "อุทัยธานี 1", "share": 0.29, "votes": 250, "total": 86718}]}, "ไทยพร้อม": {"const": [{"constituency": "นครพนม 3", "share": 0.67, "votes": 627, "total": 93958}, {"constituency": "นครพนม 4", "share": 0.51, "votes": 484, "total": 95673}, {"constituency": "มหาสารคาม 1", "share": 0.41, "votes": 376, "total": 91972}, {"constituency": "นครราชสีมา 5", "share": 0.32, "votes": 310, "total": 95662}, {"constituency": "ยะลา 2", "share": 0.14, "votes": 133, "total": 93349}], "list": [{"constituency": "นครพนม 3", "share": 2.32, "votes": 2182, "total": 94047}, {"constituency": "เชียงใหม่ 10", "share": 0.86, "votes": 794, "total": 92812}, {"constituency": "ชัยภูมิ 4", "share": 0.76, "votes": 585, "total": 77438}, {"constituency": "เลย 1", "share": 0.75, "votes": 690, "total": 91927}, {"constituency": "อุบลราชธานี 6", "share": 0.68, "votes": 571, "total": 84520}, {"constituency": "ศรีสะเกษ 6", "share": 0.65, "votes": 551, "total": 84369}, {"constituency": "อุตรดิตถ์ 3", "share": 0.63, "votes": 556, "total": 87662}, {"constituency": "เลย 2", "share": 0.62, "votes": 546, "total": 87782}, {"constituency": "ศรีสะเกษ 2", "share": 0.62, "votes": 515, "total": 83619}, {"constituency": "ศรีสะเกษ 4", "share": 0.61, "votes": 500, "total": 81829}]}, "ไทยภักดี": {"const": [{"constituency": "ปัตตานี 1", "share": 2.79, "votes": 1960, "total": 70318}, {"constituency": "สุราษฎร์ธานี 7", "share": 1.72, "votes": 1436, "total": 83524}, {"constituency": "สุโขทัย 1", "share": 1.1, "votes": 910, "total": 82373}, {"constituency": "เลย 1", "share": 1.08, "votes": 974, "total": 89960}, {"constituency": "กรุงเทพมหานคร 18", "share": 1.05, "votes": 892, "total": 85070}, {"constituency": "ลพบุรี 2", "share": 0.96, "votes": 844, "total": 87922}, {"constituency": "นครศรีธรรมราช 4", "share": 0.93, "votes": 794, "total": 85540}, {"constituency": "ศรีสะเกษ 7", "share": 0.91, "votes": 734, "total": 80860}, {"constituency": "นครศรีธรรมราช 10", "share": 0.91, "votes": 822, "total": 90772}, {"constituency": "สุราษฎร์ธานี 3", "share": 0.89, "votes": 772, "total": 86371}], "list": [{"constituency": "นครศรีธรรมราช 6", "share": 1.62, "votes": 1304, "total": 80505}, {"constituency": "พิษณุโลก 1", "share": 1.41, "votes": 1405, "total": 99661}, {"constituency": "กรุงเทพมหานคร 18", "share": 1.07, "votes": 922, "total": 86516}, {"constituency": "กระบี่ 3", "share": 0.85, "votes": 797, "total": 94309}, {"constituency": "สงขลา 4", "share": 0.81, "votes": 775, "total": 96117}, {"constituency": "สุราษฎร์ธานี 7", "share": 0.68, "votes": 585, "total": 85780}, {"constituency": "นครศรีธรรมราช 7", "share": 0.68, "votes": 573, "total": 84800}, {"constituency": "นนทบุรี 1", "share": 0.66, "votes": 677, "total": 103275}, {"constituency": "สุโขทัย 1", "share": 0.64, "votes": 536, "total": 83628}, {"constituency": "ชัยภูมิ 3", "share": 0.64, "votes": 533, "total": 83766}]}, "ไทยรวมไทย": {"const": [{"constituency": "อุดรธานี 2", "share": 0.48, "votes": 408, "total": 85226}, {"constituency": "สกลนคร 6", "share": 0.3, "votes": 237, "total": 80143}, {"constituency": "สระแก้ว 2", "share": 0.2, "votes": 194, "total": 97570}, {"constituency": "สกลนคร 2", "share": 0.18, "votes": 157, "total": 87077}], "list": [{"constituency": "ชุมพร 2", "share": 2.06, "votes": 2104, "total": 101893}, {"constituency": "ชุมพร 1", "share": 1.44, "votes": 1471, "total": 102149}, {"constituency": "ยะลา 1", "share": 1.29, "votes": 1193, "total": 92742}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.54, "votes": 387, "total": 71569}, {"constituency": "ชัยภูมิ 4", "share": 0.42, "votes": 326, "total": 77438}, {"constituency": "นครสวรรค์ 3", "share": 0.41, "votes": 417, "total": 101960}, {"constituency": "อุดรธานี 3", "share": 0.41, "votes": 322, "total": 79084}, {"constituency": "ชัยนาท 1", "share": 0.39, "votes": 376, "total": 96040}, {"constituency": "อุบลราชธานี 9", "share": 0.39, "votes": 321, "total": 81993}, {"constituency": "ปัตตานี 3", "share": 0.37, "votes": 248, "total": 67130}]}, "ไทยศรีวิไลย์": {"const": [{"constituency": "ปัตตานี 3", "share": 4.15, "votes": 2811, "total": 67707}, {"constituency": "เชียงใหม่ 10", "share": 1.19, "votes": 1092, "total": 91720}, {"constituency": "ยะลา 2", "share": 1.04, "votes": 970, "total": 93349}, {"constituency": "เลย 2", "share": 0.96, "votes": 839, "total": 86945}, {"constituency": "นครราชสีมา 13", "share": 0.88, "votes": 770, "total": 87887}, {"constituency": "เชียงราย 7", "share": 0.84, "votes": 782, "total": 93009}, {"constituency": "นครราชสีมา 1", "share": 0.8, "votes": 755, "total": 94025}, {"constituency": "ขอนแก่น 5", "share": 0.78, "votes": 648, "total": 83050}, {"constituency": "แพร่ 3", "share": 0.73, "votes": 629, "total": 85967}, {"constituency": "อุดรธานี 8", "share": 0.71, "votes": 555, "total": 78392}], "list": [{"constituency": "พัทลุง 3", "share": 0.29, "votes": 318, "total": 109343}, {"constituency": "น่าน 3", "share": 0.29, "votes": 252, "total": 88076}, {"constituency": "อุตรดิตถ์ 2", "share": 0.27, "votes": 225, "total": 84474}, {"constituency": "เชียงใหม่ 10", "share": 0.26, "votes": 243, "total": 92812}, {"constituency": "สุพรรณบุรี 5", "share": 0.24, "votes": 265, "total": 108363}, {"constituency": "เพชรบุรี 1", "share": 0.24, "votes": 240, "total": 99165}, {"constituency": "บุรีรัมย์ 1", "share": 0.23, "votes": 196, "total": 84863}, {"constituency": "เลย 2", "share": 0.21, "votes": 182, "total": 87782}, {"constituency": "อ่างทอง 2", "share": 0.2, "votes": 174, "total": 86519}, {"constituency": "นครราชสีมา 13", "share": 0.2, "votes": 176, "total": 89051}]}, "ไทยสมาร์ท": {"const": [{"constituency": "สุราษฎร์ธานี 5", "share": 1.82, "votes": 1440, "total": 79136}, {"constituency": "สงขลา 7", "share": 1.42, "votes": 1286, "total": 90326}, {"constituency": "อุดรธานี 8", "share": 0.98, "votes": 769, "total": 78392}, {"constituency": "สกลนคร 7", "share": 0.93, "votes": 736, "total": 79233}, {"constituency": "กาฬสินธุ์ 5", "share": 0.49, "votes": 449, "total": 91506}, {"constituency": "มุกดาหาร 2", "share": 0.49, "votes": 478, "total": 97661}, {"constituency": "นครศรีธรรมราช 10", "share": 0.48, "votes": 434, "total": 90772}, {"constituency": "ขอนแก่น 6", "share": 0.45, "votes": 388, "total": 86539}, {"constituency": "นครศรีธรรมราช 3", "share": 0.44, "votes": 392, "total": 89740}, {"constituency": "ขอนแก่น 3", "share": 0.42, "votes": 388, "total": 93239}], "list": [{"constituency": "สกลนคร 2", "share": 0.15, "votes": 134, "total": 87406}, {"constituency": "เชียงใหม่ 10", "share": 0.11, "votes": 101, "total": 92812}, {"constituency": "อุดรธานี 8", "share": 0.09, "votes": 74, "total": 78463}, {"constituency": "สุราษฎร์ธานี 5", "share": 0.08, "votes": 68, "total": 81216}, {"constituency": "ตาก 3", "share": 0.08, "votes": 73, "total": 90977}, {"constituency": "มุกดาหาร 2", "share": 0.07, "votes": 72, "total": 97677}, {"constituency": "ตรัง 3", "share": 0.07, "votes": 63, "total": 88158}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.07, "votes": 51, "total": 71569}, {"constituency": "กาฬสินธุ์ 2", "share": 0.07, "votes": 62, "total": 87287}, {"constituency": "น่าน 3", "share": 0.07, "votes": 60, "total": 88076}]}, "ไทยสร้างไทย": {"const": [{"constituency": "ยโสธร 1", "share": 49.98, "votes": 53130, "total": 106293}, {"constituency": "ร้อยเอ็ด 7", "share": 47.52, "votes": 42492, "total": 89428}, {"constituency": "อุดรธานี 3", "share": 46.05, "votes": 36250, "total": 78714}, {"constituency": "อุบลราชธานี 9", "share": 38.25, "votes": 31311, "total": 81849}, {"constituency": "ยโสธร 2", "share": 36.63, "votes": 34581, "total": 94418}, {"constituency": "อุดรธานี 6", "share": 34.1, "votes": 27751, "total": 81383}, {"constituency": "สกลนคร 1", "share": 28.01, "votes": 25403, "total": 90682}, {"constituency": "กาฬสินธุ์ 2", "share": 26.97, "votes": 23495, "total": 87105}, {"constituency": "อุบลราชธานี 6", "share": 26.83, "votes": 22759, "total": 84825}, {"constituency": "หนองบัวลำภู 2", "share": 25.39, "votes": 21661, "total": 85316}], "list": [{"constituency": "อุบลราชธานี 6", "share": 11.54, "votes": 9751, "total": 84520}, {"constituency": "อุบลราชธานี 9", "share": 11.49, "votes": 9420, "total": 81993}, {"constituency": "ยโสธร 1", "share": 10.63, "votes": 11314, "total": 106467}, {"constituency": "อุดรธานี 4", "share": 9.74, "votes": 7502, "total": 77060}, {"constituency": "อุดรธานี 3", "share": 8.03, "votes": 6352, "total": 79084}, {"constituency": "สกลนคร 1", "share": 7.63, "votes": 7037, "total": 92244}, {"constituency": "อุบลราชธานี 1", "share": 6.91, "votes": 6884, "total": 99624}, {"constituency": "หนองบัวลำภู 3", "share": 6.41, "votes": 5368, "total": 83709}, {"constituency": "นครพนม 4", "share": 6.16, "votes": 5862, "total": 95186}, {"constituency": "หนองบัวลำภู 2", "share": 5.95, "votes": 5092, "total": 85519}]}, "ไทยเป็นหนึ่ง": {"const": [{"constituency": "นครสวรรค์ 1", "share": 0.87, "votes": 862, "total": 99045}, {"constituency": "กำแพงเพชร 3", "share": 0.38, "votes": 337, "total": 87629}, {"constituency": "นครสวรรค์ 3", "share": 0.33, "votes": 332, "total": 102038}, {"constituency": "ร้อยเอ็ด 6", "share": 0.27, "votes": 230, "total": 84460}, {"constituency": "กำแพงเพชร 2", "share": 0.25, "votes": 241, "total": 95664}, {"constituency": "นครสวรรค์ 5", "share": 0.2, "votes": 196, "total": 98476}, {"constituency": "นครสวรรค์ 4", "share": 0.14, "votes": 136, "total": 97571}, {"constituency": "กำแพงเพชร 1", "share": 0.12, "votes": 121, "total": 96928}, {"constituency": "นครสวรรค์ 6", "share": 0.08, "votes": 73, "total": 91500}], "list": [{"constituency": "นครสวรรค์ 1", "share": 0.48, "votes": 485, "total": 100159}, {"constituency": "ปทุมธานี 7", "share": 0.33, "votes": 357, "total": 108399}, {"constituency": "ตาก 3", "share": 0.22, "votes": 197, "total": 90977}, {"constituency": "เชียงใหม่ 10", "share": 0.22, "votes": 200, "total": 92812}, {"constituency": "แม่ฮ่องสอน 2", "share": 0.18, "votes": 130, "total": 71569}, {"constituency": "น่าน 3", "share": 0.18, "votes": 159, "total": 88076}, {"constituency": "นครสวรรค์ 6", "share": 0.13, "votes": 121, "total": 90168}, {"constituency": "แม่ฮ่องสอน 1", "share": 0.13, "votes": 85, "total": 67485}, {"constituency": "นครสวรรค์ 5", "share": 0.13, "votes": 123, "total": 97671}, {"constituency": "นราธิวาส 3", "share": 0.12, "votes": 93, "total": 75013}]}}
-</script>
-  <!-- Preload 2569 derived datasets so the dashboard works on file:// (fetch is blocked). -->
-  <script src="data/election_results_2569_by_dist.js"></script>
-  <script src="data/summary_rows_2569.js"></script>
-  <script src="data/map_dist_index_2569.js"></script>
-  <script src="data/turnout_2569_by_dist.js"></script>
-  <script src="data/party_colors_2569.js"></script>
+  </script>
+	  <!-- Preload 2569 derived datasets so the dashboard works on file:// (fetch is blocked). -->
+	  <script src="data/election_results_2569_by_dist.js"></script>
+	  <!-- Preload 2566 constituency + party-list results (used for swing + candidate switching analysis). -->
+	  <script src="data/election_results_2566_by_dist.js"></script>
+	  <script src="data/summary_rows_2569.js"></script>
+	  <script src="data/map_dist_index_2569.js"></script>
+	  <script src="data/turnout_2569_by_dist.js"></script>
+	  <script src="data/party_colors_2569.js"></script>
   <script src="data/party_assets_2569/party_name_map_2569.js"></script>
   <script src="data/party_assets_2569/party_logo_url_map_2569.js"></script>
   <script>
@@ -2147,11 +2343,22 @@
       mapMetricNone: 'ผู้ชนะ',
       mapMetricSwingChange: 'Swing: ผู้ชนะเปลี่ยนพรรค',
       mapMetricSwingConst: 'Swing: คะแนนแบ่งเขต',
-      mapMetricSwingList: 'Swing: คะแนนบัญชีรายชื่อ',
-      mapMetricSwing: 'Swing',
-      mapMetricTurnout: 'ใช้สิทธิ (แบ่งเขต)',
-      mapMetricTurnoutList: 'ใช้สิทธิ (บัญชีรายชื่อ)',
-	      mapMetricMOV: 'Margin of Victory',
+	      mapMetricSwingList: 'Swing: คะแนนบัญชีรายชื่อ',
+	      mapSwingPartyAll: 'ทุกพรรค (ดัชนีรวม)',
+	      mapMetricSwing: 'Swing',
+	      candidateSwitchTitle: 'ผู้สมัครย้ายพรรค (2569 เทียบ 2566)',
+	      switchToParty: 'ไปพรรค (2569)',
+	      switchFromParty: 'มาจากพรรค (2566)',
+	      switchSameDistrictOnly: 'จับคู่เฉพาะในเขตเดิม',
+	      switchDefinitionNote: 'ผู้ชนะเดิม = ผู้ชนะเลือกตั้งแบบแบ่งเขตในปี 2566 ในเขตเดียวกัน · ชนะ/แพ้ = ผู้สมัครชนะ/แพ้ในปี 2569 · ตรวจจับ “ย้ายพรรค” จากการจับคู่ชื่อผู้สมัครระหว่างปี 2566 และ 2569',
+	      switchColCandidate: 'ผู้สมัคร',
+	      switchColDistrict: 'เขต',
+	      switchColSwitch: 'ย้ายพรรค',
+	      switchColIncWin: 'Incumbent / ผล',
+	      switchColShares: 'สัดส่วนคะแนน',
+	      mapMetricTurnout: 'ใช้สิทธิ (แบ่งเขต)',
+	      mapMetricTurnoutList: 'ใช้สิทธิ (บัญชีรายชื่อ)',
+		      mapMetricMOV: 'Margin of Victory',
 	      mapMetricHHI: 'Vote Concentration',
 	      mapMetricTV: 'Ballot Splitting',
 	      mapMetricENP: 'Effective # of Parties',
@@ -2234,11 +2441,22 @@
       mapMetricNone: 'Winner',
       mapMetricSwingChange: 'Swing: Winner change',
       mapMetricSwingConst: 'Swing: Constituency vote share',
-      mapMetricSwingList: 'Swing: Party-list vote share',
-      mapMetricSwing: 'Swing',
-      mapMetricTurnout: 'Turnout',
-      mapMetricTurnoutList: 'Party-list turnout',
-	      mapMetricMOV: 'Margin of Victory',
+	      mapMetricSwingList: 'Swing: Party-list vote share',
+	      mapSwingPartyAll: 'All parties (overall index)',
+	      mapMetricSwing: 'Swing',
+	      candidateSwitchTitle: 'Candidate Party Switching (2026 vs 2023)',
+	      switchToParty: 'To party (2026)',
+	      switchFromParty: 'From party (2023)',
+	      switchSameDistrictOnly: 'Match only within same constituency',
+	      switchDefinitionNote: 'Incumbent = the 2023 constituency winner in the same district. Win/Lose = whether the candidate wins the constituency in 2026. Party switching is detected by matching candidate names between 2023 and 2026.',
+	      switchColCandidate: 'Candidate',
+	      switchColDistrict: 'District',
+	      switchColSwitch: 'Switch',
+	      switchColIncWin: 'Incumbent / Result',
+	      switchColShares: 'Shares',
+	      mapMetricTurnout: 'Turnout',
+	      mapMetricTurnoutList: 'Party-list turnout',
+		      mapMetricMOV: 'Margin of Victory',
 	      mapMetricHHI: 'Vote Concentration',
 	      mapMetricTV: 'Ballot Splitting',
 	      mapMetricENP: 'Effective # of Parties',
@@ -2813,7 +3031,8 @@
 	    updateTableLanguage();
 	    buildSummaryCards();
 	    renderParliamentArch();
-    refreshPartySelectOptions();
+	    refreshPartySelectOptions();
+	    try { if (initCandidateSwitching && initCandidateSwitching.rerender) initCandidateSwitching.rerender(); } catch (e) {}
 	    updateSummaryFilter(partySelect ? partySelect.value : defaultParty);
 	    setHeaderYearText();
 	    [mapProvince, shareProvince].forEach((select) => {
@@ -3100,6 +3319,7 @@
       : (list.includes(yearDefault) ? yearDefault : (list[0] || 'ทั้งหมด'));
     setSelectValue(plotPartySelect, resolved);
   };
+
 
 	  const refreshSharePartyOptions = () => {
 	    if (!sharePartySelect) return;
@@ -3783,12 +4003,20 @@
     });
   }
 
-	  window.addEventListener('message', (event) => {
-	    const payload = event.data || {};
-	    if (payload.type === 'select-dist' && payload.distId) {
-	      try {
-	        selectInMainMap(payload.distId);
-	        scrollToMainMap();
+		  window.addEventListener('message', (event) => {
+		    const payload = event.data || {};
+		    if (payload.type === 'swing-party-changed') {
+		      const party = payload.party || '';
+		      const desktopSel = document.getElementById('map-swing-party');
+		      const mobileSel = document.getElementById('map-mobile-swing-party');
+		      if (desktopSel) desktopSel.value = party;
+		      if (mobileSel) mobileSel.value = party;
+		      return;
+		    }
+		    if (payload.type === 'select-dist' && payload.distId) {
+		      try {
+		        selectInMainMap(payload.distId);
+		        scrollToMainMap();
 	      } catch (e) {}
 	      return;
 	    }
@@ -3803,7 +4031,13 @@
       const rawHeight = Math.round((payload.height || 0) + extra);
       const maxHeight = payload.id === 'density-frame'
         ? (window.innerWidth <= 900 ? 1200 : 900)
-        : (payload.id === 'province-support-frame' ? 3800 : (payload.id === 'number-match-frame' ? 2600 : 1600));
+        : (payload.id === 'province-support-frame'
+          ? 3800
+          : (payload.id === 'number-match-frame'
+            ? 2600
+            : (payload.id === 'heatmap-frame'
+              ? (window.innerWidth <= 900 ? 2400 : 2000)
+              : 1600)));
       const nextHeight = Math.max(300, Math.min(rawHeight, maxHeight));
       if (nextHeight) {
         target.style.height = `${nextHeight}px`;
@@ -3842,8 +4076,10 @@
 		  const mapBtnPop = document.getElementById('map-btn-pop');
 	  const mapSwingSelectWrap = document.getElementById('map-swing-select-wrap');
 	  const mapSwingMode = document.getElementById('map-swing-mode');
+	  const mapSwingParty = document.getElementById('map-swing-party');
 	  const mapMobileSwingWrap = document.getElementById('map-mobile-swing-wrap');
 	  const mapMobileSwingMode = document.getElementById('map-mobile-swing-mode');
+	  const mapMobileSwingParty = document.getElementById('map-mobile-swing-party');
 	  const mapProvince = document.getElementById('map-province');
   const mapDistrict = document.getElementById('map-district');
 	  const mapDataScript = document.getElementById('map-dist-data');
@@ -4468,18 +4704,79 @@
     });
   }
 
-  if (mapSwingMode) {
-    mapSwingMode.addEventListener('change', () => {
-      if (mapMobileSwingMode) mapMobileSwingMode.value = mapSwingMode.value;
-      if (mapBtnSwing && mapBtnSwing.classList.contains('active')) mapBtnSwing.click();
-    });
-  }
-  if (mapMobileSwingMode) {
-    mapMobileSwingMode.addEventListener('change', () => {
-      if (mapSwingMode) mapSwingMode.value = mapMobileSwingMode.value;
-      if (mapBtnSwing && mapBtnSwing.classList.contains('active')) mapBtnSwing.click();
-    });
-  }
+	  if (mapSwingMode) {
+	    mapSwingMode.addEventListener('change', () => {
+	      if (mapMobileSwingMode) mapMobileSwingMode.value = mapSwingMode.value;
+        syncSwingPartyVisibility();
+	      if (mapBtnSwing && mapBtnSwing.classList.contains('active')) mapBtnSwing.click();
+	    });
+	  }
+	  if (mapMobileSwingMode) {
+	    mapMobileSwingMode.addEventListener('change', () => {
+	      if (mapSwingMode) mapSwingMode.value = mapMobileSwingMode.value;
+        syncSwingPartyVisibility();
+	      if (mapBtnSwing && mapBtnSwing.classList.contains('active')) mapBtnSwing.click();
+	    });
+	  }
+
+	    const refreshSwingPartyOptions = () => {
+	      // Swing compares 2569 vs 2566, and the map iframe uses 2569 party naming (e.g., ประชาชน).
+	      // Use 2569 parties for the swing-party dropdown regardless of the activeYear table.
+	      const rows2569 = (Array.isArray(summaryRowsByYear && summaryRowsByYear['2569']) && summaryRowsByYear['2569'].length)
+	        ? summaryRowsByYear['2569']
+	        : (Array.isArray(window.__summaryRows2569) ? window.__summaryRows2569 : null);
+	      const list = rows2569
+	        ? [...new Set(rows2569.map((r) => (r && r.party ? String(r.party).trim() : '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'))
+	        : getActivePartyList(false);
+	      const keep = (mapSwingParty && mapSwingParty.value) ? mapSwingParty.value : '';
+	      const keepMobile = (mapMobileSwingParty && mapMobileSwingParty.value) ? mapMobileSwingParty.value : '';
+
+      const rebuild = (select, keepValue) => {
+        if (!select) return;
+        const placeholder = select.querySelector('option[value=""]') ? select.querySelector('option[value=""]').textContent : t('mapSwingPartyAll');
+        select.innerHTML = '';
+        const base = document.createElement('option');
+        base.value = '';
+        base.textContent = placeholder || t('mapSwingPartyAll');
+        select.appendChild(base);
+        appendOptions(select, list);
+        setSelectValue(select, keepValue);
+      };
+
+      rebuild(mapSwingParty, keep);
+      rebuild(mapMobileSwingParty, keepMobile || keep);
+    };
+
+    const getActiveSwingMode = () => (mapSwingMode ? (mapSwingMode.value || 'swing_change') : 'swing_change');
+
+	    const syncSwingPartyVisibility = () => {
+	      const mode = getActiveSwingMode();
+	      const show = (mode === 'swing_change' || mode === 'swing_const' || mode === 'swing_list');
+	      if (mapSwingParty) mapSwingParty.style.display = show ? 'inline-block' : 'none';
+	      if (mapMobileSwingParty) mapMobileSwingParty.style.display = show ? 'inline-block' : 'none';
+	    };
+
+    const sendSwingPartyToMap = (party) => {
+      postToMapReliable({ type: 'set-swing-party', party: party || '' });
+    };
+
+    if (mapSwingParty) {
+      mapSwingParty.addEventListener('change', () => {
+        if (mapMobileSwingParty) mapMobileSwingParty.value = mapSwingParty.value;
+        sendSwingPartyToMap(mapSwingParty.value || '');
+      });
+    }
+    if (mapMobileSwingParty) {
+      mapMobileSwingParty.addEventListener('change', () => {
+        if (mapSwingParty) mapSwingParty.value = mapMobileSwingParty.value;
+        sendSwingPartyToMap(mapMobileSwingParty.value || '');
+      });
+    }
+
+    // Initial population and visibility.
+    refreshSwingPartyOptions();
+    syncSwingPartyVisibility();
+    if (mapSwingParty && mapSwingParty.value) sendSwingPartyToMap(mapSwingParty.value);
 
 	  [mapBtnSwing, mapBtnTurnout, mapBtnTurnoutList, mapBtnMOV, mapBtnHHI, mapBtnTV, mapBtnENP, mapBtnNTL].forEach((btn) => {
 	    if (!btn) return;
@@ -4765,6 +5062,394 @@
     postToMapReliable({ type: 'select-constituency', distId, mode });
     if (district && mapDistrict && mapDistrict.value !== distId) mapDistrict.value = distId;
   };
+
+  // Candidate party switching (2569 vs 2566)
+	  const initCandidateSwitching = (() => {
+	    const elToParty = document.getElementById('switch-to-party');
+	    const elFromParty = document.getElementById('switch-from-party');
+	    const elSameOnly = document.getElementById('switch-same-district-only');
+	    const elMatrix = document.getElementById('switch-matrix');
+	    const elTbody = document.getElementById('switch-table-body');
+	    const elTable = document.querySelector('#candidate-switch-section .switch-table table');
+
+	    const maybeDecodeThai = (s) => {
+	      if (s == null) return '';
+	      const txt = String(s);
+	      if (/[\u0E00-\u0E7F]/.test(txt)) return txt;
+	      try {
+	        const decoded = decodeURIComponent(escape(txt));
+	        return decoded || txt;
+	      } catch (e) {
+	        return txt;
+	      }
+	    };
+	    const canonicalPartyName = (p) => {
+	      const name = maybeDecodeThai(p).replace(/\s+/g, ' ').trim();
+	      if (!name) return '';
+	      if (name === 'ก้าวไกล' || name === 'ประชาชน') return 'ประชาชน';
+	      if (name === 'เพื่อไทรวมพลัง' || name === 'ไทรวมพลัง') return 'ไทรวมพลัง';
+	      return name;
+	    };
+	    const partyNameByYear = (canonParty, year) => {
+	      const p = canonicalPartyName(canonParty);
+	      if (p === 'ประชาชน') return (year === '2566') ? 'ก้าวไกล' : 'ประชาชน';
+	      if (p === 'ไทรวมพลัง') return (year === '2566') ? 'เพื่อไทรวมพลัง' : 'ไทรวมพลัง';
+	      return p;
+	    };
+	    const partyOptionLabel = (canonParty, primaryYear) => {
+	      const canon = canonicalPartyName(canonParty);
+	      const primary = partyNameByYear(canon, primaryYear);
+	      const secondary = partyNameByYear(canon, primaryYear === '2566' ? '2569' : '2566');
+	      const a = (currentLang === 'en') ? displayPartyName(primary) : primary;
+	      const b = (currentLang === 'en') ? displayPartyName(secondary) : secondary;
+	      if (!b || b === a) return a;
+	      return `${a} (${b})`;
+	    };
+	    const normName = (s) => maybeDecodeThai(s).replace(/\s+/g, ' ').trim();
+	    const normKey = (s) => normName(s).toLowerCase();
+
+    const getByDist2566 = () => (window.__results2566ByDist && typeof window.__results2566ByDist === 'object')
+      ? window.__results2566ByDist
+      : {};
+
+    const getByDist2569 = async () => {
+      if (window.__electionResults2569 && window.__electionResults2569.byDist) return window.__electionResults2569.byDist;
+      try {
+        const res = await fetch('data/election_results_2569_by_dist.json', { cache: 'no-store' });
+        const data = await res.json();
+        return (data && data.byDist) ? data.byDist : {};
+      } catch (e) {
+        return {};
+      }
+    };
+
+	    const winnerCandidate = (cands) => {
+	      const arr = Array.isArray(cands) ? cands : [];
+	      let best = null;
+	      for (let i = 0; i < arr.length; i++) {
+	        const r = arr[i] || {};
+	        const votes = Number(r.votes || 0) || 0;
+	        if (!best || votes > best.votes) {
+	          best = {
+	            candidate: normName(r.candidate || ''),
+	            party: canonicalPartyName(r.party || ''),
+	            votes,
+	            share: Number(r.share_pp != null ? r.share_pp : (r.const_pp != null ? r.const_pp : 0)) || 0,
+	          };
+	        }
+	      }
+	      return best;
+	    };
+
+	    const buildIndexes = async () => {
+      const by66 = getByDist2566();
+      const by69raw = await getByDist2569();
+
+      const by69 = {};
+	      Object.keys(by69raw || {}).forEach((distId) => {
+	        const d = by69raw[distId] || {};
+	        by69[maybeDecodeThai(distId)] = {
+	          province: maybeDecodeThai(d.province || ''),
+	          district: d.district,
+	          const_candidates: Array.isArray(d.const_candidates) ? d.const_candidates.map((r) => ({
+	            candidate: normName(r.candidate || ''),
+	            party: canonicalPartyName(r.party || ''),
+	            votes: Number(r.votes || 0) || 0,
+	            share_pp: Number(r.share_pp || 0) || 0,
+	          })) : []
+	        };
+	      });
+
+      const idx66ByDist = new Map();
+      const idx66ByName = new Map(); // nameKey -> [{distId, party, share, votes}]
+      const winners66ByDist = new Map(); // distId -> winner nameKey
+      const winners66ByName = new Set(); // any district incumbent
+
+      Object.keys(by66 || {}).forEach((distId) => {
+        const d = by66[distId] || {};
+        const did = maybeDecodeThai(distId);
+        const cands = Array.isArray(d.const_candidates) ? d.const_candidates : [];
+        const m = new Map();
+	        cands.forEach((r) => {
+	          const name = normName(r.candidate || '');
+	          const key = normKey(name);
+	          if (!key) return;
+	          const party = canonicalPartyName(r.party || '');
+	          const votes = Number(r.votes || 0) || 0;
+	          const share = Number(r.share_pp || 0) || 0;
+	          m.set(key, { candidate: name, party, votes, share, distId: did });
+	          if (!idx66ByName.has(key)) idx66ByName.set(key, []);
+	          idx66ByName.get(key).push({ distId: did, party, votes, share });
+	        });
+        idx66ByDist.set(did, m);
+        const w = winnerCandidate(cands);
+        if (w && w.candidate) {
+          const wk = normKey(w.candidate);
+          winners66ByDist.set(did, wk);
+          winners66ByName.add(wk);
+        }
+      });
+
+      const winners69ByDist = new Map();
+      Object.keys(by69 || {}).forEach((distId) => {
+        const d = by69[distId] || {};
+        const w = winnerCandidate(d.const_candidates || []);
+        if (w && w.candidate) winners69ByDist.set(distId, normKey(w.candidate));
+      });
+
+      const parties69 = new Set();
+      const parties66 = new Set();
+	      Object.keys(by69 || {}).forEach((distId) => {
+	        (by69[distId].const_candidates || []).forEach((r) => { if (r.party) parties69.add(r.party); });
+	      });
+	      Object.keys(by66 || {}).forEach((distId) => {
+	        const d = by66[distId] || {};
+	        (d.const_candidates || []).forEach((r) => {
+	          const p = canonicalPartyName(r.party || '');
+	          if (p) parties66.add(p);
+	        });
+	      });
+
+	      return { by69, idx66ByDist, idx66ByName, winners66ByDist, winners66ByName, winners69ByDist, parties69: [...parties69], parties66: [...parties66] };
+	    };
+
+	    let sortKey = 'diff';
+	    let sortDir = 'desc'; // 'asc' | 'desc'
+	    const sortDefaults = (key) => (key === 'diff' ? 'desc' : 'asc');
+	    const setSort = (key) => {
+	      const k = String(key || '').trim();
+	      if (!k) return;
+	      if (k === sortKey) sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
+	      else { sortKey = k; sortDir = sortDefaults(k); }
+	    };
+	    const updateSortIndicators = () => {
+	      if (!elTable) return;
+	      const ths = Array.from(elTable.querySelectorAll('thead th.sortable[data-sort]'));
+	      ths.forEach((th) => {
+	        const k = th.getAttribute('data-sort') || '';
+	        if (k && k === sortKey) {
+	          th.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
+	          th.setAttribute('data-sort-indicator', sortDir === 'asc' ? '▲' : '▼');
+	        } else {
+	          th.removeAttribute('aria-sort');
+	          th.setAttribute('data-sort-indicator', '↕');
+	        }
+	      });
+	    };
+
+	    const render = (state, filters) => {
+	      if (!elMatrix || !elTbody) return;
+	      const { by69, idx66ByDist, idx66ByName, winners66ByDist, winners66ByName, winners69ByDist } = state;
+	      const { toParty, fromParty, sameDistrictOnly } = filters;
+
+	      const records = [];
+      Object.keys(by69 || {}).forEach((distId69) => {
+        const d69 = by69[distId69] || {};
+        const cands69 = d69.const_candidates || [];
+        const winner69Key = winners69ByDist.get(distId69) || '';
+        const winner66KeySame = winners66ByDist.get(distId69) || '';
+        const map66Same = idx66ByDist.get(distId69) || null;
+
+	        cands69.forEach((r69) => {
+	          const name = normName(r69.candidate || '');
+	          const key = normKey(name);
+	          if (!key) return;
+	          const party69 = canonicalPartyName(r69.party || '');
+
+          let match66 = null;
+          let matchDist66 = '';
+          if (sameDistrictOnly) {
+            if (map66Same && map66Same.has(key)) {
+              match66 = map66Same.get(key);
+              matchDist66 = distId69;
+            }
+          } else {
+            const hits = idx66ByName.get(key) || [];
+            if (hits.length === 1) {
+              match66 = hits[0];
+              matchDist66 = hits[0].distId;
+            }
+          }
+          if (!match66) return;
+
+	          const party66 = canonicalPartyName(match66.party || '');
+	          if (!party66 || !party69) return;
+	          if (party66 === party69) return;
+
+          if (toParty && party69 !== toParty) return;
+          if (fromParty && party66 !== fromParty) return;
+
+          const inc = sameDistrictOnly ? (winner66KeySame && key === winner66KeySame) : winners66ByName.has(key);
+          const win = winner69Key && key === winner69Key;
+
+          const share66 = Number(match66.share || 0) || 0;
+          const share69 = Number(r69.share_pp || 0) || 0;
+
+	          records.push({
+	            distId69,
+	            province: d69.province || '',
+	            district: d69.district || '',
+	            candidate: name,
+	            party66,
+	            party69,
+	            distId66: matchDist66,
+	            inc,
+	            win,
+	            share66,
+	            share69,
+	            diff: share69 - share66,
+	          });
+	        });
+	      });
+
+	      const cmpText = (a, b) => String(a || '').localeCompare(String(b || ''), 'th');
+	      const cmpNum = (a, b) => (Number(a || 0) - Number(b || 0));
+	      const statusRank = (r) => ((r.inc ? 2 : 0) + (r.win ? 1 : 0)); // 3=inc+win,2=inc+lose,1=non+win,0=non+lose
+	      const baseCompare = (a, b) => {
+	        if (sortKey === 'candidate') return cmpText(a.candidate, b.candidate) || cmpText(a.province, b.province) || cmpNum(a.district, b.district) || (b.diff - a.diff);
+	        if (sortKey === 'district') return cmpText(a.province, b.province) || cmpNum(a.district, b.district) || cmpText(a.candidate, b.candidate) || (b.diff - a.diff);
+	        if (sortKey === 'switch') return cmpText(partyNameByYear(a.party69, '2569'), partyNameByYear(b.party69, '2569')) || cmpText(partyNameByYear(a.party66, '2566'), partyNameByYear(b.party66, '2566')) || cmpText(a.candidate, b.candidate) || (b.diff - a.diff);
+	        if (sortKey === 'status') return (statusRank(a) - statusRank(b)) || cmpText(a.province, b.province) || cmpNum(a.district, b.district) || (b.diff - a.diff);
+	        // default = diff
+	        return (a.diff - b.diff) || cmpText(a.province, b.province) || cmpNum(a.district, b.district) || cmpText(a.candidate, b.candidate);
+	      };
+	      records.sort((a, b) => {
+	        const c = baseCompare(a, b);
+	        return sortDir === 'asc' ? c : -c;
+	      });
+	      updateSortIndicators();
+
+	      const matrix = {
+	        inc_win: 0, inc_lose: 0, non_win: 0, non_lose: 0,
+	      };
+      records.forEach((r) => {
+        const inc = !!r.inc;
+        const win = !!r.win;
+        if (inc && win) matrix.inc_win += 1;
+        else if (inc && !win) matrix.inc_lose += 1;
+        else if (!inc && win) matrix.non_win += 1;
+        else matrix.non_lose += 1;
+      });
+      const total = records.length || 0;
+      const pct = (n) => total ? (n / total * 100) : 0;
+
+      const winLabel = (currentLang === 'en') ? 'Win' : 'ชนะ';
+      const loseLabel = (currentLang === 'en') ? 'Lose' : 'แพ้';
+	      const incLabel = (currentLang === 'en') ? 'Incumbent' : 'ผู้ชนะเดิม';
+	      const nonIncLabel = (currentLang === 'en') ? 'Non‑incumbent' : 'ไม่ใช่ผู้ชนะเดิม';
+
+	      elMatrix.innerHTML = [
+	        `<div class="cell hdr blank"></div>`,
+	        `<div class="cell hdr">${winLabel}</div>`,
+	        `<div class="cell hdr">${loseLabel}</div>`,
+	        `<div class="cell hdr">${incLabel}</div>`,
+	        `<div class="cell"><div class="metric">${matrix.inc_win}</div><div class="sub">${pct(matrix.inc_win).toFixed(1)}%</div></div>`,
+	        `<div class="cell"><div class="metric">${matrix.inc_lose}</div><div class="sub">${pct(matrix.inc_lose).toFixed(1)}%</div></div>`,
+	        `<div class="cell hdr">${nonIncLabel}</div>`,
+	        `<div class="cell"><div class="metric">${matrix.non_win}</div><div class="sub">${pct(matrix.non_win).toFixed(1)}%</div></div>`,
+	        `<div class="cell"><div class="metric">${matrix.non_lose}</div><div class="sub">${pct(matrix.non_lose).toFixed(1)}%</div></div>`,
+	      ].join('');
+
+	      elTbody.innerHTML = records.map((r) => {
+	        const distLabel = `${r.province} — ${currentLang === 'en' ? 'District ' : 'เขต '}${r.district}`;
+	        const switchLabel = `${displayPartyName(partyNameByYear(r.party66, '2566'))} → ${displayPartyName(partyNameByYear(r.party69, '2569'))}`;
+	        const incTag = r.inc ? `<span class="tag inc">Inc</span>` : `<span class="tag noninc">Non‑inc</span>`;
+	        const winTag = r.win ? `<span class="tag win">${currentLang === 'en' ? 'Win' : 'ชนะ'}</span>` : `<span class="tag lose">${currentLang === 'en' ? 'Lose' : 'แพ้'}</span>`;
+	        const shares = `${r.share66.toFixed(1)}% → ${r.share69.toFixed(1)}% (${formatSigned(r.diff.toFixed(1))}pp)`;
+	        const moved = (!sameDistrictOnly && r.distId66 && r.distId66 !== r.distId69) ? ` · ${currentLang === 'en' ? 'from' : 'จาก'} ${r.distId66}` : '';
+	        return `<tr data-dist="${r.distId69}" style="cursor:pointer;">` +
+	          `<td>${r.candidate}</td>` +
+	          `<td>${distLabel}${moved}</td>` +
+	          `<td>${switchLabel}</td>` +
+	          `<td>${incTag} ${winTag}</td>` +
+	          `<td class="mono">${shares}</td>` +
+	        `</tr>`;
+	      }).join('');
+
+      elTbody.querySelectorAll('tr[data-dist]').forEach((tr) => {
+        tr.addEventListener('click', () => {
+          const did = tr.getAttribute('data-dist');
+          if (!did) return;
+          try {
+            selectInMainMap(did);
+            scrollToMainMap();
+          } catch (e) {}
+        });
+      });
+    };
+
+	    const populatePartyOptions = (parties69, parties66) => {
+	      const listTo = (Array.isArray(parties69) ? parties69 : [])
+	        .filter(Boolean)
+	        .map((p) => canonicalPartyName(p))
+	        .filter(Boolean);
+	      const uniqueTo = [...new Set(listTo)].sort((a, b) => displayPartyName(a).localeCompare(displayPartyName(b), 'th'));
+
+	      const listFrom = (Array.isArray(parties66) ? parties66 : [])
+	        .filter(Boolean)
+	        .map((p) => canonicalPartyName(p))
+	        .filter(Boolean);
+	      const uniqueFrom = [...new Set(listFrom)].sort((a, b) => displayPartyName(a).localeCompare(displayPartyName(b), 'th'));
+
+	      const fill = (sel, unique, primaryYear) => {
+	        if (!sel) return;
+	        const keep = canonicalPartyName(sel.value || '');
+	        sel.innerHTML = `<option value="">${t('allParties')}</option>`;
+	        unique.forEach((p) => {
+	          const opt = document.createElement('option');
+	          opt.value = p;
+	          opt.textContent = partyOptionLabel(p, primaryYear);
+	          sel.appendChild(opt);
+	        });
+	        setSelectValue(sel, keep);
+	      };
+
+	      fill(elToParty, uniqueTo, '2569');
+	      fill(elFromParty, uniqueFrom, '2566');
+	    };
+
+    let cachedState = null;
+    const ensure = async () => {
+      if (cachedState) return cachedState;
+      cachedState = await buildIndexes();
+      populatePartyOptions(cachedState.parties69, cachedState.parties66);
+      return cachedState;
+    };
+
+      const rerender = async () => {
+      const state = await ensure();
+      // Refresh option text on language changes.
+      populatePartyOptions(state.parties69, state.parties66);
+      render(state, {
+        toParty: elToParty ? (elToParty.value || '') : '',
+        fromParty: elFromParty ? (elFromParty.value || '') : '',
+        sameDistrictOnly: elSameOnly ? !!elSameOnly.checked : true,
+      });
+    };
+
+	    const wire = () => {
+	      if (elToParty) elToParty.addEventListener('change', rerender);
+	      if (elFromParty) elFromParty.addEventListener('change', rerender);
+	      if (elSameOnly) elSameOnly.addEventListener('change', rerender);
+	      if (elTable) {
+	        elTable.querySelectorAll('thead th.sortable[data-sort]').forEach((th) => {
+	          th.addEventListener('click', () => {
+	            setSort(th.getAttribute('data-sort') || '');
+	            rerender();
+	          });
+	        });
+	        updateSortIndicators();
+	      }
+	    };
+
+    return { wire, rerender };
+  })();
+
+  if (initCandidateSwitching && initCandidateSwitching.wire) {
+    initCandidateSwitching.wire();
+    // Defer to let other initializers populate language/year and DOM.
+    setTimeout(() => { try { initCandidateSwitching.rerender(); } catch (e) {} }, 0);
+  }
 
   const handleTopListClick = (event) => {
     const item = event.target.closest('.top-list-item');
